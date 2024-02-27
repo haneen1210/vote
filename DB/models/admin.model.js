@@ -7,7 +7,6 @@ const UserSchema = new Schema({
 
     cardnumber: {
         type: String,
-        required: true,
         unique: true,
     },
 
@@ -26,17 +25,14 @@ const UserSchema = new Schema({
 
     image: {
         type: Object,
-        required: true,
     },
 
     phone: {
         type: String,
-        required: true,
     },
 
     address: {
         type: String,
-        required: true,
     },
 
     confirmEmail: {
@@ -47,7 +43,6 @@ const UserSchema = new Schema({
     gender: {
         type: String,
         enum: ['Male', 'Female'],
-        required: true,
     },
     statuse: {
         type: String,
@@ -60,7 +55,6 @@ const UserSchema = new Schema({
         type: String,
         default: 'User',
         enum: ['User', 'Admin', 'Candidate'],
-        required: true,
 
     },
     sendCode: {
@@ -69,6 +63,10 @@ const UserSchema = new Schema({
     },
     changePasswordTime: {
         type: Date,
+    },
+    isDeleted:{
+        type:Boolean,
+        default:false,
     },
 
 }, {
