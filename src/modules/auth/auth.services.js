@@ -7,7 +7,7 @@ import { customAlphabet } from "nanoid";
 
 
 export const Signup = async (req, res, next) => {
-    const { userName, email, password, cardnumber, phone, address, gender ,role} = req.body;
+    const { userName, email, password, cardnumber, phone, address, gender, role } = req.body;
 
     const user = await userModel.findOne({ email });
     if (user) {
@@ -238,7 +238,7 @@ export const Signup = async (req, res, next) => {
   `
     await sendEmail(email, "confirm email", html)
 
-    const createUser = await userModel.create({ userName, email, password: hashedPassword, cardnumber, phone, address, gender,role,image: { secure_url, public_id } });
+    const createUser = await userModel.create({ userName, email, password: hashedPassword, cardnumber, phone, address, gender, role, image: { secure_url, public_id } });
     return res.status(201).json({ message: "success", createUser });
 
 }
@@ -277,7 +277,7 @@ export const singIn = async (req, res, next) => {
     );
     const refreshToken = jwt.sign({ id: user._id, role: user.role, status: user.status }, process.env.LOGINSECRET,
         { expiresIn: 60 * 60 * 24 * 30 });
-    return res.status(200).json({ message: "success", token, refreshToken,role: user.role });
+    return res.status(200).json({ message: "success", token, refreshToken, role: user.role });
 }
 
 export const sendCode = async (req, res, next) => {

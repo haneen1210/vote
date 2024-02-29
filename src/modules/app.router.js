@@ -11,8 +11,8 @@ const initApp = async (app, express) => {
         return res.status(200).json({ message: "welcom" });
     })
     //app.use('/auth',authRouter);
-    app.use('/Admin',Adminrouter);
-    app.use('/auth',authRouter);
+    app.use('/Admin', Adminrouter);
+    app.use('/auth', authRouter);
     app.get("*", (req, res) => {
         return res.status(500).json({ message: "page not found" });
     })
