@@ -7,11 +7,17 @@ import { customAlphabet } from "nanoid";
 
 
 export const Signup = async (req, res, next) => {
-    const { userName, email, password, cardnumber, phone, address, gender, role } = req.body;
+    const { userName, email, password, cardnumber, phone, address, gender, role='User' } = req.body;
 
-    const user = await userModel.findOne({ email });
-    if (user) {
+    
+    if (await userModel.findOne({ email })) {
         return next(new Error("email already exists", { cause: 409 }));
+    }
+    if (await userModel.findOne({ phone })) {
+        return next(new Error("phone already exists", { cause: 409 }));
+    }
+    if (await userModel.findOne({ cardnumber })) {
+        return next(new Error("cardnumber already exists", { cause: 409 }));
     }
     const hashedPassword = await bcrypt.hash(password, parseInt(process.env.SALT_ROUND));
     const { secure_url, public_id } = await cloudinary.uploader.upload(req.file.path, {
@@ -268,6 +274,10 @@ export const singIn = async (req, res, next) => {
     if (!user.confirmEmail) {
         return next(new Error("plz confirm your email", { cause: 400 }));
     }
+    if (user.statuse=="Inactive") {
+        return next(new Error("your account Inactive", { cause: 400 }));
+    }
+    
     const match = await bcrypt.compare(password, user.password);
     if (!match) {
         return next(new Error("data invalid", { cause: 400 }));

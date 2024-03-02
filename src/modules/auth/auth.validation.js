@@ -9,7 +9,7 @@ export const signupSchema = joi.object({
     phone: joi.string().required().min(10).max(10),
     address: joi.string().alphanum().min(3).max(25).required(),
     gender: joi.string().valid('Male', 'Female').required(),
-    role: joi.string().valid('User', 'Admin', 'Candidate').required(),
+    role: joi.string().valid('User', 'Admin', 'Candidate'),
     file: generalFields.file.required(),
 
 });

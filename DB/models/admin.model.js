@@ -29,6 +29,8 @@ const UserSchema = new Schema({
 
     phone: {
         type: String,
+        required:true,
+        unique:true,
     },
 
     address: {
@@ -50,7 +52,7 @@ const UserSchema = new Schema({
         enum: ['Active', 'Inactive'],
 
     },
-
+    
     role: {
         type: String,
         default: 'User',
