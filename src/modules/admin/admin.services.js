@@ -68,6 +68,7 @@ export const updateadmin = async (req, res, next) => {
     admin.userName = req.body.userName;
     admin.address = req.body.address;
     admin.statuse = req.body.statuse;
+    admin.phone = req.body.phone;
 
 
     await admin.save();

@@ -21,3 +21,4 @@ router.post('/addCandidate', auth(endPoint.addCandidate), fileUpload(fileValidat
 
 
 export default router;
+
