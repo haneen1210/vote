@@ -1,8 +1,6 @@
 import joi from "joi";
 import { generalFields, validation } from "../../middleware/validation.js";
 
-
-
 export const UpdateAdminSchema = joi.object({
     id: joi.string().custom(validation).required(),
     email: joi.string().email(),
