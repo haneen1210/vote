@@ -39,7 +39,7 @@ export const restore = async (req, res) => {
     const admin = await userModel.findOneAndUpdate({ _id: id, isDeleted: true, role: 'Admin' }, { isDeleted: false }, { new: true })
         ;
     if (!admin) {
-        return res.status(400).json({ message: "cont restore this coupon" });
+        return res.status(400).json({ message: "admin not found" });
     }
     return res.status(200).json({ message: "success" });
 }

@@ -16,3 +16,12 @@ export const updateVoteSchema = joi.object({
     id: joi.string().custom(validation).required(),
     VotingStatus: joi.string().valid('Active', 'Inactive').required(),
 });
+
+export const getspecificvote=joi.object({
+    id:joi.string().min(24).max(24).required(),
+});
+
+export const addExistingCandidateToVote=joi.object({
+    CandidateID:joi.string().min(24).max(24).required(),
+    voteID:joi.string().min(24).max(24).required(),
+});

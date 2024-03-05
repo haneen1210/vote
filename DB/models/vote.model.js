@@ -1,4 +1,4 @@
-import mongoose, { Schema, model } from "mongoose";
+import mongoose, { Schema, model,Types} from "mongoose";
 const VoteSchema = new Schema({
     voteName: {
         type: String,
@@ -31,10 +31,7 @@ const VoteSchema = new Schema({
         default: false,
     },
 
-   // usedBy: [{ type: Types.ObjectId, ref: 'User' }],
-  //  createdBy: [{ type: Types.ObjectId, ref: 'User' }],
-   // updateBy: [{ type: Types.ObjectId, ref: 'User' }],
-
+   candidates: [{ type:Types.ObjectId, ref: 'User' }]
 }, {
     timestamps: true,
 }
