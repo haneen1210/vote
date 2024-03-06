@@ -24,7 +24,7 @@ router.get('/:id',auth(Object.values(roles)),validation(validators.getspecificvo
 router.post('/addcandidatetovote/:CandidateID/:voteID', auth(endPoint.addExistingCandidateToVote),validation(validators.addExistingCandidateToVote),asynHandler(voteservices.addExistingCandidateToVote));
 
 router.post('/uploadExcelCandidateToVote', auth(endPoint.addExistingCandidateToVote),fileUpload(fileValidation.excel).single('file'),asynHandler(voteservices.uploadExcelCandidateToVote));
-
+router.post('/:CandidateID', auth(endPoint.getspecificCandidate),validation(validators.getspecificCandidate),asynHandler(voteservices.getspecificCandidate));
 
 export default router;
 

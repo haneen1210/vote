@@ -150,4 +150,12 @@ export const uploadExcelCandidateToVote=async(req, res,next)=> {
     }
 }
 
- 
+export const getspecificCandidate = async (req, res) => {
+    const { CandidateID } = req.params;
+    const vote = await voteModel.findOne({ "candidates": CandidateID });
+    if(!vote){
+        return res.status(404).json({message:"Candidate not found"});
+    }
+    return res.status(200).json({ message: "Vote found", vote });
+
+}

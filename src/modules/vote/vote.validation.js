@@ -25,3 +25,6 @@ export const addExistingCandidateToVote=joi.object({
     CandidateID:joi.string().min(24).max(24).required(),
     voteID:joi.string().min(24).max(24).required(),
 });
+export const getspecificCandidate=joi.object({
+    CandidateID:joi.string().min(24).max(24).required(),
+});
