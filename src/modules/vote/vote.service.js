@@ -70,30 +70,28 @@ export const getVoteOpen = async (req, res, next) => {
 export const getspecificVote = async (req, res) => {
     const { id } = req.params;
     const vote = await voteModel.findById(id);
-    if(!vote){
-        return res.status(404).json({message:"vote not found"});
+    if (!vote) {
+        return res.status(404).json({ message: "vote not found" });
     }
-    const subvote=await voteModel.find(vote).populate({
-        path:'candidates'
+    const subvote = await voteModel.find(vote).populate({
+        path: 'candidates'
     });
     return res.status(200).json({ message: "success", subvote });
 
 }
 export const getallVoteandcatecory = async (req, res) => {
-    const subvote=await voteModel.find().populate({
-        path:'candidates'
+    const subvote = await voteModel.find().populate({
+        path: 'candidates'
     });
     return res.status(200).json({ message: "success", subvote });
 
 }
 
-
-
 // وظيفة لإضافة مرشح موجود إلى التصويت
-export const addExistingCandidateToVote=async(req, res)=> {
+export const addExistingCandidateToVote = async (req, res) => {
     const { CandidateID, voteID } = req.params;
     const Candidate = await userModel.findOne({ _id: CandidateID, role: 'Candidate' });
-   const vote = await voteModel.findOne({ _id: voteID });
+    const vote = await voteModel.findOne({ _id: voteID });
     if (!vote || !Candidate) {
         return res.status(404).json({ message: "Vote or Candidate not found" });
     }
@@ -101,22 +99,22 @@ export const addExistingCandidateToVote=async(req, res)=> {
     if (existingCandidate) {
         return res.status(400).json({ message: "Candidate already exists in the vote" });
     }
-    
+
     vote.candidates.push(Candidate);
     await vote.save();
-    
-    return res.status(200).json({ message: "Candidate added to vote successfully" });
-    
-}
- 
 
-export const uploadExcelCandidateToVote=async(req, res,next)=> {
+    return res.status(200).json({ message: "Candidate added to vote successfully" });
+
+}
+
+
+export const uploadExcelCandidateToVote = async (req, res, next) => {
 
     try {
         const woorkBook = XLSX.readFile(req.file.path);
         const woorkSheet = woorkBook.Sheets[woorkBook.SheetNames[0]];
         const users = XLSX.utils.sheet_to_json(woorkSheet);
-    
+
         for (const row of users) {
             const { CandidateID, voteID } = row;
 
@@ -150,12 +148,3 @@ export const uploadExcelCandidateToVote=async(req, res,next)=> {
     }
 }
 
-export const getspecificCandidate = async (req, res) => {
-    const { CandidateID } = req.params;
-    const vote = await voteModel.findOne({ "candidates": CandidateID });
-    if(!vote){
-        return res.status(404).json({message:"Candidate not found"});
-    }
-    return res.status(200).json({ message: "Vote found", vote });
-
-}
