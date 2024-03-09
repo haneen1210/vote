@@ -8,6 +8,7 @@ const UserSchema = new Schema({
     cardnumber: {
         type: String,
         unique: true,
+        required: true,
     },
 
 
@@ -25,6 +26,7 @@ const UserSchema = new Schema({
 
     image: {
         type: Object,
+        required: true,
     },
 
     phone: {
@@ -35,6 +37,7 @@ const UserSchema = new Schema({
 
     address: {
         type: String,
+        required: true,
     },
 
     confirmEmail: {
@@ -45,6 +48,7 @@ const UserSchema = new Schema({
     gender: {
         type: String,
         enum: ['Male', 'Female'],
+        required: true,
     },
     statuse: {
         type: String,

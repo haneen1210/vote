@@ -17,11 +17,11 @@ const VoteSchema = new Schema({
         required: true,
 
     },
-    Title: {
-        type: String,
+    image: {
+        type: Object,
         required: true,
-
     },
+
 
     StartDateVote: { type: Date, required: true },
     EndDateVote: { type: Date, required: true },
