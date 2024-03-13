@@ -5,6 +5,7 @@ import moment from "moment";
 import userModel from "../../../DB/models/admin.model.js";
 import XLSX from "xlsx";
 
+
 export const createVote = async (req, res, next) => {
   const {
     voteName,
@@ -74,6 +75,23 @@ export const updateVotingStatus = async (req, res, next) => {
   }
 };
 
+export const sendReminderVotingStatus = async (req, res, next) => {
+    try {
+        // العثور على جميع التصويتات التي موعدها انتهى
+        const expiredVotes = await voteModel.find({ EndDateVote: { $lt: new Date() } });
+
+        // تحديث حالة التصويت لكل تصويت منتهي
+        for (const vote of expiredVotes) {
+            vote.VotingStatus = "Inactive";
+            await vote.save();
+            console.log(`Voting is optionally chosen to vote: ${vote._id} ${vote.voteName}`);
+        }
+    } catch (error) {
+        console.error("An error occurred while terminating voting automatically:", error.message);
+    }
+
+
+}
 export const getVoteOpen = async (req, res, next) => {
   const votes = await voteModel.find({ VotingStatus: "Active" });
   return res.status(200).json({ message: "success", votes });

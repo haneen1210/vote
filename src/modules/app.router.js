@@ -4,7 +4,9 @@ import Adminrouter from "./admin/admin.router.js";
 import voteRouter from "./vote/vote.router.js";
 import candidateRouter from "./candidate/candidate.router.js";
 import cors from "cors";
+import cron from "node-cron";
 import { globalErrorHandler } from "../utls/errorHanding.js";
+import { sendReminderVotingStatus } from "./vote/vote.service.js";
 const initApp = async (app, express) => {
   /*
 app.use(async(req,res,next)=>{
@@ -21,6 +23,14 @@ app.use(async(req,res,next)=>{
   app.use(cors());
   app.use(express.json());
   connectDB();
+
+  cron.schedule('*/60 * * * *', async () => {
+    await sendReminderVotingStatus();
+}, {
+    scheduled: true,
+    timezone: 'Asia/Hebron',
+});
+
   app.get("/", (req, res) => {
     return res.status(200).json({ message: "welcom" });
   });

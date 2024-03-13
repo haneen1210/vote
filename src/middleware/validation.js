@@ -1,4 +1,5 @@
 import joi from 'joi';
+import XLSX from 'xlsx';
 export const generalFields = {
     file: joi.object({
         size: joi.number().positive().required(),
@@ -25,6 +26,7 @@ export const validation = (schema) => {
         const inputsData = { ...req.body, ...req.params, ...req.query };
         if (req.file || req.files) {
             inputsData.file = req.file || req.files;
+            
         }
         //{ abortEarly: false } عشان يطبعلي كل الايرور مش بس يرور واحد
         const vlidationResult = schema.validate(inputsData, { abortEarly: false });
@@ -37,3 +39,35 @@ export const validation = (schema) => {
         next();
     }
 }
+export const validation1 = (schema) => {
+    return async (req, res, next) => {
+        try {
+            if (!req.body || !req.body.file) {
+                throw new Error('File data is missing.');
+            }
+            
+            const fileData = req.body.file;
+            if (!Array.isArray(fileData)) {
+                throw new Error('File data must be an array of objects.');
+            }
+
+            // التحقق من صحة كل كائن في المصفوفة
+            for (const obj of fileData) {
+                const validationResult = await schema.validateAsync(obj, { abortEarly: false });
+                if (validationResult.error) {
+                    throw new Error('Validation error in file data.');
+                }
+            }
+
+            next();
+        } catch (error) {
+            console.error("Error in validation:", error);
+            return res.status(400).json({
+                message: "Validation error",
+                validationError: error.message
+            });
+        }
+    };
+};
+
+

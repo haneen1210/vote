@@ -1,5 +1,5 @@
 import joi from "joi";
-import { generalFields } from "../../middleware/validation.js";
+import { generalFields, } from "../../middleware/validation.js";
 export const signupSchema = joi.object({
     userName: joi.string().alphanum().min(3).max(25).required(),
     cardnumber: joi.number().positive().required(),
