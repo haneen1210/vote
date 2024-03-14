@@ -19,7 +19,7 @@ router.patch('/restore/:id', auth(endPoint.restore), validation(validators.Delet
 router.put('/:id', auth(endPoint.updateadmin), fileUpload(fileValidation.image).single('image'),validation(validators.UpdateAdminSchema), asynHandler(Adminservices.updateadmin));
 router.post('/addCandidate', auth(endPoint.addCandidate), fileUpload(fileValidation.image).single('image'), validation(AuthValidators.signupSchema), asynHandler(authservices.Signup));
 router.post('/addCandidateExcel', auth(endPoint.addCandidate), fileUpload(fileValidation.excel).single('file'), asynHandler(Adminservices.addCandidateExcel));
-
+router.get('/getcandidate', auth(endPoint.getcandidate), asynHandler(Adminservices.getcandidate));
 
 export default router;
 
