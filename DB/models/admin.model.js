@@ -74,7 +74,7 @@ const UserSchema = new Schema({
         type:Boolean,
         default:false,
     },
-    votes: { type: Number, default: 0 }
+  //  votes: { type: Number, default: 0 }
 
 }, {
     timestamps: true,
