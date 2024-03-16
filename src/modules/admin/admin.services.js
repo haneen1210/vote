@@ -6,13 +6,14 @@ import cloudinary from "../../utls/cloudinary.js";
 import XLSX from "xlsx";
 
 export const getAdmin = async (req, res, next) => {
-    const Admins = await userModel.find({ role: 'Admin' } ,{isDeleted:false});
+    const Admins = await userModel.find({ isDeleted: false , role : 'Admin'});
     return res.status(200).json({ message: "success", Admins });
 
 }
 export const getspesificAdmin = async (req, res, next) => {
     const { AdminID } = req.params;
-    const Admin = await userModel.findOne({ _id: AdminID });
+    console.log(AdminID);
+    const Admin = await userModel.findOne({ _id: AdminID , role : 'Admin'});
     if (!Admin) {
         return res.status(404).json({ message: "Admin not found" });
     }
