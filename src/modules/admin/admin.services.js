@@ -10,6 +10,15 @@ export const getAdmin = async (req, res, next) => {
     return res.status(200).json({ message: "success", Admins });
 
 }
+export const getspesificAdmin = async (req, res, next) => {
+    const { AdminID } = req.params;
+    const Admin = await userModel.findOne({ _id: AdminID });
+    if (!Admin) {
+        return res.status(404).json({ message: "Admin not found" });
+    }
+    return res.status(200).json({ message: "Admin found", Admin });
+
+}
 export const getcandidate = async (req, res, next) => {
     const Candidate = await userModel.find({ role: 'Candidate' });
     return res.status(200).json({ message: "success", Candidate });

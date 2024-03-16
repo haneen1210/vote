@@ -12,6 +12,7 @@ import * as authservices from '../auth/auth.services.js'
 const router = Router();
 
 router.get('/getAdmin', auth(endPoint.getAdmin), asynHandler(Adminservices.getAdmin));
+router.get('/getAdmin:id', auth(endPoint.getAdmin), asynHandler(Adminservices.getAdmin));
 router.post('/addadmin', auth(endPoint.addadmin), validation(AuthValidators.signinSchema), asynHandler(authservices.Signup));
 router.patch('/softDelet/:id', auth(endPoint.deleteadmin), validation(validators.DeletAdminAndRestore), asynHandler(Adminservices.softDeletAdmin));
 router.delete('/hrddDeleted/:id', auth(endPoint.deleteadmin), validation(validators.DeletAdminAndRestore), asynHandler(Adminservices.Harddeleteadmin));
