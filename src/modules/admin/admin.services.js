@@ -6,7 +6,7 @@ import cloudinary from "../../utls/cloudinary.js";
 import XLSX from "xlsx";
 
 export const getAdmin = async (req, res, next) => {
-    const Admins = await userModel.find({ role: 'Admin' });
+    const Admins = await userModel.find({ role: 'Admin' } ,{isDeleted:false});
     return res.status(200).json({ message: "success", Admins });
 
 }
