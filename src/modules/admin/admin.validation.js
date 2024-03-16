@@ -2,7 +2,6 @@ import joi from "joi";
 import { generalFields } from "../../middleware/validation.js";
 
 export const UpdateAdminSchema = joi.object({
-    id:joi.string().min(24).max(24).required(),
     email: joi.string().email(),
     userName: joi.string().alphanum().min(3).max(25),
     phone: joi.string().min(10).max(10),
@@ -21,7 +20,6 @@ export const excelUserDataSchema = joi.object({
     userName: joi.string().alphanum().min(3).max(25).required(),
     cardnumber: joi.string().required(),
     email: joi.string().email().required(), 
-    Cpassword: joi.string().valid(joi.ref('password')).required(),
     phone: joi.string().required().min(10).max(10), 
     address: joi.string().alphanum().min(3).max(25).required(),
     gender: joi.string().valid('Male', 'Female').required(),

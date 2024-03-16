@@ -4,6 +4,8 @@ import jwt from "jsonwebtoken";
 import { sendEmail } from "../../utls/email.js";
 import cloudinary from "../../utls/cloudinary.js";
 import XLSX from "xlsx";
+import * as validators from './admin.validation.js';
+import { validation, validation1} from "../../middleware/validation.js";
 
 export const getAdmin = async (req, res, next) => {
     const Admins = await userModel.find({ isDeleted: false , role : 'Admin'});
@@ -55,8 +57,6 @@ export const restore = async (req, res) => {
     return res.status(200).json({ message: "success" });
 }
 
-
-
 export const updateadmin = async (req, res, next) => {
     const { id } = req.params;
     const admin = await userModel.findOne({ _id: id });
@@ -72,20 +72,45 @@ export const updateadmin = async (req, res, next) => {
         })
         cloudinary.uploader.destroy(admin.image.public_id);
         admin.image={ secure_url, public_id };
-        
     }
-  
     admin.email = req.body.email;
     admin.userName = req.body.userName;
     admin.address = req.body.address;
     admin.statuse = req.body.statuse;
     admin.phone = req.body.phone;
-
-
+     
     await admin.save();
     return res.status(200).json({ message: "success", admin });
 
 }
+
+export const updateProfile = async (req, res, next) => {
+    const  id  = req.user._id;
+    const user = await userModel.findOne({ _id: id });
+    if (!user) {
+        return res.status(404).json({ message: "user not found" });
+    }
+    if (await userModel.findOne({ email: req.body.email, _id: { $ne: id } }).select('email')) {
+        return res.status(409).json({ message: `user ${req.body.email} alredy exists` })
+    }
+    if(req.file){
+        const { secure_url, public_id } = await cloudinary.uploader.upload(req.file.path, {
+            folder: `${process.env.APP_NAME}/user`
+        })
+        cloudinary.uploader.destroy(admin.image.public_id);
+        admin.image={ secure_url, public_id };
+    }
+    user.email = req.body.email;
+    user.userName = req.body.userName;
+    user.address = req.body.address;
+    user.statuse = req.body.statuse;
+    user.phone = req.body.phone;
+     
+    await user.save();
+    return res.status(200).json({ message: "success", user });
+
+}
+
 
 export const addCandidateExcel = async (req, res, next) => {
     try{
@@ -93,36 +118,23 @@ export const addCandidateExcel = async (req, res, next) => {
     const woorkSheet = woorkBook.Sheets[woorkBook.SheetNames[0]];
     const users = XLSX.utils.sheet_to_json(woorkSheet);
     for (const row of users) {
-        const {  userName, email, password, cardnumber, phone, address, gender, role } = row;
-        if (role !== 'Candidate') {
-            console.log(`Invalid role for user ${userName}. Skipping...`);
-            continue;
-        }
-        if (await userModel.findOne({ email })) {
-           // return next(new Error("email already exists", { cause: 409 }));
-            console.log(
-                `email already exists ${email} `,
-              );
+        const {  userName, email, password, cardnumber, phone, address,  gender, role='Candidate' } = row;
+    const r = validation(validators.excelUserDataSchema); 
+    if (await userModel.findOne({ email })) {
+            return next(new Error("email already exists", { cause: 409 }));
               continue; // Skip to the next row
         }
         if (await userModel.findOne({ phone })) {
-            //return next(new Error("phone already exists", { cause: 409 }));
-            console.log(
-                `phone already exists ${phone} `,
-              );
+              return next(new Error("phone already exists", { cause: 409 }));
               continue; // Skip to the next row
         }
         if (await userModel.findOne({ cardnumber })) {
-            //return next(new Error("cardnumber already exists", { cause: 409 }));
-            console.log(
-                `cardnumber already exists ${cardnumber} `,
-              );
+            return next(new Error("cardnumber already exists", { cause: 409 }));
               continue; // Skip to the next row
         }
         const passwordString = String(password);
         const hashedPassword = await bcrypt.hash(passwordString, parseInt(process.env.SALT_ROUND));
         const token = jwt.sign({ email }, process.env.CONFTRAMEMAILSECRET);
-
         const html = `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
         <html dir="ltr" xmlns="http://www.w3.org/1999/xhtml" xmlns:o="urn:schemas-microsoft-com:office:office" lang="en">
          <head>
@@ -341,8 +353,7 @@ export const addCandidateExcel = async (req, res, next) => {
         
         `
           await sendEmail(email, "confirm email", html)
-      
-          const createUser = await userModel.create({ userName, email, password:hashedPassword,cardnumber, phone, address, gender, role, image: { secure_url:'https://drive.google.com/file/d/1-Dp4LJv73Z-aFyLUJRb1kiMtdVyeuHmn/view?usp=sharing'} });
+          const createUser = await userModel.create({ userName, email, password:hashedPassword,cardnumber, phone, address, gender, image: { secure_url:'https://drive.google.com/file/d/1-Dp4LJv73Z-aFyLUJRb1kiMtdVyeuHmn/view?usp=sharing'} });
           console.log(`added Candidate successfully: ${createUser.userName}`);
     }
     return res
