@@ -22,11 +22,7 @@ export const getspesificAdmin = async (req, res, next) => {
     return res.status(200).json({ message: "Admin found", Admin });
 
 }
-export const getcandidate = async (req, res, next) => {
-    const Candidate = await userModel.find({ role: 'Candidate' });
-    return res.status(200).json({ message: "success", Candidate });
 
-}
 export const softDeletAdmin = async (req, res) => {
     const { id } = req.params;
     const admin = await userModel.findOneAndUpdate({ _id: id, isDeleted: false, role: 'Admin' }, { isDeleted: true }, { new: true });

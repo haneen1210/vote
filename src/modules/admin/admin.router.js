@@ -22,7 +22,7 @@ router.put('/:id', auth(endPoint.updateadmin), fileUpload(fileValidation.image).
 router.post('/addCandidate', auth(endPoint.addCandidate), fileUpload(fileValidation.image).single('image'), validation(AuthValidators.signupSchema), asynHandler(authservices.Signup));
 router.post('/addCandidateExcel', auth(endPoint.addCandidate), fileUpload(fileValidation.excel).single('file'), 
 asynHandler(Adminservices.addCandidateExcel));
-router.get('/getcandidate', auth(endPoint.getcandidate), asynHandler(Adminservices.getcandidate));
+
 
 export default router;
 
