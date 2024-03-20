@@ -25,22 +25,22 @@ export const getspesificAdmin = async (req, res, next) => {
 
 export const softDeletAdmin = async (req, res) => {
     const { id } = req.params;
-    const admin = await userModel.findOneAndUpdate({ _id: id, isDeleted: false, role: 'Admin' }, { isDeleted: true }, { new: true });
-
-    if (!admin) {
-        return res.status(400).json({ message: "cont delete this admin" });
+    const user =await userModel.findOneAndUpdate({ _id: id, isDeleted: false }, { isDeleted: true }, { new: true });
+    if (!user) {
+        return res.status(400).json({ message: "Can't delete this record" });
     }
-    return res.status(200).json({ message: "success" });
+
+    return res.status(200).json({ message: `success delet  ${user.role}` });
 }
 
 export const Harddeleteadmin = async (req, res, next) => {
     const { id } = req.params;
-    const admin = await userModel.findOneAndDelete({ _id: id, isDeleted: true, role: 'Admin' });
+    const user = await userModel.findOneAndDelete({ _id: id, isDeleted: true });
 
-    if (!admin) {
-        return res.status(400).json({ message: "cont delete this admin" });
+    if (!user) {
+        return res.status(400).json({ message: "cont delete this record" });
     }
-    return res.status(200).json({ message: "success" });
+    return res.status(200).json({ message: `success delet  ${user.role}` });
 }
 
 export const restore = async (req, res) => {
@@ -77,6 +77,32 @@ export const updateadmin = async (req, res, next) => {
      
     await admin.save();
     return res.status(200).json({ message: "success", admin });
+
+}
+export const updateCandidate = async (req, res, next) => {
+    const { id } = req.params;
+    const Candidate = await userModel.findOne({ _id: id });
+    if (!Candidate) {
+        return res.status(404).json({ message: "Candidate not found" });
+    }
+    if (await userModel.findOne({ email: req.body.email, _id: { $ne: id } }).select('email')) {
+        return res.status(409).json({ message: `Candidate ${req.body.email} alredy exists` })
+    }
+    if(req.file){
+        const { secure_url, public_id } = await cloudinary.uploader.upload(req.file.path, {
+            folder: `${process.env.APP_NAME}/Candidate`
+        })
+        cloudinary.uploader.destroy(admin.image.public_id);
+        admin.image={ secure_url, public_id };
+    }
+    Candidate.email = req.body.email;
+    Candidate.userName = req.body.userName;
+    Candidate.address = req.body.address;
+    Candidate.statuse = req.body.statuse;
+    Candidate.phone = req.body.phone;
+    
+    await Candidate.save();
+    return res.status(200).json({ message: "success", Candidate });
 
 }
 
