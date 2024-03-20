@@ -6,6 +6,7 @@ export const endPoint = {
     updateVotingStatus:[roles.Admin],
     addExistingCandidateToVote:[roles.Admin],
     getspecificCandidate:[roles.Admin],
+    removeCandidateFromVote:[roles.Admin],
 }
 
 

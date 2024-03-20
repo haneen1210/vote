@@ -18,8 +18,8 @@ router.patch('/updateVotingStatus/:id', auth(endPoint.updateVotingStatus), valid
 router.get('/getVoteOpen', auth(Object.values(roles)), asynHandler(voteservices.getVoteOpen));
 router.get('/getallvotewithcandidate', auth(Object.values(roles)), asynHandler(voteservices.getallVoteandcatecory));
 router.get('/:id', auth(Object.values(roles)), validation(validators.getspecificvote), asynHandler(voteservices.getspecificVote));
-router.post('/addcandidatetovote', auth(endPoint.addExistingCandidateToVote), validation(validators.addExistingCandidateToVote), asynHandler(voteservices.addExistingCandidateToVote));
+router.post('/addcandidatetovote', auth(endPoint.addExistingCandidateToVote), validation(validators.addAndRemoveCandidateToVote), asynHandler(voteservices.addExistingCandidateToVote));
 router.post('/uploadExcelCandidateToVote', auth(endPoint.addExistingCandidateToVote), fileUpload(fileValidation.excel).single('file'), asynHandler(voteservices.uploadExcelCandidateToVote));
-
+router.patch('/removeCandidateFromVote',auth(endPoint.removeCandidateFromVote),validation(validators.addAndRemoveCandidateToVote), asynHandler(voteservices.removeCandidateFromVote));
 export default router;
 

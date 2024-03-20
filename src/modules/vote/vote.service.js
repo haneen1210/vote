@@ -118,10 +118,7 @@ export const getallVoteandcatecory = async (req, res) => {
 // وظيفة لإضافة مرشح موجود إلى التصويت
 export const addExistingCandidateToVote = async (req, res) => {
   const { userName, voteName } = req.body;
-  const candidate = await userModel.findOne({
-    userName,
-    role: "Candidate",
-  });
+  const candidate = await userModel.findOne({userName, role: "Candidate", });
   const vote = await voteModel.findOne({ voteName});
 
   if (!vote || !candidate) {
@@ -197,6 +194,30 @@ export const uploadExcelCandidateToVote = async (req, res, next) => {
 };
 
 
+export const removeCandidateFromVote = async (req, res) => {
+    const { userName, voteName } = req.body;
+    const candidate = await userModel.findOne({userName, role: "Candidate", });
+    const vote = await voteModel.findOne({ voteName});
+  
+    if (!vote || !candidate) {
+      return res.status(404).json({ message: "Vote or Candidate not found" });
+    }
+    const existingCandidate = await voteModel.findOneAndUpdate({ _id: vote._id, candidates: candidate._id},{ $pull: { candidates: candidate._id } });
+
+    
+      
+  if (!existingCandidate) {
+    return res.status(400).json({ message: "Candidate not exists in the vote" });
+  }
+
+  await vote.save();
+  return res.status(200).json({ message: "Candidate removed from vote successfully" });
+};
+
+
+
+
+ 
 /*
 export const uploadExcelCandidateToVote = async (req, res, next) => {
   try {

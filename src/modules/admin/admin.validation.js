@@ -12,7 +12,6 @@ export const UpdateSchema = joi.object({
 });
 
 export const DeletAdminAndRestore = joi.object({
- 
     id:joi.string().min(24).max(24).required(),
 });
 
