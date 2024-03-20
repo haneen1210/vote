@@ -45,12 +45,11 @@ export const Harddeleteadmin = async (req, res, next) => {
 
 export const restore = async (req, res) => {
     const { id } = req.params;
-    const admin = await userModel.findOneAndUpdate({ _id: id, isDeleted: true, role: 'Admin' }, { isDeleted: false }, { new: true })
-        ;
-    if (!admin) {
-        return res.status(400).json({ message: "admin not found" });
+    const user = await userModel.findOneAndUpdate({ _id: id, isDeleted: true}, { isDeleted: false }, { new: true })    ;
+    if (!user) {
+        return res.status(400).json({ message: "user not found" });
     }
-    return res.status(200).json({ message: "success" });
+    return res.status(200).json({ message:  `success restore  ${user.role}` });
 }
 
 export const updateadmin = async (req, res, next) => {
