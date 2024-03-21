@@ -20,7 +20,7 @@ export const Signup = async (req, res, next) => {
         return next(new Error("cardnumber already exists", { cause: 409 }));
     }
 
-    const match =bcrypt.compareSync(use.Cpassword,password);
+    const match =bcrypt.compareSync(req.use.Cpassword,password);
 
 if(!match){
     return next(new Error(`password and cpassword not match`));
