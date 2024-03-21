@@ -20,11 +20,6 @@ export const Signup = async (req, res, next) => {
         return next(new Error("cardnumber already exists", { cause: 409 }));
     }
 
-    const match =bcrypt.compareSync(req.use.Cpassword,password);
-
-if(!match){
-    return next(new Error(`password and cpassword not match`));
-}
     const hashedPassword = await bcrypt.hash(password, parseInt(process.env.SALT_ROUND));
     const { secure_url, public_id } = await cloudinary.uploader.upload(req.file.path, {
         folder: `${process.env.APP_NAME}/users`
