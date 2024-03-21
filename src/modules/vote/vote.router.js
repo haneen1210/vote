@@ -16,6 +16,7 @@ router.post('/createVote', auth(endPoint.createVote),fileUpload(fileValidation.i
 router.get('/getvotes', auth(Object.values(roles)), asynHandler(voteservices.getVotes));
 router.patch('/updateVotingStatus/:id', auth(endPoint.updateVotingStatus), validation(validators.updateVoteSchema), asynHandler(voteservices.updateVotingStatus));
 router.get('/getVoteOpen', auth(Object.values(roles)), asynHandler(voteservices.getVoteOpen));
+router.get('/getpreviousvotes', auth(Object.values(roles)), asynHandler(voteservices.getpreviousvotes));
 router.get('/getallvotewithcandidate', auth(Object.values(roles)), asynHandler(voteservices.getallVoteandcatecory));
 router.get('/:id', auth(Object.values(roles)), validation(validators.getspecificvote), asynHandler(voteservices.getspecificVote));
 router.post('/addcandidatetovote', auth(endPoint.addExistingCandidateToVote), validation(validators.addAndRemoveCandidateToVote), asynHandler(voteservices.addExistingCandidateToVote));

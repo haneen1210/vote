@@ -2,6 +2,7 @@ import connectDB from "../../DB/connection.js";
 import authRouter from "./auth/auth.router.js";
 import Adminrouter from "./admin/admin.router.js";
 import voteRouter from "./vote/vote.router.js";
+import PostRouter from './post/post.router.js'
 import candidateRouter from "./candidate/candidate.router.js";
 import cors from "cors";
 import cron from "node-cron";
@@ -38,7 +39,7 @@ app.use(async(req,res,next)=>{
   app.use("/auth", authRouter);
   app.use("/vote", voteRouter);
   app.use("/candidate", candidateRouter);
-
+  app.use('/Post',PostRouter);
   app.get("*", (req, res) => {
     return res.status(500).json({ message: "page not found" });
   });
@@ -46,3 +47,4 @@ app.use(async(req,res,next)=>{
 };
 
 export default initApp;
+

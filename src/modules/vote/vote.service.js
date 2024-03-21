@@ -39,6 +39,10 @@ export const getVotes = async (req, res, next) => {
   const votes = await voteModel.find();
   return res.status(200).json({ message: "success", votes });
 };
+
+
+
+
 export const updateVotingStatus = async (req, res, next) => {
   const { id } = req.params;
   const vote = await voteModel.findOne({ _id: id });
@@ -96,7 +100,10 @@ export const getVoteOpen = async (req, res, next) => {
   const votes = await voteModel.find({ VotingStatus: "Active" });
   return res.status(200).json({ message: "success", votes });
 };
-
+export const getpreviousvotes = async (req, res, next) => {
+    const votes = await voteModel.find({ VotingStatus: "Inactive",EndDateVote: { $lt: new Date() }  });
+    return res.status(200).json({ message: "success", votes });
+  };
 export const getspecificVote = async (req, res) => {
   const { id } = req.params;
   const vote = await voteModel.findById(id);

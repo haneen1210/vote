@@ -30,7 +30,7 @@ export const softDeletAdmin = async (req, res) => {
         return res.status(400).json({ message: "Can't delete this record" });
     }
 
-    return res.status(200).json({ message: `success delet  ${user.role}` });
+    return res.status(200).json({ message: `success delet${user.role}` });
 }
 
 export const Harddeleteadmin = async (req, res, next) => {
@@ -40,7 +40,7 @@ export const Harddeleteadmin = async (req, res, next) => {
     if (!user) {
         return res.status(400).json({ message: "cont delete this record" });
     }
-    return res.status(200).json({ message: `success delet  ${user.role}` });
+    return res.status(200).json({ message: `success delet${user.role}` });
 }
 
 export const restore = async (req, res) => {
@@ -49,7 +49,7 @@ export const restore = async (req, res) => {
     if (!user) {
         return res.status(400).json({ message: "user not found" });
     }
-    return res.status(200).json({ message:  `success restore  ${user.role}` });
+    return res.status(200).json({ message:  `success restore${user.role}` });
 }
 
 export const updateadmin = async (req, res, next) => {
