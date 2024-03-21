@@ -387,3 +387,23 @@ export const addCandidateExcel = async (req, res, next) => {
     .json({ message: "Error while uploading candidates " });
 }
 }
+
+
+export const updatPassword = async (req, res, next) => {
+    const {oldPassword,newPassword}=req.body;
+    const user = await userModel.findById(req.user._id);
+    const match =bcrypt.compareSync(oldPassword,user.password);
+    
+    if(!match){
+        return next(new Error(`invalid old password`));
+    }
+    const match2 =bcrypt.compareSync(oldPassword,newPassword);
+    
+    if(match2){
+        return next(new Error(` old password sem new password`));
+    }
+    const hashPassword=bcrypt.hashSync(newPassword,parseInt(process.env.SALTROUND));
+    user.password=hashPassword;
+    user.save();
+    return res.status(200).json({message:"Password successfully changed"});
+    }

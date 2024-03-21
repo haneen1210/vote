@@ -26,3 +26,10 @@ export const excelUserDataSchema = joi.object({
     role: joi.string().valid( 'Candidate').required(), 
 });
 
+
+
+export const updatPassword = joi.object({
+    oldPassword: generalFields.password.required(),
+    newPassword:generalFields.password.required(),
+    Cpassword: joi.string().valid(joi.ref('newPassword')).required(),
+});

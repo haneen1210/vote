@@ -23,7 +23,7 @@ router.put('/updateCandidate/:id', auth(endPoint.updateCandidate), fileUpload(fi
 router.post('/addCandidate', auth(endPoint.addCandidate), fileUpload(fileValidation.image).single('image'), validation(AuthValidators.signupSchema), asynHandler(authservices.Signup));
 router.post('/addCandidateExcel', auth(endPoint.addCandidate), fileUpload(fileValidation.excel).single('file'), 
 asynHandler(Adminservices.addCandidateExcel));
-
+router.patch('/updatPassword', auth(Object.values(roles)),validation(validators.updatPassword), asynHandler(Adminservices.updatPassword));
 
 export default router;
 
