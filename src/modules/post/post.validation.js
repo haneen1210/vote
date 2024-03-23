@@ -11,7 +11,7 @@ export const createPost = joi.object({
 });
 
 export const createcommant = joi.object({
-  
+ id:joi.string(), 
     file:generalFields.file,
     text:joi.string().min(10).max(100).required(),
    

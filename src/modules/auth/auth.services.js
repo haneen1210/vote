@@ -21,9 +21,20 @@ export const Signup = async (req, res, next) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, parseInt(process.env.SALT_ROUND));
-    const { secure_url, public_id } = await cloudinary.uploader.upload(req.file.path, {
-        folder: `${process.env.APP_NAME}/users`
-    })
+if(role=='Candidate'){
+  const { secure_url, public_id } = await cloudinary.uploader.upload(req.file.path, {
+    folder: `${process.env.APP_NAME}/Candidates`
+})
+}
+else if(role=='Admin'){
+  const { secure_url, public_id } = await cloudinary.uploader.upload(req.file.path, {
+    folder: `${process.env.APP_NAME}/Admins`
+})
+}
+const { secure_url, public_id } = await cloudinary.uploader.upload(req.file.path, {
+  folder: `${process.env.APP_NAME}/Users`
+})
+
     const token = jwt.sign({ email }, process.env.CONFTRAMEMAILSECRET);
     //const html=`<a href='${req.protocol}://${req.headers.host}/auth/confimEmail/${token}'>verify</a>`;
     const html = `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">

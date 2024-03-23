@@ -14,7 +14,7 @@ const router = Router();
 router.get('/getAdmin', auth(endPoint.getAdmin), asynHandler(Adminservices.getAdmin));
 router.put('/updateProfile', auth(Object.values(roles)), fileUpload(fileValidation.image).single('image'),validation(validators.UpdateSchema), asynHandler(Adminservices.updateProfile));
 router.get('/getAdmin/:AdminID', auth(endPoint.getAdmin), asynHandler(Adminservices.getspesificAdmin));
-router.post('/addadmin', auth(endPoint.addadmin), validation(AuthValidators.signinSchema), asynHandler(authservices.Signup));
+router.post('/addadmin', auth(endPoint.addadmin), validation(AuthValidators.signupSchema), asynHandler(authservices.Signup));
 router.patch('/softDelet/:id', auth(endPoint.deleteByadmin), validation(validators.DeletAdminAndRestore), asynHandler(Adminservices.softDeletAdmin));
 router.delete('/hrddDeleted/:id', auth(endPoint.deleteByadmin), validation(validators.DeletAdminAndRestore), asynHandler(Adminservices.Harddeleteadmin));
 router.patch('/restore/:id', auth(endPoint.restore), validation(validators.DeletAdminAndRestore), asynHandler(Adminservices.restore));
