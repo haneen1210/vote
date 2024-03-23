@@ -25,17 +25,23 @@ if(role=='Candidate'){
   const { secure_url, public_id } = await cloudinary.uploader.upload(req.file.path, {
     folder: `${process.env.APP_NAME}/Candidates`
 })
+const createUser = await userModel.create({ userName, email, password: hashedPassword, cardnumber, phone, address, gender, role, image: { secure_url, public_id } });
+
 }
 else if(role=='Admin'){
   const { secure_url, public_id } = await cloudinary.uploader.upload(req.file.path, {
     folder: `${process.env.APP_NAME}/Admins`
 })
+const createUser = await userModel.create({ userName, email, password: hashedPassword, cardnumber, phone, address, gender, role, image: { secure_url, public_id } });
+
 }
 else{
 
   const { secure_url, public_id } = await cloudinary.uploader.upload(req.file.path, {
     folder: `${process.env.APP_NAME}/Users`
   })
+  const createUser = await userModel.create({ userName, email, password: hashedPassword, cardnumber, phone, address, gender, role, image: { secure_url, public_id } });
+
 }
   
     const token = jwt.sign({ email }, process.env.CONFTRAMEMAILSECRET);
@@ -259,7 +265,6 @@ else{
   `
     await sendEmail(email, "confirm email", html)
 
-    const createUser = await userModel.create({ userName, email, password: hashedPassword, cardnumber, phone, address, gender, role, image: { secure_url, public_id } });
     return res.status(201).json({ message: "success", createUser });
 
 }
