@@ -64,7 +64,7 @@ export const updateadmin = async (req, res, next) => {
     
     if(req.file){
 
-        if (role === 'Candidate') {
+        if (admin.role === 'Candidate') {
             const { secure_url, public_id } = await cloudinary.uploader.upload(req.file.path, {
                 folder: `${process.env.APP_NAME}/Candidate`
             })
@@ -72,7 +72,7 @@ export const updateadmin = async (req, res, next) => {
             admin.image={ secure_url, public_id };
         }
 
-     else if (role === 'Admin') {
+     else if (admin.role === 'Admin') {
         const { secure_url, public_id } = await cloudinary.uploader.upload(req.file.path, {
             folder: `${process.env.APP_NAME}/Admin`
         })
