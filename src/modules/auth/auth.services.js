@@ -21,29 +21,23 @@ export const Signup = async (req, res, next) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, parseInt(process.env.SALT_ROUND));
-if(role=='Candidate'){
-  const { secure_url, public_id } = await cloudinary.uploader.upload(req.file.path, {
-    folder: `${process.env.APP_NAME}/Candidates`
-})
-const createUser = await userModel.create({ userName, email, password: hashedPassword, cardnumber, phone, address, gender, role, image: { secure_url, public_id } });
+    let imageUploadFolder = '';
 
-}
-else if(role=='Admin'){
-  const { secure_url, public_id } = await cloudinary.uploader.upload(req.file.path, {
-    folder: `${process.env.APP_NAME}/Admins`
-})
-const createUser = await userModel.create({ userName, email, password: hashedPassword, cardnumber, phone, address, gender, role, image: { secure_url, public_id } });
+    // تحديد مجلد الرفع حسب دور المستخدم
+    if (role === 'Candidate') {
+        imageUploadFolder = `${process.env.APP_NAME}/Candidates`;
+    } else if (role === 'Admin') {
+        imageUploadFolder = `${process.env.APP_NAME}/Admins`;
+    } else {
+        imageUploadFolder = `${process.env.APP_NAME}/Users`;
+    }
 
-}
-else{
+    // رفع الصورة إلى Cloudinary
+    const { secure_url, public_id } = await cloudinary.uploader.upload(req.file.path, {
+        folder: imageUploadFolder
+    });
 
-  const { secure_url, public_id } = await cloudinary.uploader.upload(req.file.path, {
-    folder: `${process.env.APP_NAME}/Users`
-  })
-  const createUser = await userModel.create({ userName, email, password: hashedPassword, cardnumber, phone, address, gender, role, image: { secure_url, public_id } });
 
-}
-  
     const token = jwt.sign({ email }, process.env.CONFTRAMEMAILSECRET);
     //const html=`<a href='${req.protocol}://${req.headers.host}/auth/confimEmail/${token}'>verify</a>`;
     const html = `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -265,6 +259,7 @@ else{
   `
     await sendEmail(email, "confirm email", html)
 
+    const createUser = await userModel.create({ userName, email, password: hashedPassword, cardnumber, phone, address, gender, role, image: { secure_url, public_id } });
     return res.status(201).json({ message: "success", createUser });
 
 }
