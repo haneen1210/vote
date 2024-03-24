@@ -19,7 +19,7 @@ router.patch('/softDelet/:id', auth(endPoint.deleteByadmin), validation(validato
 router.delete('/hrddDeleted/:id', auth(endPoint.deleteByadmin), validation(validators.DeletAdminAndRestore), asynHandler(Adminservices.Harddeleteadmin));
 router.patch('/restore/:id', auth(endPoint.restore), validation(validators.DeletAdminAndRestore), asynHandler(Adminservices.restore));
 router.put('/:id', auth(endPoint.updateadmin), fileUpload(fileValidation.image).single('image'),validation(validators.UpdateSchema), asynHandler(Adminservices.updateadmin));
-router.put('/updateCandidate/:id', auth(endPoint.updateCandidate), fileUpload(fileValidation.image).single('image'),validation(validators.UpdateSchema), asynHandler(Adminservices.updateCandidate));
+router.put('/updateCandidate/:id', auth(endPoint.updateCandidate), fileUpload(fileValidation.image).single('image'),validation(validators.UpdateSchema), asynHandler(Adminservices.updateadmin));
 router.post('/addCandidate', auth(endPoint.addCandidate), fileUpload(fileValidation.image).single('image'), validation(AuthValidators.signupSchema), asynHandler(authservices.Signup));
 router.post('/addCandidateExcel', auth(endPoint.addCandidate), fileUpload(fileValidation.excel).single('file'), 
 asynHandler(Adminservices.addCandidateExcel));

@@ -56,17 +56,38 @@ export const updateadmin = async (req, res, next) => {
     const { id } = req.params;
     const admin = await userModel.findOne({ _id: id });
     if (!admin) {
-        return res.status(404).json({ message: "admin not found" });
+        return res.status(404).json({ message: `${user.role} not found` });
     }
     if (await userModel.findOne({ email: req.body.email, _id: { $ne: id } }).select('email')) {
-        return res.status(409).json({ message: `admin ${req.body.email} alredy exists` })
+        return res.status(409).json({ message: `${user.role} ${req.body.email} alredy exists` })
     }
+    
     if(req.file){
+
+        if (role === 'Candidate') {
+            const { secure_url, public_id } = await cloudinary.uploader.upload(req.file.path, {
+                folder: `${process.env.APP_NAME}/Candidate`
+            })
+            cloudinary.uploader.destroy(admin.image.public_id);
+            admin.image={ secure_url, public_id };
+        }
+
+     else if (role === 'Admin') {
         const { secure_url, public_id } = await cloudinary.uploader.upload(req.file.path, {
             folder: `${process.env.APP_NAME}/Admin`
         })
         cloudinary.uploader.destroy(admin.image.public_id);
         admin.image={ secure_url, public_id };
+    }
+
+    else {
+        const { secure_url, public_id } = await cloudinary.uploader.upload(req.file.path, {
+            folder: `${process.env.APP_NAME}/users`
+        })
+        cloudinary.uploader.destroy(admin.image.public_id);
+        admin.image={ secure_url, public_id };
+    }
+        
     }
     admin.email = req.body.email;
     admin.userName = req.body.userName;
@@ -78,32 +99,7 @@ export const updateadmin = async (req, res, next) => {
     return res.status(200).json({ message: "success", admin });
 
 }
-export const updateCandidate = async (req, res, next) => {
-    const { id } = req.params;
-    const Candidate = await userModel.findOne({ _id: id });
-    if (!Candidate) {
-        return res.status(404).json({ message: "Candidate not found" });
-    }
-    if (await userModel.findOne({ email: req.body.email, _id: { $ne: id } }).select('email')) {
-        return res.status(409).json({ message: `Candidate ${req.body.email} alredy exists` })
-    }
-    if(req.file){
-        const { secure_url, public_id } = await cloudinary.uploader.upload(req.file.path, {
-            folder: `${process.env.APP_NAME}/Candidate`
-        })
-        cloudinary.uploader.destroy(admin.image.public_id);
-        admin.image={ secure_url, public_id };
-    }
-    Candidate.email = req.body.email;
-    Candidate.userName = req.body.userName;
-    Candidate.address = req.body.address;
-    Candidate.statuse = req.body.statuse;
-    Candidate.phone = req.body.phone;
-    
-    await Candidate.save();
-    return res.status(200).json({ message: "success", Candidate });
 
-}
 
 export const updateProfile = async (req, res, next) => {
     const  id  = req.user._id;
