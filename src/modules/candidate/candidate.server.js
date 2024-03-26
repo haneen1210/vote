@@ -3,7 +3,7 @@ import VoteModel from "../../../DB/models/vote.model.js";
 
 
 export const getcandidate = async (req, res, next) => {
-    const Candidate = await userModel. find({ isDeleted: false , role : 'Candidate',status:'Active'});
+    const Candidate = await userModel. find({ isDeleted: false , role : 'Candidate',statuse:'Active'});
     return res.status(200).json({ message: "success", Candidate });
 
 }
