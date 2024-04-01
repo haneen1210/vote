@@ -7,6 +7,8 @@ import VoteModel from "../../../../DB/models/vote.model.js";
 export const create = async (req, res, next) => {
     const { title, caption,voteName } = req.body;
     const id = req.user._id;
+    const role = req.user.role;
+
     const vote = await VoteModel.findOne({ voteName});
     if (!vote ) {
         return res.status(404).json({ message: "Vote  not found" });
@@ -19,7 +21,7 @@ export const create = async (req, res, next) => {
         const post = await PostModel.create({ title, caption, userId: id,image:{ secure_url, public_id } });
         vote.Posts.push(post);
     await vote.save();
-        return res.json({ message: "success", post });
+        return res.json({ message: "success", post , role });
     }
 else{
     const post = await PostModel.create({ title, caption, userId: id });
