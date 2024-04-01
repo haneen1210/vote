@@ -18,6 +18,6 @@ router.post('/',auth(endPoint.createPost),fileUpload(fileValidation.image).singl
 router.patch('/:id/like', auth(Object.values(roles)),asynHandler(postControler.likePost));
 router.patch('/:id/unlike', auth(Object.values(roles)),asynHandler(postControler.unlikePost));
 router.post('/:id/comment', auth(Object.values(roles)),fileUpload(fileValidation.image).single('image'),validation(validators.createcommant),asynHandler(commentontroler.createComment));
-router.post('/getPost', auth(Object.values(roles)),asynHandler(postControler.getPost));
+router.get('/getPost', auth(Object.values(roles)),asynHandler(postControler.getPost));
 
 export default router;
