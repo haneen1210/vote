@@ -1,31 +1,34 @@
 import cloudinary from "../../../utls/cloudinary.js";
 import userModel from "../../../../DB/models/admin.model.js";
-import commentModel from "../../../../DB/models/comment.model.js";
 import PostModel from "../../../../DB/models/post.model.js";
+import VoteModel from "../../../../DB/models/vote.model.js";
 
 
 export const create = async (req, res, next) => {
-    const { title, caption } = req.body;
+    const { title, caption,voteName } = req.body;
     const id = req.user._id;
-
+    const vote = await VoteModel.findOne({ voteName});
+    if (!vote ) {
+        return res.status(404).json({ message: "Vote  not found" });
+      }
     // التحقق مما إذا كانت هناك صورة مرفقة في الطلب
     if (req.file) {
         const { secure_url, public_id } = await cloudinary.uploader.upload(req.file.path, {
             folder: `${process.env.APP_NAME}/post`
         });
         const post = await PostModel.create({ title, caption, userId: id,image:{ secure_url, public_id } });
+        vote.Posts.push(post);
+    await vote.save();
         return res.json({ message: "success", post });
     }
 else{
     const post = await PostModel.create({ title, caption, userId: id });
+    vote.Posts.push(post);
+    await vote.save();
     return res.json({ message: "success", post });
-
+    
 }
-   
-
-};
-
-
+}
 
 export const likePost = async (req, res, next) => {
     const { id } = req.params;//id post
@@ -54,28 +57,38 @@ export const unlikePost = async (req, res, next) => {
 }
 
 export const getPost = async (req, res, next) => {
-const posts = await PostModel.find({}).populate([
+    const { voteName } = req.body;
+    const vote = await VoteModel.findOne({voteName});
+    if (!vote ) {
+        return res.status(404).json({ message: "Vote  not found" });
+      }
+      const postvote = await VoteModel.find(vote).populate({
+        path: "Posts",
+        populate: ([
 
-    {
-        path:'userId',
-        select:'userName'
-    },
-    {
-        path:'like',
-        select:'userName'  
-    },
+            {
+                path:'userId',
+                select:'userName'
+            },
+            {
+                path:'like',
+                select:'userName'  
+            },
+        
+            {
+                path:'unlike',
+                select:'userName'  
+            },
+            {
+                path:'comment',
+            }
+            
+         
+        ])
+        
+        
+      });
+      return res.status(200).json({message:`success `,postvote});
 
-    {
-        path:'unlike',
-        select:'userName'  
-    },
-    {
-        path:'comment',
-    }
- 
-]);
-
-
-return res.status(200).json({message:"success",posts});
 
 }

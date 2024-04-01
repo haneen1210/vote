@@ -59,7 +59,7 @@ export const updateadmin = async (req, res, next) => {
         return res.status(404).json({ message: `${user.role} not found` });
     }
     if (await userModel.findOne({ email: req.body.email, _id: { $ne: id } }).select('email')) {
-        return res.status(409).json({ message: `${user.role} ${req.body.email} alredy exists` })
+        return res.status(409).json({ message: `${admin.role} ${req.body.email} alredy exists` })
     }
     
     if(req.file){

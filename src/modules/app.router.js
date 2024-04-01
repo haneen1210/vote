@@ -4,6 +4,12 @@ import Adminrouter from "./admin/admin.router.js";
 import voteRouter from "./vote/vote.router.js";
 import PostRouter from './post/post.router.js'
 import candidateRouter from "./candidate/candidate.router.js";
+import ServicesRouter from "./services/services.router.js";
+import defintionRouter from "./definition/defintion.router.js";
+import customersRouter from "./customer/customer.router.js";
+import plansRouter from "./Plans/plans.router.js";
+import blogRouter from "./blogs/blogs.router.js";
+import communicationRouter from "./communication/communication.router.js";
 import cors from "cors";
 import cron from "node-cron";
 import { globalErrorHandler } from "../utls/errorHanding.js";
@@ -40,6 +46,12 @@ app.use(async(req,res,next)=>{
   app.use("/vote", voteRouter);
   app.use("/candidate", candidateRouter);
   app.use('/Post',PostRouter);
+  app.use('/services',ServicesRouter);
+  app.use('/defintion',defintionRouter);
+  app.use('/customers',customersRouter);
+  app.use('/plans',plansRouter);
+  app.use('/blog',blogRouter);
+  app.use('/communication',communicationRouter);
   app.get("*", (req, res) => {
     return res.status(500).json({ message: "page not found" });
   });
