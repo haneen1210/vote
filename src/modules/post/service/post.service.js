@@ -27,7 +27,7 @@ else{
     const post = await PostModel.create({ title, caption, userId: id });
     vote.Posts.push(post);
     await vote.save();
-    return res.json({ message: "success", post });
+    return res.json({ message: "success", post , role });
     
 }
 }
