@@ -71,7 +71,7 @@ export const getPost = async (req, res, next) => {
 
             {
                 path:'userId',
-                select:'userName'
+                select:'userName image'
             },
             {
                 path:'like',
