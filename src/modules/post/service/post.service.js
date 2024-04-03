@@ -59,8 +59,8 @@ export const unlikePost = async (req, res, next) => {
 }
 
 export const getPost = async (req, res, next) => {
-    const { voteName } = req.body;
-    const vote = await VoteModel.findOne({voteName});
+    const { id } = req.params; // id vote
+    const vote = await VoteModel.findOne({_id:id});
     if (!vote ) {
         return res.status(404).json({ message: "Vote  not found" });
       }
