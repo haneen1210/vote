@@ -8,6 +8,7 @@ export const create = async (req, res, next) => {
     const { title, caption,voteName } = req.body;
     const id = req.user._id;
     const role = req.user.role;
+    
 
     const vote = await VoteModel.findOne({ voteName});
     if (!vote ) {
@@ -21,13 +22,13 @@ export const create = async (req, res, next) => {
         const post = await PostModel.create({ title, caption, userId: id,image:{ secure_url, public_id } });
         vote.Posts.push(post);
     await vote.save();
-        return res.json({ message: "success", post , role });
+        return res.json({ message: "success", post , role , image:req.user.image});
     }
 else{
     const post = await PostModel.create({ title, caption, userId: id });
     vote.Posts.push(post);
     await vote.save();
-    return res.json({ message: "success", post , role });
+    return res.json({ message: "success", post , role ,image:req.user.image});
     
 }
 }
