@@ -19,5 +19,5 @@ router.patch('/:id/like', auth(Object.values(roles)),asynHandler(postControler.l
 router.patch('/:id/unlike', auth(Object.values(roles)),asynHandler(postControler.unlikePost));
 router.post('/:id/comment', auth(Object.values(roles)),fileUpload(fileValidation.image).single('image'),validation(validators.createcommant),asynHandler(commentontroler.createComment));
 router.get('/getPost/:id', auth(Object.values(roles)),asynHandler(postControler.getPost));
-
+router.get('/geSpecifictPost/:id', auth(Object.values(roles)),asynHandler(postControler.geSpecifictPost));
 export default router;

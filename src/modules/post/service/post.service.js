@@ -9,7 +9,7 @@ export const create = async (req, res, next) => {
     const id = req.user._id;
     const role = req.user.role;
     const image = req.user.image;
-
+   
     const vote = await VoteModel.findOne({ voteName});
     if (!vote ) {
         return res.status(404).json({ message: "Vote  not found" });
@@ -92,6 +92,43 @@ export const getPost = async (req, res, next) => {
         
       });
       return res.status(200).json({message:`success `,postvote});
+
+
+}
+
+
+export const geSpecifictPost = async (req, res, next) => {
+    const { id } = req.params; // id post
+    const post = await PostModel.findOne({_id:id});
+    if (!post ) {
+        return res.status(404).json({ message: "post  not found" });
+      }
+      const postmodel = await PostModel.find(post).populate([
+        
+
+            {
+                path:'userId',
+                select:'userName image'
+            },
+            {
+                path:'like',
+                select:'userName'  
+            },
+        
+            {
+                path:'unlike',
+                select:'userName'  
+            },
+            {
+                path:'comment',
+            }
+            
+         
+       
+        
+        
+        ]);
+      return res.status(200).json({message:`success `,postmodel});
 
 
 }
