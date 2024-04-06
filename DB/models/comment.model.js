@@ -20,11 +20,7 @@ userName:{
     ref:'User',
     required:true,
 },
-image: {// صورة الشخص يلي بعلق
-    type: Object,
-    ref:'User',
-    required: true,
-},
+
 
 postId:{type:Types.ObjectId,ref:'Post',required:true},
 like:[{type:Types.ObjectId, ref:'User',}],
