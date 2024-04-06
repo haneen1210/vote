@@ -15,6 +15,11 @@ userId:{
     ref:'User',
     required:true,
 },
+userName:{
+    type:Types.ObjectId,
+    ref:'User',
+    required:true,
+},
 postId:{type:Types.ObjectId,ref:'Post',required:true},
 like:[{type:Types.ObjectId, ref:'User',}],
 unlike:[{type:Types.ObjectId, ref:'User',}],
