@@ -16,7 +16,7 @@ userId:{
     required:true,
 },
 userName:{
-    type:Types.ObjectId,
+    type:String,
     ref:'User',
     required:true,
 },
