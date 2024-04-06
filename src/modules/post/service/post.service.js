@@ -120,12 +120,12 @@ export const geSpecifictPost = async (req, res, next) => {
                 select:'userName'  
             },
             {
-                path:'comment ',
+                path:'comment',
                 populate: {
                     path:'userId'
                 }
 
-
+                
 
                 
             }
