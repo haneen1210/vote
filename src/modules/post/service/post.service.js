@@ -122,7 +122,7 @@ export const geSpecifictPost = async (req, res, next) => {
             {
                 path:'comment',
                 populate: {
-                    path:'userId'
+                    path:'userId',select :'image.secure_url userName'
                 }
 
                 
