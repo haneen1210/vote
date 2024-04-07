@@ -11,5 +11,5 @@ const router = Router();
 router.get('/getcandidate', auth(endPoint.getcandidate), asynHandler(candidateservices.getcandidate));
 router.post('/:CandidateID', auth(endPoint.getspecificCandidate), validation(validators.getspecificCandidate), asynHandler(candidateservices.getspecificCandidateinvote));
 router.post('/CandidateIDvalid/:CandidateID', auth(endPoint.getspecificCandidate), validation(validators.getspecificCandidate), asynHandler(candidateservices.getspecificCandidate));
-
+router.post('/:CandidateID/AllVotesParticipateIn', auth(endPoint.getspecificCandidate), validation(validators.getspecificCandidate), asynHandler(candidateservices.getspecificCandidateinvotes));
 export default router;

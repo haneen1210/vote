@@ -13,7 +13,7 @@ long_description:{
     type:String,
     required:true,
 },
-image: {
+image: {// صورة يلي برا 
     type: Object,
     required: true,
 },

@@ -28,3 +28,12 @@ export const getspecificCandidate = async (req, res) => {
 }
 
 
+export const getspecificCandidateinvotes = async (req, res) => {
+    const { CandidateID } = req.params;
+    const vote = await VoteModel.find({ "candidates": CandidateID });
+    if (!vote) {
+        return res.status(404).json({ message: "Vote not found" });
+    }
+    return res.status(200).json({ message: "Vote found", vote });
+
+}
