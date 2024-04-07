@@ -1,4 +1,4 @@
-import mongoose, { Schema, model } from "mongoose";
+import mongoose, { Schema, model ,Types} from "mongoose";
 const UserSchema = new Schema({
     userName: {
         type: String,
@@ -74,7 +74,7 @@ const UserSchema = new Schema({
         type:Boolean,
         default:false,
     },
-  //  votes: { type: Number, default: 0 }
+    votes: [{ type:Types.ObjectId, ref: 'Vote' }]
 
 }, {
     timestamps: true,

@@ -8,6 +8,7 @@ export const auth=(accessRoles =[])=>{
     return async (req,res,next)=>{
         const{authorization} = req.headers;
         if(!authorization?.startsWith(process.env.BEARERKEY)){ 
+        
               return res.status(400).json({message:"invalid authorization "});}
      
 
@@ -15,6 +16,7 @@ export const auth=(accessRoles =[])=>{
     const decoded =jwt.verify(token,process.env.LOGINSECRET);
 
     if(!decoded){ 
+        
           return res.status(400).json({message:"invalid authorization "});}
           const user =await userModel.findById(decoded.id).select("userName role  changePasswordTime");
           if(!user){ 
@@ -28,4 +30,5 @@ if(!accessRoles.includes(user.role)){
 }
 req.user = user;
 next();
+
         }}
