@@ -40,8 +40,11 @@ export const updatecommunication = async (req, res) => {
     if (!communication) {
         return res.status(404).json({ message: "communication not found" });
     }
-   
-    communication.type = req.body.type;
+    if (await communicationModel.findOne({ email: req.body.email, _id: { $ne: id } }).select('email')) {
+        return res.status(409).json({ message: `${admin.role} ${req.body.email} alredy exists` })
+    }
+
+    communication.email = req.body.email;
     communication.logo = req.body.logo;
     communication.phone = req.body.phone;
     communication.address = req.body.address;
