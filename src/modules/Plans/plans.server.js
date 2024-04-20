@@ -24,11 +24,10 @@ export const additem = async (req, res, next) => {
 }
 
 export const getSplans = async (req, res, next) => {
-    const plans = await PlansModel. find({}).populate({
-        path:'item',
+    const plans = await PlansModel.find({}).populate({
+        path: 'item',
     });
     return res.status(200).json({ message: "success", plans });
-
 }
 
 export const getspecificplan = async (req, res) => {
