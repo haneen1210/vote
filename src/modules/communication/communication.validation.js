@@ -3,10 +3,16 @@ import { generalFields, validation } from "../../middleware/validation.js";
 
 
 export const communication=joi.object({
-    type: joi.string().valid('email', 'whatsapp', 'facebook', 'instagram').required(),
+    socialMedia: joi.array().items(joi.object({
+        image: joi.object({
+            url: joi.string().required().uri() // Validate image URL as URI
+        }).required(),
+        link: joi.string().required().uri().min(10), // Validate link as URI with minimum length of 10 characters
+    })).required(),
     phone: joi.string().required().min(10).max(10),
-    address: joi.string().required(),
+    address: joi.string().required().min(3),
     logo: joi.string().uri(),
+   email: generalFields.email,
 });
 
 export const getspecificcommunication=joi.object({

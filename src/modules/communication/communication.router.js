@@ -8,7 +8,7 @@ import * as validators from './communication.validation.js';
 import fileUpload, { fileValidation } from "../../utls/multer.js";
 
 const router = Router();
-router.post('/newcommunication',auth(endPoint.communication), validation(validators.communication), asynHandler(communicationserver.createcommunicatione));
+router.post('/newcommunication',auth(endPoint.communication),fileUpload(fileValidation.image).single('image'), validation(validators.communication), asynHandler(communicationserver.createcommunicatione));
 router.get('/getcommunication', auth(Object.values(roles)), asynHandler(communicationserver.getcommunication));
 router.get('/:communicationID', auth(endPoint.communication), validation(validators.getspecificcommunication), asynHandler(communicationserver.getspecificcommunication));
 router.patch('/:id', auth(endPoint.communication), validation(validators.updatecommunicationSchema), asynHandler(communicationserver.updatecommunication));

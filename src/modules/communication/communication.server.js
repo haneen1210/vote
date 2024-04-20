@@ -3,13 +3,18 @@ import communicationModel from "../../../DB/models/communication.js";
 
 
 export const createcommunicatione = async (req, res, next) => {
-    const {  type,address,logo,phone} = req.body;
-    
+ 
+    const {  socialMedia, email, address, logo, phone} = req.body;
+   
     if (await communicationModel.findOne({ phone })) {
         return next(new Error("phone already exists", { cause: 409 }));}
-
-
-    const communication = await communicationModel.create({ type,address,logo,phone});
+     
+        if (await communicationModel.findOne({ email })) {
+            return next(new Error("email already exists", { cause: 409 }));}
+    
+     
+    const communication = await communicationModel.create({  socialMedia, email, address, logo, phone});
+ 
     return res.status(201).json({ message: "success", communication });
 }
 

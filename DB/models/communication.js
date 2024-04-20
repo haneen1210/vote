@@ -1,10 +1,21 @@
 import mongoose, { Schema, model ,Types} from 'mongoose';
 const communicationschema = new Schema({
-    type: {
+    socialMedia: [{
+        image :{
+          type:Object,
+          required:true,
+        },
+        link :{
+          type: String,
+          required:true,
+        },
+      }],
+
+      email: {
         type: String,
-        enum: ['email', 'whatsapp', 'facebook', 'instagram'],
-        required: true
-      },
+        required: true,
+        unique: true,
+    },
       address: {
         type: String,
         required: true
@@ -18,6 +29,9 @@ const communicationschema = new Schema({
         required:true,
         unique:true,
     },
+
+    createdBy:{type:Types.ObjectId,ref:'User'},
+    updateBy:{type:Types.ObjectId,ref:'User'},
 },
     {
         timestamps: true,
