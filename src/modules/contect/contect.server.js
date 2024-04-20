@@ -38,7 +38,7 @@ export const updatecontect = async (req, res) => {
     if (!communication) {
         return res.status(404).json({ message: "contect not found" });
     }
-    if (await userModel.findOne({ email: req.body.email, _id: { $ne: id } }).select('email')) {
+    if (await contectModel.findOne({ email: req.body.email, _id: { $ne: id } }).select('email')) {
         return res.status(409).json({ message: `${admin.role} ${req.body.email} alredy exists` })
     }
 
