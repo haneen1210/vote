@@ -12,13 +12,13 @@ export const newPlans = async (req, res, next) => {
 
 export const additem = async (req, res, next) => {
     const { id } = req.params;//id plan
-
+    
     const plan = await PlansModel.findOne({_id:id });
     if (!plan) {
         return res.status(404).json({ message: "plan not found" });
     }
     plan.item = req.body.item;
-    await item.save();
+    await plan.save();
     return res.status(200).json({ message: "success", item });
 }
 
