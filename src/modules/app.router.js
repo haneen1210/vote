@@ -10,6 +10,7 @@ import customersRouter from "./customer/customer.router.js";
 import plansRouter from "./Plans/plans.router.js";
 import blogRouter from "./blogs/blogs.router.js";
 import communicationRouter from "./communication/communication.router.js";
+import contectRouter from "./contect/contect.router.js";
 import cors from "cors";
 import cron from "node-cron";
 import { globalErrorHandler } from "../utls/errorHanding.js";
@@ -52,6 +53,7 @@ app.use(async(req,res,next)=>{
   app.use('/plans',plansRouter);
   app.use('/blog',blogRouter);
   app.use('/communication',communicationRouter);
+  app.use('/contect',contectRouter);
   app.get("*", (req, res) => {
     return res.status(500).json({ message: "page not found" });
   });
