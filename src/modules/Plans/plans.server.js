@@ -1,4 +1,5 @@
 
+import itemModel from "../../../DB/models/item.model.js";
 import PlansModel from "../../../DB/models/plans.model.js";
 
 
@@ -11,15 +12,15 @@ export const newPlans = async (req, res, next) => {
 }
 
 export const additem = async (req, res, next) => {
-    const { id } = req.params;//id plan
-    
-    const plan = await PlansModel.findOne({_id:id });
+    req.body.planId=req.params.id;    //id plan
+   // req.body.userId=req.user._id;
+    const plan = await PlansModel.findById(req.params.id);
     if (!plan) {
         return res.status(404).json({ message: "plan not found" });
     }
-    plan.item = req.body.item;
-    await plan.save();
-    return res.status(200).json({ message: "success", plan });
+    plan.text = req.body.text;
+    const planx=await itemModel.create(req.body);
+    return res.status(200).json({ message: "success", planx });
 }
 
 export const getSplans = async (req, res, next) => {

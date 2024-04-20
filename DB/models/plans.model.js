@@ -10,13 +10,20 @@ description:{
     required:true,
 },
 item:{
-    type:[{type:Types.ObjectId}],
+    type:[{type:Types.ObjectId, ref:'User',}],
     required:true,
 },
 
 }
 ,{
     timestamps:true,
+    toJSON:{virtuals:true},
+    toObject:{virtuals:true},
+});
+Plansschema.virtual('items',{
+    localField:'_id',
+    foreignField:'planId',
+    ref:'items',
 });
 
 
