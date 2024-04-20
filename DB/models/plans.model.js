@@ -10,7 +10,7 @@ description:{
     required:true,
 },
 item:{
-    type:[{type:Types.ObjectId, ref:'User',}],
+    type:[{type:Types.ObjectId}],
     required:true,
 },
 

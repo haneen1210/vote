@@ -19,7 +19,7 @@ export const additem = async (req, res, next) => {
     }
     plan.item = req.body.item;
     await plan.save();
-    return res.status(200).json({ message: "success", item });
+    return res.status(200).json({ message: "success", plan });
 }
 
 export const getSplans = async (req, res, next) => {
