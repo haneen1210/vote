@@ -5,8 +5,8 @@ import PlansModel from "../../../DB/models/plans.model.js";
 
 export const newPlans = async (req, res, next) => {
    
-    const { planName, description,item} = req.body;
-    const createplans = await PlansModel.create({ planName, description ,item});
+    const { planName, description} = req.body;
+    const createplans = await PlansModel.create({ planName, description });
     return res.status(201).json({ message: "success", createplans });
 
 }
@@ -36,7 +36,11 @@ export const getspecificplan = async (req, res) => {
     if (!plan) {
         return res.status(404).json({ message: "plans not found" });
     }
-    return res.status(200).json({ message: "plans found", plan });
+    const plans = await PlansModel.find({}).populate({
+        path: 'item',
+    });
+    return res.status(200).json({ message: "plans found", plans });
+
 }
 
 export const updateplan = async (req, res) => {
@@ -48,7 +52,7 @@ export const updateplan = async (req, res) => {
   
     plan.planName = req.body.planName;
     plan.description = req.body.description;
-    plan.item = req.body.item;
+   // plan.item = req.body.item;
     await plan.save();
     return res.status(200).json({ message: "success update plan ", plan });
 }
