@@ -9,6 +9,10 @@ description:{
     type:String,
     required:true,
 },
+item:{
+    type:String,
+    required:true,
+},
 
 }
 ,{

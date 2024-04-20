@@ -4,8 +4,8 @@ import PlansModel from "../../../DB/models/plans.model.js";
 
 export const newPlans = async (req, res, next) => {
    
-    const { planName, description} = req.body;
-    const createplans = await PlansModel.create({ planName, description });
+    const { planName, description,item} = req.body;
+    const createplans = await PlansModel.create({ planName, description ,item});
     return res.status(201).json({ message: "success", createplans });
 
 }
@@ -34,7 +34,7 @@ export const updateplan = async (req, res) => {
   
     plan.planName = req.body.planName;
     plan.description = req.body.description;
-     
+    plan.item = req.body.item;
     await plan.save();
     return res.status(200).json({ message: "success update plan ", plan });
 }
