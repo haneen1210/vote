@@ -9,10 +9,6 @@ description:{
     type:String,
     required:true,
 },
-item:{
-    type:[{type:Types.ObjectId, ref:'User',}],
-    required:true,
-},
 
 }
 ,{
@@ -20,10 +16,10 @@ item:{
     toJSON:{virtuals:true},
     toObject:{virtuals:true},
 });
-Plansschema.virtual('items',{
+Plansschema.virtual('item',{
     localField:'_id',
     foreignField:'planId',
-    ref:'items',
+    ref:'item',
 });
 
 
