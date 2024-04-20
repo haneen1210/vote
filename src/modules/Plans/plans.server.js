@@ -10,6 +10,18 @@ export const newPlans = async (req, res, next) => {
 
 }
 
+export const additem = async (req, res, next) => {
+    const { id } = req.params;//id plan
+
+    const plan = await PlansModel.findOne({_id:id });
+    if (!plan) {
+        return res.status(404).json({ message: "plan not found" });
+    }
+        item.item = req.body.item;
+    await item.save();
+    return res.status(200).json({ message: "success", item });
+}
+
 export const getSplans = async (req, res, next) => {
     const plans = await PlansModel. find({});
     return res.status(200).json({ message: "success", plans });
