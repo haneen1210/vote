@@ -36,6 +36,6 @@ export const getspecificCandidateinvotes = async (req, res) => {
     if (!votes) {
         return res.status(404).json({ message: "candidate not found" });
     }
-    return res.status(200).json({ message: "candidate found", voteNames });
+    return res.status(200).json({ message: "candidate found", voteNames ,id:CandidateID });
 
 }
