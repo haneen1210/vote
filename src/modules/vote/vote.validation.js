@@ -29,3 +29,14 @@ export const addAndRemoveCandidateToVote=joi.object({
 export const getspecificCandidate=joi.object({
     CandidateID:joi.string().min(24).max(24).required(),
 });
+
+export const join=joi.object({
+    idvote:joi.string().min(24).max(24).required(),
+    idcandidate:joi.string().min(24).max(24).required(),
+});
+
+
+export const updatejoin1=joi.object({
+    idvote:joi.string().min(24).max(24).required(),
+    id:joi.string().min(24).max(24).required(),
+});

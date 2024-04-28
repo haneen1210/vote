@@ -218,6 +218,37 @@ export const removeCandidateFromVote = async (req, res) => {
   return res.status(200).json({ message: "Candidate removed from vote successfully" });
 };
 
+export const join1 = async (req, res, next) => {
+  const { idvote } = req.params;//id idvote
+  const { idcandidate } = req.params;//id idcandidate
+  const user_id = req.user._id;
+  if (!idvote || !idcandidate) {
+    return res.status(404).json({ message: "Vote or Candidate not found" });
+  }
+  const inactiveVote = await voteModel.findOne({ _id: idvote, VotingStatus: "Inactive" });
+  if (inactiveVote) {
+    return res.status(400).json({ message: "The voting period has ended" });
+  }
+  const join = await voteModel.findByIdAndUpdate(idvote, { $addToSet: { join1: user_id } },
+      {
+          new: true
+      })
+  await join.save();
+  return res.status(200).json({ message: "success", join });
+}
+export const updatejoin1 = async (req, res, next) => {
+  const { idvote } = req.params;//id idvote
+  const { id } = req.params;//id user
+  const join2 = await voteModel.findByIdAndUpdate(idvote, { $addToSet: { join2: id }, $pull: { join1: id } },
+      {
+          new: true
+      })
+  
+  await join2.save();
+  return res.status(200).json({ message: "success", join2 });
+}
+
+
 
 
 

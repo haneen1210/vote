@@ -7,6 +7,8 @@ export const endPoint = {
     addExistingCandidateToVote:[roles.Admin],
     getspecificCandidate:[roles.Admin],
     removeCandidateFromVote:[roles.Admin],
+    join:[roles.User],
+    updatejoin:[roles.Admin],
 }
 
 
