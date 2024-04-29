@@ -16,8 +16,12 @@ export const generalFields = {
         'string.empty': "email is required",
         'string.empty': "plz enter a valid email ",
     }),
-    password: joi.string().required().min(6).messages({
-        'string.empty': "password is required",
+    password: joi.string().required().min(8)
+    .pattern(new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})'))
+    .messages({
+        'string.empty': "Password is required",
+        'string.min': "Password must be at least 8 characters long",
+        'string.pattern.base': "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"
     }),
 }
 
