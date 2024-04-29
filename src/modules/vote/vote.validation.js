@@ -38,5 +38,6 @@ export const join=joi.object({
 
 export const updatejoin1=joi.object({
     idvote:joi.string().min(24).max(24).required(),
+    idcandidate:joi.string().min(24).max(24).required(),
     id:joi.string().min(24).max(24).required(),
 });
