@@ -4,6 +4,7 @@ import cloudinary from "../../utls/cloudinary.js";
 import moment from "moment";
 import userModel from "../../../DB/models/admin.model.js";
 import XLSX from "xlsx";
+import ResultModel from "../../../DB/models/result.model.js";
 
 
 export const createVote = async (req, res, next) => {
@@ -233,19 +234,22 @@ export const join1 = async (req, res, next) => {
       {
           new: true
       })
+
   await join.save();
   return res.status(200).json({ message: "success", join });
 }
 export const updatejoin1 = async (req, res, next) => {
   const { idvote } = req.params;//id idvote
+  const { idcandidate } = req.params;//id idcandidate
   const { id } = req.params;//id user
   const join2 = await voteModel.findByIdAndUpdate(idvote, { $addToSet: { join2: id }, $pull: { join1: id } },
       {
           new: true
       })
-  
+        
+      const result = await ResultModel.create({VoteId:idvote,candidateId:idcandidate,userId:id});
   await join2.save();
-  return res.status(200).json({ message: "success", join2 });
+  return res.status(200).json({ message: "success", join2,result });
 }
 
 
