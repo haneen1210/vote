@@ -4,7 +4,7 @@ import cloudinary from "../../utls/cloudinary.js";
 import moment from "moment";
 import userModel from "../../../DB/models/admin.model.js";
 import XLSX from "xlsx";
-import ResultModel from "../../../DB/models/result.model.js";
+import ResultModel from "../../../DB/models/Result.model.js";
 
 
 export const createVote = async (req, res, next) => {
