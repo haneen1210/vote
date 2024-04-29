@@ -5,6 +5,7 @@ export const roles = {
     Admin:'Admin',User:'User',Candidate:'Candidate'
 }
 export const auth=(accessRoles =[])=>{
+
     return async (req,res,next)=>{
         const{authorization} = req.headers;
         if(!authorization?.startsWith(process.env.BEARERKEY)){ 
@@ -29,6 +30,7 @@ if(!accessRoles.includes(user.role)){
     return res.status(403).json({message:"not auth user "});
 }
 req.user = user;
+
 next();
 
         }}

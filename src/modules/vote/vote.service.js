@@ -253,8 +253,36 @@ export const updatejoin1 = async (req, res, next) => {
 }
 
 
+ 
 
+export const countVotesForCandidates = async (req, res, next) => {
+  
+  
+  const results = await ResultModel.aggregate([
+    // Group by candidateId and VoteId, and count the votes
+    
+    {
+      $group: {
+        _id: {
+          VoteId: "$VoteId",
+          candidateId: "$candidateId"
+        },
+        voteCount: { $sum: 1 }
+      }
+    },
+    // Optional: Sort by VoteId and then by voteCount in descending order
+    {
+      $sort: {
+        "_id.VoteId": 1,
+        "voteCount": -1
+      }
+    }
+  ]);
+  return res.status(200).json({ message: "Vote counts for each candidate", results });
+ 
 
+ // return res.status(200).json({ message: "Vote counts for each candidate" });
+}
 
  
 /*

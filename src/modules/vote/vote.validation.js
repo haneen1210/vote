@@ -41,3 +41,6 @@ export const updatejoin1=joi.object({
     idcandidate:joi.string().min(24).max(24).required(),
     id:joi.string().min(24).max(24).required(),
 });
+
+export const sss = joi.object({
+    id: joi.string().custom(validation).required(),})
