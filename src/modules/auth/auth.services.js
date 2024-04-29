@@ -258,8 +258,8 @@ export const Signup = async (req, res, next) => {
   
   `
     await sendEmail(email, "confirm email", html)
-
-    const createUser = await userModel.create({ userName, email, password: hashedPassword, cardnumber, phone, address, gender, role, image: { secure_url, public_id } });
+    const statuse = role === 'User' ? 'Inactive' : 'Active';
+    const createUser = await userModel.create({ userName, email, password: hashedPassword, statuse,cardnumber, phone, address, gender, role, image: { secure_url, public_id } });
     return res.status(201).json({ message: "success", createUser });
 
 }

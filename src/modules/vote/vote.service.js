@@ -281,7 +281,6 @@ export const countVotesForCandidates = async (req, res, next) => {
   return res.status(200).json({ message: "Vote counts for each candidate", results });
  
 
- // return res.status(200).json({ message: "Vote counts for each candidate" });
 }
 
  
