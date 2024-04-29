@@ -11,6 +11,12 @@ export const UpdateSchema = joi.object({
     file: generalFields.file,
 });
 
+export const UpdateStatuseUser = joi.object({
+    idUser:joi.string().min(24).max(24).required(),
+    statuse: joi.string().valid('Active', 'Inactive'),
+   
+});
+
 export const DeletAdminAndRestore = joi.object({
     id:joi.string().min(24).max(24).required(),
 });
