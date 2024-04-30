@@ -16,6 +16,7 @@ router.get('/getUsers', auth(endPoint.getAdmin), asynHandler(Adminservices.getUs
 router.put('/UpdateStatuseUser/:idUser', auth(endPoint.updateadmin),validation(validators.UpdateStatuseUser), asynHandler(Adminservices.UpdateStatuseUser));
 router.put('/updateProfile', auth(Object.values(roles)), fileUpload(fileValidation.image).single('image'),validation(validators.UpdateSchema), asynHandler(Adminservices.updateProfile));
 router.get('/getAdmin/:AdminID', auth(endPoint.getAdmin), asynHandler(Adminservices.getspesificAdmin));
+router.get('/getUser/:UserID', auth(endPoint.getAdmin), asynHandler(Adminservices.getspesificUser));
 router.post('/addadmin', auth(endPoint.addadmin), validation(AuthValidators.signupSchema), asynHandler(authservices.Signup));
 router.patch('/softDelet/:id', auth(endPoint.deleteByadmin), validation(validators.DeletAdminAndRestore), asynHandler(Adminservices.softDeletAdmin));
 router.delete('/hrddDeleted/:id', auth(endPoint.deleteByadmin), validation(validators.DeletAdminAndRestore), asynHandler(Adminservices.Harddeleteadmin));

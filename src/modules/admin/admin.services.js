@@ -14,7 +14,6 @@ export const getAdmin = async (req, res, next) => {
 }
 export const getspesificAdmin = async (req, res, next) => {
     const { AdminID } = req.params;
-    console.log(AdminID);
     const Admin = await userModel.findOne({ _id: AdminID , role : 'Admin'});
     if (!Admin) {
         return res.status(404).json({ message: "Admin not found" });
@@ -654,4 +653,12 @@ export const updatPassword = async (req, res, next) => {
 
 }
   
-  
+export const getspesificUser = async (req, res, next) => {
+  const { UserID } = req.params;
+  const User = await userModel.findOne({ _id: UserID , role : 'User'});
+  if (!User) {
+      return res.status(404).json({ message: "User not found" });
+  }
+  return res.status(200).json({ message: "User found", User });
+
+}
