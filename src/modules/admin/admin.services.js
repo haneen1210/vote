@@ -647,5 +647,11 @@ export const updatPassword = async (req, res, next) => {
       return res.status(200).json({ message: "success", User });
   
   }
+
+  export const getUser = async (req, res, next) => {
+    const Users = await userModel.find({ isDeleted: false , role : 'User'});
+    return res.status(200).json({ message: "success", Admins });
+
+}
   
   
