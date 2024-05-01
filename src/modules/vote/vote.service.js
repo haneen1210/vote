@@ -108,11 +108,12 @@ export const getspecificVote = async (req, res) => {
   if (!vote) {
     return res.status(404).json({ message: "vote not found" });
   }
-  const subvote = await voteModel.find(vote).populate({
+  const subvote = await voteModel.findById(id).populate({
     path: "candidates",
   });
   return res.status(200).json({ message: "success", subvote });
 };
+
 export const getallVoteandcatecory = async (req, res) => {
   const subvote = await voteModel.find().populate({
     path: "candidates",
