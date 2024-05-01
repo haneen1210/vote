@@ -124,7 +124,8 @@ export const getallVoteandcatecory = async (req, res) => {
 // وظيفة لإضافة مرشح موجود إلى التصويت
 export const addExistingCandidateToVote = async (req, res) => {
   const { userName, voteName } = req.body;
-  const candidate = await userModel.findOne({userName, role: "Candidate", });
+ 
+  const candidate = await userModel.findOne({userName, role: "Candidate" });
   const vote = await voteModel.findOne({ voteName});
 
   if (!vote || !candidate) {
@@ -239,23 +240,7 @@ export const join1 = async (req, res, next) => {
   await join.save();
   return res.status(200).json({ message: "success", join,result });
 }
-/*
-export const updatejoin1 = async (req, res, next) => {
-  const { idvote } = req.params;//id idvote
-  const { idcandidate } = req.params;//id idcandidate
-  const { id } = req.params;//id user
-  const join2 = await voteModel.findByIdAndUpdate(idvote, { $addToSet: { join2: id }, $pull: { join1: id } },
-      {
-          new: true
-      })
-        
-      const result = await ResultModel.create({VoteId:idvote,candidateId:idcandidate,userId:id});
-  await join2.save();
-  return res.status(200).json({ message: "success", join2,result });
-}
 
-
- */
 
 export const countVotesForCandidates = async (req, res, next) => {
   

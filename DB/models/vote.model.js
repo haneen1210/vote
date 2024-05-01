@@ -34,7 +34,7 @@ const VoteSchema = new Schema({
    candidates: [{ type:Types.ObjectId, ref: 'User' }],
    Posts: [{ type:Types.ObjectId, ref: 'Post' }],
    join1:[{type:Types.ObjectId, ref:'User',}],
-   join2:[{type:Types.ObjectId, ref:'User',}],
+  
 }, {
     timestamps: true,
 }
