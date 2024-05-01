@@ -235,10 +235,11 @@ export const join1 = async (req, res, next) => {
       {
           new: true
       })
-
+      const result = await ResultModel.create({VoteId:idvote,candidateId:idcandidate,userId: user_id });
   await join.save();
-  return res.status(200).json({ message: "success", join });
+  return res.status(200).json({ message: "success", join,result });
 }
+/*
 export const updatejoin1 = async (req, res, next) => {
   const { idvote } = req.params;//id idvote
   const { idcandidate } = req.params;//id idcandidate
@@ -254,7 +255,7 @@ export const updatejoin1 = async (req, res, next) => {
 }
 
 
- 
+ */
 
 export const countVotesForCandidates = async (req, res, next) => {
   

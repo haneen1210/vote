@@ -24,6 +24,6 @@ router.post('/addcandidatetovote', auth(endPoint.addExistingCandidateToVote), va
 router.post('/uploadExcelCandidateToVote', auth(endPoint.addExistingCandidateToVote), fileUpload(fileValidation.excel).single('file'), asynHandler(voteservices.uploadExcelCandidateToVote));
 router.patch('/removeCandidateFromVote',auth(endPoint.removeCandidateFromVote),validation(validators.addAndRemoveCandidateToVote), asynHandler(voteservices.removeCandidateFromVote));
 router.patch('/:idvote/:idcandidate/join',auth(endPoint.join),validation(validators.join),asynHandler(voteservices.join1));
-router.put('/:idvote/:idcandidate/:id', auth(endPoint.updatejoin),validation(validators.updatejoin1), asynHandler(voteservices.updatejoin1));
+//router.put('/:idvote/:idcandidate/:id', auth(endPoint.updatejoin),validation(validators.updatejoin1), asynHandler(voteservices.updatejoin1));
 export default router;
 
