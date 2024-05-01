@@ -8,8 +8,8 @@ import * as validators from './candidate.validation.js';
 import fileUpload, { fileValidation } from "../../utls/multer.js";
 
 const router = Router();
+router.get('/AllVotesParticipateIn',auth(endPoint.AllVotesParticipateIn),asynHandler(candidateservices.getspecificCandidateinvotes));
 router.get('/getcandidate', auth(endPoint.getcandidate), asynHandler(candidateservices.getcandidate));
 router.get('/:CandidateID', auth(endPoint.getspecificCandidate), validation(validators.getspecificCandidate), asynHandler(candidateservices.getspecificCandidateinvote));
 router.get('/CandidateIDvalid/:CandidateID', auth(endPoint.getspecificCandidate), validation(validators.getspecificCandidate), asynHandler(candidateservices.getspecificCandidate));
-router.get('/:CandidateID/AllVotesParticipateIn', auth(endPoint.getspecificCandidate), validation(validators.getspecificCandidate), asynHandler(candidateservices.getspecificCandidateinvotes));
 export default router;

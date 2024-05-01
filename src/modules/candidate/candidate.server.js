@@ -30,12 +30,12 @@ export const getspecificCandidate = async (req, res) => {
 
 export const getspecificCandidateinvotes = async (req, res) => {
     
-    const { CandidateID } = req.params;
-    const votes = await VoteModel.find({ candidates: CandidateID }).populate('candidates');
+    const user_id = req.user._id;
+    const votes = await VoteModel.find({ candidates: user_id }).populate('candidates');
     const voteNames = votes.map(vote => vote.voteName);
     if (!votes) {
         return res.status(404).json({ message: "candidate not found" });
     }
-    return res.status(200).json({ message: "candidate found", voteNames ,id:CandidateID });
+    return res.status(200).json({ message: "candidate found", voteNames ,id:user_id });
 
 }
