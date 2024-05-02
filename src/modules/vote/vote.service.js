@@ -101,7 +101,7 @@ export const getVoteOpen = async (req, res, next) => {
 export const getpreviousvotes = async (req, res, next) => {
     const votes = await voteModel.find({ VotingStatus: "Inactive",EndDateVote: { $lt: new Date() }  });
     return res.status(200).json({ message: "success", votes });
-  };
+  };/*
 export const getspecificVote = async (req, res) => {
   const { id } = req.params;
   const vote = await voteModel.findById(id);
@@ -113,7 +113,24 @@ export const getspecificVote = async (req, res) => {
   });
   return res.status(200).json({ message: "success", subvote });
 };
+*/
 
+export const getspecificVote = async (req, res) => {
+  const { id } = req.params;
+    const vote = await voteModel.findById(id).populate({
+      path: "candidates", // Ensure this is the correct path and it's properly set in your schema
+      // Optionally, you can add more options here if needed
+    });
+
+    if (!vote) {
+      return res.status(404).json({ message: "Vote not found" });
+    }
+
+    return res.status(200).json({ message: "Success", vote });
+
+  
+  }
+;
 export const getallVoteandcatecory = async (req, res) => {
   const subvote = await voteModel.find().populate({
     path: "candidates",
