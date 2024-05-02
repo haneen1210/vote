@@ -238,7 +238,7 @@ export const removeCandidateFromVote = async (req, res) => {
   await vote.save();
   return res.status(200).json({ message: "Candidate removed from vote successfully" });
 };
-
+/*
 export const join1 = async (req, res, next) => {
   const { idvote } = req.params;//id idvote
   const { idcandidate } = req.params;//id idcandidate
@@ -259,7 +259,42 @@ export const join1 = async (req, res, next) => {
   return res.status(200).json({ message: "success", join,result });
 }
 
+*/
 
+export const join1 = async (req, res, next) => {
+  const { idvote, idcandidate } = req.params;
+  const user_id = req.user._id;
+
+  // Check if both vote and candidate IDs are provided
+  if (!idvote || !idcandidate) {
+    return res.status(404).json({ message: "Vote or Candidate not found" });
+  }
+
+  // Check if the vote is inactive
+  const inactiveVote = await voteModel.findOne({ _id: idvote, VotingStatus: "Inactive" });
+  if (inactiveVote) {
+    return res.status(400).json({ message: "The voting period has ended" });
+  }
+
+  // Check if the user has already participated in this vote
+  const existingParticipation = await ResultModel.findOne({ VoteId: idvote, userId: user_id });
+  if (existingParticipation) {
+    return res.status(409).json({ message: "User has already participated in this vote" });
+  }
+
+  // Add user to the vote (assuming that join1 is an array of user IDs)
+  const join = await voteModel.findByIdAndUpdate(
+    idvote,
+    { $addToSet: { join1: user_id } },  // Ensures user is added only once
+    { new: true }
+  );
+
+  // Create a result entry for the user's participation
+  const result = await ResultModel.create({ VoteId: idvote, candidateId: idcandidate, userId: user_id });
+
+  // There's no need to call save after findByIdAndUpdate if you're not making additional changes to 'join'
+  return res.status(200).json({ message: "Success", join, result });
+};
 export const countVotesForCandidates = async (req, res, next) => {
   
   
