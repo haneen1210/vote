@@ -2,13 +2,13 @@ import joi from "joi";
 import { generalFields, validation } from "../../middleware/validation.js";
 
 
-
+const datePattern = /^(\d{2})-(\d{2})-(\d{4}) (\d{2}):(\d{2}):(\d{2})$/;
 export const createVoteSchema = joi.object({
     voteName: joi.string().min(3).max(25).required(),
     VotingStatus: joi.string().valid('Active', 'Inactive').required(),
     description: joi.string().min(10).max(100).required(),
-    StartDateVote: joi.date().iso().required(),
-    EndDateVote: joi.date().iso().required(),
+    StartDateVote: joi.string().pattern(datePattern).required(),
+  EndDateVote: joi.string().pattern(datePattern).required(),
     file: generalFields.file.required(),
 });
 
