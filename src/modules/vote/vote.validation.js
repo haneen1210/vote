@@ -7,8 +7,8 @@ export const createVoteSchema = joi.object({
     voteName: joi.string().min(3).max(25).required(),
     VotingStatus: joi.string().valid('Active', 'Inactive').required(),
     description: joi.string().min(10).max(100).required(),
-    StartDateVote:joi.date().required(),
-    EndDateVote:joi.date().required(),
+    StartDateVote: joi.date().iso().required(),
+    EndDateVote: joi.date().iso().required(),
     file: generalFields.file.required(),
 });
 
