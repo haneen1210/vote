@@ -293,6 +293,9 @@ export const join1 = async (req, res, next) => {
   // There's no need to call save after findByIdAndUpdate if you're not making additional changes to 'join'
   return res.status(200).json({ message: "Success", join, result });
 };
+
+
+/*
 export const countVotesForCandidates = async (req, res, next) => {
   
   
@@ -320,8 +323,48 @@ export const countVotesForCandidates = async (req, res, next) => {
  
 
 }
+*/
+export const countVotesForCandidates = async (req, res, next) => {
+  const results = await ResultModel.aggregate([
+      // Join with the votes collection to fetch the vote name
+      {
+          $lookup: {
+              from: "votes", // Ensure this is the correct collection name
+              localField: "VoteId",
+              foreignField: "_id",
+              as: "voteInfo"
+          }
+      },
+      // Unwind the result of the lookup to handle array
+      {
+          $unwind: {
+              path: "$voteInfo",
+              preserveNullAndEmptyArrays: true
+          }
+      },
+      // Group by candidateId and VoteId, and count the votes
+      {
+          $group: {
+              _id: {
+                  VoteId: "$VoteId",
+                  candidateId: "$candidateId",
+                  voteName: "$voteInfo.voteName" // Ensure this matches the field name in your schema
+              },
+              voteCount: { $sum: 1 }
+          }
+      },
+      // Optional: Sort by VoteId and then by voteCount in descending order
+      {
+          $sort: {
+              "_id.VoteId": 1,
+              "voteCount": -1
+          }
+      }
+  ]);
 
- 
+  return res.status(200).json({ message: "Vote counts for each candidate", results });
+};
+
 /*
 export const uploadExcelCandidateToVote = async (req, res, next) => {
   try {
