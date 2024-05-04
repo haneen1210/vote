@@ -314,7 +314,7 @@ export const countVotesForCandidates = async (req, res) => {
 
 };
 */
-const countVotesForCandidates = async (req, res) => {
+export const countVotesForCandidates = async (req, res) => {
 
       const results = await ResultModel.aggregate([
           { $group: { _id: { VoteId: "$VoteId", candidateId: "$candidateId" }, count: { $sum: 1 } } }
