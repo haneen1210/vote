@@ -321,8 +321,8 @@ const countVotesForCandidates = async (req, res) => {
       ]);
 
       const populatedResults = await Promise.all(results.map(async result => {
-          const voteDetails = await VoteModel.findById(result._id.VoteId);
-          const candidateDetails = await UserModel.findById(result._id.candidateId);
+          const voteDetails = await voteModel.findById(result._id.VoteId);
+          const candidateDetails = await voteModel.findById(result._id.candidateId);
 
           // التحقق من أن voteDetails و candidateDetails ليست null قبل الوصول إلى خصائصها
           if (!voteDetails || !candidateDetails) {
