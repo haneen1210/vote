@@ -356,71 +356,75 @@ export const countVotesForCandidates = async (req, res) => {
 */
 
 export const countVotesForCandidates = async (req, res) => {
-  
-      // جمع وتجميع الأصوات بناءً على معرف التصويت ومعرف المرشح
-      const results = await ResultModel.aggregate([
-          {
-              $group: {
-                  _id: {
-                      VoteId: "$VoteId",
-                      candidateId: "$candidateId"
-                  },
-                  count: { $sum: 1 }
-              }
-          },
-          // إضافة $lookup لجلب معلومات عن التصويت
-          {
-              $lookup: {
-                  from: "votes",
-                  localField: "_id.VoteId",
-                  foreignField: "_id",
-                  as: "voteInfo"
-              }
-          },
-          {
-              $unwind: {
-                  path: "$voteInfo",
-                  preserveNullAndEmptyArrays: true
-              }
-          },
-          // إضافة $lookup آخر لجلب معلومات المرشح
-          {
-              $lookup: {
-                  from: "users",
-                  localField: "_id.candidateId",
-                  foreignField: "_id",
-                  as: "candidateInfo"
-              }
-          },
-          {
-              $unwind: {
-                  path: "$candidateInfo",
-                  preserveNullAndEmptyArrays: true
-              }
-          },
-          // إعادة تشكيل البيانات للنتائج النهائية
-          {
-              $project: {
-                  voteId: "$_id.VoteId",
-                  voteName: "$voteInfo.voteName",
-                  candidateId: "$_id.candidateId",
-                  candidateName: "$candidateInfo.userName",
-                  voteCount: "$count"
-              }
-          },
-          // فرز النتائج
-          {
-              $sort: {
-                  voteId: 1,
-                  voteCount: -1
-              }
-          }
-      ]);
+  const results = await ResultModel.aggregate([
+    // دمج معلومات التصويت
+    {
+        $lookup: {
+            from: "votes",  // تأكد من أن هذا هو اسم مجموعة التصويتات
+            localField: "VoteId",
+            foreignField: "_id",
+            as: "voteDetails"
+        }
+    },
+    {
+        $unwind: {
+            path: "$voteDetails",
+            preserveNullAndEmptyArrays: true
+        }
+    },
+    // دمج معلومات المرشحين
+    {
+        $lookup: {
+            from: "users",  // تأكد من أن هذا هو اسم مجموعة المستخدمين
+            localField: "candidateId",
+            foreignField: "_id",
+            as: "candidateDetails"
+        }
+    },
+    {
+        $unwind: {
+            path: "$candidateDetails",
+            preserveNullAndEmptyArrays: true
+        }
+    },
+    // تجميع البيانات حسب التصويت والمرشح
+    {
+        $group: {
+            _id: {
+                VoteId: "$VoteId",
+                VoteName: "$voteDetails.voteName",
+                CandidateId: "$candidateId",
+                CandidateName: "$candidateDetails.userName"
+            },
+            NumberOfVoters: { $sum: 1 }
+        }
+    },
+    // إعادة تجميع البيانات لتنظيمها حسب التصويت
+    {
+        $group: {
+            _id: "$_id.VoteId",
+            VoteName: { $first: "$_id.VoteName" },
+            Candidates: {
+                $push: {
+                    CandidateName: "$_id.CandidateName",
+                    NumberOfVoters: "$NumberOfVoters"
+                }
+            }
+        }
+    },
+    // فرز النتائج حسب اسم التصويت
+    {
+        $sort: {
+            "VoteName": 1
+        }
+    }
+]);
 
-      res.status(200).json({
-          message: "Vote counts for each candidate including candidate names",
-          results
-      });
+res.status(200).json({
+    message: "Successfully retrieved vote results",
+    data: results
+});
+
 
 };
 
