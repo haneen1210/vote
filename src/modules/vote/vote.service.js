@@ -114,24 +114,7 @@ export const getspecificVote = async (req, res) => {
   });
   return res.status(200).json({ message: "success", subvote });
 };
-/*
-export const getspecificVote = async (req, res) => {
-  const { id } = req.params;
-    const vote = await voteModel.findById(id).populate({
-      path: "candidates", // Ensure this is the correct path and it's properly set in your schema
-      // Optionally, you can add more options here if needed
-    });
 
-    if (!vote) {
-      return res.status(404).json({ message: "Vote not found" });
-    }
-
-    return res.status(200).json({ message: "Success", vote });
-
-  
-  }
-;
-*/
 export const getallVoteandcatecory = async (req, res) => {
   const subvote = await voteModel.find().populate({
     path: "candidates",
@@ -294,36 +277,7 @@ export const join1 = async (req, res, next) => {
   return res.status(200).json({ message: "Success", join, result });
 };
 
-
 /*
-export const countVotesForCandidates = async (req, res, next) => {
-  
-  
-  const results = await ResultModel.aggregate([
-    // Group by candidateId and VoteId, and count the votes
-    
-    {
-      $group: {
-        _id: {
-          VoteId: "$VoteId",
-          candidateId: "$candidateId"
-        },
-        voteCount: { $sum: 1 }
-      }
-    },
-    // Optional: Sort by VoteId and then by voteCount in descending order
-    {
-      $sort: {
-        "_id.VoteId": 1,
-        "voteCount": -1
-      }
-    }
-  ]);
-  return res.status(200).json({ message: "Vote counts for each candidate", results });
- 
-
-}
-*/
 export const countVotesForCandidates = async (req, res, next) => {
   const results = await ResultModel.aggregate([
       // Join with the votes collection to fetch the vote name
@@ -363,25 +317,78 @@ export const countVotesForCandidates = async (req, res, next) => {
   ]);
 
   return res.status(200).json({ message: "Vote counts for each candidate", results });
+};*/
+
+export const countVotesForCandidates = async (req, res, next) => {
+  const results = await ResultModel.aggregate([
+      // Join with the votes collection to fetch the vote name
+      {
+          $lookup: {
+              from: "votes", // افترض أن هذا هو اسم المجموعة الصحيح
+              localField: "VoteId",
+              foreignField: "_id",
+              as: "voteInfo"
+          }
+      },
+      {
+          $unwind: {
+              path: "$voteInfo",
+              preserveNullAndEmptyArrays: true
+          }
+      },
+      // Join with the user collection to fetch the candidate's name
+      {
+          $lookup: {
+              from: "users", // تأكد من أن هذا هو اسم مجموعة المستخدمين الخاص بك
+              localField: "candidateId",
+              foreignField: "_id",
+              as: "candidateInfo"
+          }
+      },
+      {
+          $unwind: {
+              path: "$candidateInfo",
+              preserveNullAndEmptyArrays: true
+          }
+      },
+      // Group by candidateId and VoteId, count the votes, and include candidate's name
+      {
+          $group: {
+              _id: {
+                  VoteId: "$VoteId",
+                  candidateId: "$candidateId",
+                  voteName: "$voteInfo.voteName",
+                  candidateName: "$candidateInfo.name" // أضف اسم المرشح
+              },
+              voteCount: { $sum: 1 }
+          }
+      },
+      // Optional: Sort by VoteId and then by voteCount in descending order
+      {
+          $sort: {
+              "_id.VoteId": 1,
+              "voteCount": -1
+          }
+      }
+  ]);
+
+  return res.status(200).json({ message: "Vote counts for each candidate including candidate names", results });
 };
+
 
 export const findUserVotes = async (req, res) => {
   const { userId } = req.params;
-
       // استعلام لجلب جميع معرفات التصويتات التي شارك فيها المستخدم
       const userVotes = await ResultModel.find({ userId }) .select('VoteId -_id'); // اختيار فقط حقل VoteId وإخفاء _id
 console.log(userVotes);
       // تحويل النتيجة إلى مصفوفة من معرفات التصويت
       const voteIds = userVotes.map(vote => vote.VoteId);
-
       // استعلام لجلب تفاصيل التصويتات باستخدام معرفات التصويت
       const voteDetails = await voteModel.find({ _id: { $in: voteIds } });
-
       res.status(200).json({
           message: 'Retrieved all votes the user has participated in',
           data: voteDetails
       });
- 
 };
 
 /*
