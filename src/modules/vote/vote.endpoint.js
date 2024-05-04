@@ -9,6 +9,7 @@ export const endPoint = {
     removeCandidateFromVote:[roles.Admin],
     join:[roles.User],
     updatejoin:[roles.Admin],
+    User:[roles.User],
 }
 
 

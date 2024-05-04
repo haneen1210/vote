@@ -5,7 +5,7 @@ import moment from "moment";
 import userModel from "../../../DB/models/admin.model.js";
 import XLSX from "xlsx";
 import ResultModel from "../../../DB/models/Result.model.js";
-
+import mongoose from 'mongoose';
 
 export const createVote = async (req, res, next) => {
   const {
@@ -363,6 +363,25 @@ export const countVotesForCandidates = async (req, res, next) => {
   ]);
 
   return res.status(200).json({ message: "Vote counts for each candidate", results });
+};
+
+export const findUserVotes = async (req, res) => {
+  const { userId } = req.params;
+
+      // استعلام لجلب جميع معرفات التصويتات التي شارك فيها المستخدم
+      const userVotes = await ResultModel.find({ userId }) .select('VoteId -_id'); // اختيار فقط حقل VoteId وإخفاء _id
+console.log(userVotes);
+      // تحويل النتيجة إلى مصفوفة من معرفات التصويت
+      const voteIds = userVotes.map(vote => vote.VoteId);
+
+      // استعلام لجلب تفاصيل التصويتات باستخدام معرفات التصويت
+      const voteDetails = await voteModel.find({ _id: { $in: voteIds } });
+
+      res.status(200).json({
+          message: 'Retrieved all votes the user has participated in',
+          data: voteDetails
+      });
+ 
 };
 
 /*
