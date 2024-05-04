@@ -275,7 +275,7 @@ export const join1 = async (req, res, next) => {
   return res.status(200).json({ message: "Success", join, result });
 };
 
-
+/*
 export const countVotesForCandidates = async (req, res) => {
 
       // استخدام Mongoose لجمع الأصوات وتعبئة التفاصيل ذات الصلة
@@ -312,6 +312,44 @@ export const countVotesForCandidates = async (req, res) => {
           results: populatedResults
       });
 
+};
+*/
+const countVotesForCandidates = async (req, res) => {
+
+      const results = await ResultModel.aggregate([
+          { $group: { _id: { VoteId: "$VoteId", candidateId: "$candidateId" }, count: { $sum: 1 } } }
+      ]);
+
+      const populatedResults = await Promise.all(results.map(async result => {
+          const voteDetails = await VoteModel.findById(result._id.VoteId);
+          const candidateDetails = await UserModel.findById(result._id.candidateId);
+
+          // التحقق من أن voteDetails و candidateDetails ليست null قبل الوصول إلى خصائصها
+          if (!voteDetails || !candidateDetails) {
+              console.log('One of the documents was not found:', { voteDetails, candidateDetails });
+              return {
+                  voteId: result._id.VoteId,
+                  candidateId: result._id.candidateId,
+                  voteName: voteDetails ? voteDetails.voteName : 'Vote details not found',
+                  candidateName: candidateDetails ? candidateDetails.userName : 'Candidate details not found',
+                  voteCount: result.count
+              };
+          }
+
+          return {
+              voteId: result._id.VoteId,
+              candidateId: result._id.candidateId,
+              voteName: voteDetails.voteName,
+              candidateName: candidateDetails.userName,
+              voteCount: result.count
+          };
+      }));
+
+      res.status(200).json({
+          message: "Vote counts for each candidate including candidate names",
+          results: populatedResults
+      });
+ 
 };
 
 
@@ -379,102 +417,3 @@ export const uploadExcelCandidateToVote = async (req, res, next) => {
   }
 };*/
 
-
-/*
-export const countVotesForCandidates = async (req, res, next) => {
-  const results = await ResultModel.aggregate([
-      // Join with the votes collection to fetch the vote name
-      {
-          $lookup: {
-              from: "votes", // Ensure this is the correct collection name
-              localField: "VoteId",
-              foreignField: "_id",
-              as: "voteInfo"
-          }
-      },
-      // Unwind the result of the lookup to handle array
-      {
-          $unwind: {
-              path: "$voteInfo",
-              preserveNullAndEmptyArrays: true
-          }
-      },
-      // Group by candidateId and VoteId, and count the votes
-      {
-          $group: {
-              _id: {
-                  VoteId: "$VoteId",
-                  candidateId: "$candidateId",
-                  voteName: "$voteInfo.voteName" // Ensure this matches the field name in your schema
-              },
-              voteCount: { $sum: 1 }
-          }
-      },
-      // Optional: Sort by VoteId and then by voteCount in descending order
-      {
-          $sort: {
-              "_id.VoteId": 1,
-              "voteCount": -1
-          }
-      }
-  ]);
-
-  return res.status(200).json({ message: "Vote counts for each candidate", results });
-};*/
-/*
-export const countVotesForCandidates = async (req, res, next) => {
-  const results = await ResultModel.aggregate([
-      // Join with the votes collection to fetch the vote name
-      {
-          $lookup: {
-              from: "votes", // افترض أن هذا هو اسم المجموعة الصحيح
-              localField: "VoteId",
-              foreignField: "_id",
-              as: "voteInfo"
-          }
-      },
-      {
-          $unwind: {
-              path: "$voteInfo",
-              preserveNullAndEmptyArrays: true
-          }
-      },
-      // Join with the user collection to fetch the candidate's name
-      {
-          $lookup: {
-              from: "users", // تأكد من أن هذا هو اسم مجموعة المستخدمين الخاص بك
-              localField: "candidateId",
-              foreignField: "_id",
-              as: "candidateInfo"
-          }
-      },
-      {
-          $unwind: {
-              path: "$candidateInfo",
-              preserveNullAndEmptyArrays: true
-          }
-      },
-      // Group by candidateId and VoteId, count the votes, and include candidate's name
-      {
-          $group: {
-              _id: {
-                  VoteId: "$VoteId",
-                  candidateId: "$candidateId",
-                  voteName: "$voteInfo.voteName",
-                  candidateName: "$candidateInfo.userName" // أضف اسم المرشح
-              },
-              voteCount: { $sum: 1 }
-          }
-      },
-      // Optional: Sort by VoteId and then by voteCount in descending order
-      {
-          $sort: {
-              "_id.VoteId": 1,
-              "voteCount": -1
-          }
-      }
-  ]);
-
-  return res.status(200).json({ message: "Vote counts for each candidate including candidate names", results });
-};
-*/
