@@ -356,7 +356,7 @@ export const countVotesForCandidates = async (req, res) => {
 */
 
 export const countVotesForCandidates = async (req, res) => {
-  try {
+  
       // جمع وتجميع الأصوات بناءً على معرف التصويت ومعرف المرشح
       const results = await ResultModel.aggregate([
           {
@@ -421,10 +421,7 @@ export const countVotesForCandidates = async (req, res) => {
           message: "Vote counts for each candidate including candidate names",
           results
       });
-  } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "An error occurred", error: error.toString() });
-  }
+
 };
 
 export const findUserVotes = async (req, res) => {
@@ -491,3 +488,4 @@ export const uploadExcelCandidateToVote = async (req, res, next) => {
   }
 };*/
 
+//localhost:5000/
