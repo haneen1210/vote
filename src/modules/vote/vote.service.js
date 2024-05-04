@@ -314,6 +314,7 @@ export const countVotesForCandidates = async (req, res) => {
 
 };
 */
+/*
 export const countVotesForCandidates = async (req, res) => {
 
       const results = await ResultModel.aggregate([
@@ -352,6 +353,79 @@ export const countVotesForCandidates = async (req, res) => {
  
 };
 
+*/
+
+export const countVotesForCandidates = async (req, res) => {
+  try {
+      // جمع وتجميع الأصوات بناءً على معرف التصويت ومعرف المرشح
+      const results = await ResultModel.aggregate([
+          {
+              $group: {
+                  _id: {
+                      VoteId: "$VoteId",
+                      candidateId: "$candidateId"
+                  },
+                  count: { $sum: 1 }
+              }
+          },
+          // إضافة $lookup لجلب معلومات عن التصويت
+          {
+              $lookup: {
+                  from: "votes",
+                  localField: "_id.VoteId",
+                  foreignField: "_id",
+                  as: "voteInfo"
+              }
+          },
+          {
+              $unwind: {
+                  path: "$voteInfo",
+                  preserveNullAndEmptyArrays: true
+              }
+          },
+          // إضافة $lookup آخر لجلب معلومات المرشح
+          {
+              $lookup: {
+                  from: "users",
+                  localField: "_id.candidateId",
+                  foreignField: "_id",
+                  as: "candidateInfo"
+              }
+          },
+          {
+              $unwind: {
+                  path: "$candidateInfo",
+                  preserveNullAndEmptyArrays: true
+              }
+          },
+          // إعادة تشكيل البيانات للنتائج النهائية
+          {
+              $project: {
+                  voteId: "$_id.VoteId",
+                  voteName: "$voteInfo.voteName",
+                  candidateId: "$_id.candidateId",
+                  candidateName: "$candidateInfo.userName",
+                  voteCount: "$count"
+              }
+          },
+          // فرز النتائج
+          {
+              $sort: {
+                  voteId: 1,
+                  voteCount: -1
+              }
+          }
+      ]);
+
+      res.status(200).json({
+          message: "Vote counts for each candidate including candidate names",
+          results
+      });
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "An error occurred", error: error.toString() });
+  }
+};
 
 export const findUserVotes = async (req, res) => {
   const { userId } = req.params;
