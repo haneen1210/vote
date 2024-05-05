@@ -693,3 +693,11 @@ export const manageWithdrawalRequest = async (req, res) => {
       res.status(200).json({ message: `Withdrawal request ${status.toLowerCase()} successfully`, updatedRequest });
 
 };
+
+
+
+export const withdrawals = async (req, res, next) => {
+  const withdrawals = await WithdrawalModel.find({  status : 'Pending'});
+  return res.status(200).json({ message: "success", withdrawals });
+
+}
