@@ -42,10 +42,10 @@ export const getspecificCandidateinvotes = async (req, res) => {
 }
 export const requestWithdrawal = async (req, res) => {
    
-        const { candidateId, voteId, reason } = req.body;
-
+        const { voteId, reason } = req.body;
+        const user_id = req.user._id;//candidateId
         // تحقق من أن المرشح موجود وله الصلاحية
-        const candidate = await userModel.findOne({ _id: candidateId, role: 'Candidate' });
+        const candidate = await userModel.findOne({ _id: user_id, role: 'Candidate' });
         if (!candidate) {
             return res.status(404).json({ message: "Candidate not found or unauthorized" });
         }
@@ -57,12 +57,12 @@ export const requestWithdrawal = async (req, res) => {
         }
 
         // تحقق من أن المرشح مشارك في التصويت
-        if (!vote.candidates.includes(candidateId)) {
+        if (!vote.candidates.includes(user_id)) {
             return res.status(400).json({ message: "Candidate not participating in the vote" });
         }
 
         // أنشئ طلب انسحاب جديد
-        const withdrawalRequest = await WithdrawalModel.create({candidateId,voteId, reason });
+        const withdrawalRequest = await WithdrawalModel.create({user_id,voteId, reason });
 
         res.status(201).json({ message: "Withdrawal request submitted successfully",withdrawalRequest });
            
