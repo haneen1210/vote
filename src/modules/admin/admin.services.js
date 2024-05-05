@@ -6,6 +6,7 @@ import cloudinary from "../../utls/cloudinary.js";
 import XLSX from "xlsx";
 import * as validators from './admin.validation.js';
 import { validation, validation1} from "../../middleware/validation.js";
+import WithdrawalModel from "../../../DB/models/withdrawa.model.js";
 
 export const getAdmin = async (req, res, next) => {
     const Admins = await userModel.find({ isDeleted: false , role : 'Admin'});
