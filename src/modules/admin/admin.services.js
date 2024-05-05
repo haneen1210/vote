@@ -670,7 +670,7 @@ export const manageWithdrawalRequest = async (req, res) => {
       const { status } = req.body; // الحالة الجديدة المراد تحديثها
 
       // التحقق من صحة الحالة
-      const validStatuses = ['Pending', 'Approved', 'Rejected'];
+      const validStatuses = ['Pending', 'Approved', 'Rejected', 'On Hold'];
       if (!validStatuses.includes(status)) {
           return res.status(400).json({
               message: "Invalid status. Must be one of: 'Pending', 'Approved', 'Rejected', 'On Hold'"
@@ -678,10 +678,17 @@ export const manageWithdrawalRequest = async (req, res) => {
       }
 
       // تحديث طلب الانسحاب بالحالة الجديدة
-      const updatedRequest = await WithdrawalModel.findByIdAndUpdate( requestId, { status }, { new: true }  );
+      const updatedRequest = await WithdrawalModel.findByIdAndUpdate(requestId, { status }, { new: true });
 
       if (!updatedRequest) {
           return res.status(404).json({ message: "Withdrawal request not found" });
+      }
+
+      // إذا تم قبول الطلب، قم بإزالة المرشح من قائمة المرشحين في التصويت
+      if (status === 'Approved') {
+          await VoteModel.findByIdAndUpdate(updatedRequest.voteId, {
+              $pull: { candidates: updatedRequest.candidateId }
+          });
       }
 
       res.status(200).json({ message: `Withdrawal request ${status.toLowerCase()} successfully`, updatedRequest });
