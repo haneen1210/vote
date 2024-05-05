@@ -700,7 +700,7 @@ export const withdrawals = async (req, res, next) => {
     // Fetch withdrawals with associated vote and candidate information
     const withdrawals = await WithdrawalModel.find({ status: 'Pending' })
       .populate({
-        path: 'vote', // Replace with the correct field name in WithdrawalModel
+        path: 'Vote', // Replace with the correct field name in WithdrawalModel
         select: 'voteName', // Assuming the 'name' field represents the vote name
       })
       .populate({
