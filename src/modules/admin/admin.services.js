@@ -7,6 +7,7 @@ import XLSX from "xlsx";
 import * as validators from './admin.validation.js';
 import { validation, validation1} from "../../middleware/validation.js";
 import WithdrawalModel from "../../../DB/models/withdrawa.model.js";
+import VoteModel from "../../../DB/models/vote.model.js";
 
 export const getAdmin = async (req, res, next) => {
     const Admins = await userModel.find({ isDeleted: false , role : 'Admin'});
@@ -670,11 +671,9 @@ export const manageWithdrawalRequest = async (req, res) => {
       const { status } = req.body; // الحالة الجديدة المراد تحديثها
 
       // التحقق من صحة الحالة
-      const validStatuses = ['Pending', 'Approved', 'Rejected', 'On Hold'];
+      const validStatuses = ['Pending', 'Approved', 'Rejected'];
       if (!validStatuses.includes(status)) {
-          return res.status(400).json({
-              message: "Invalid status. Must be one of: 'Pending', 'Approved', 'Rejected', 'On Hold'"
-          });
+          return res.status(400).json({  message: "Invalid status. Must be one of: 'Pending', 'Approved', 'Rejected'" });
       }
 
       // تحديث طلب الانسحاب بالحالة الجديدة
