@@ -7,12 +7,7 @@ export const getspecificCandidate=joi.object({
 
 
 export const requestWithdrawal=joi.object({
-    candidateId: joi.string().hex().length(24).required().messages({
-        "string.base": "Candidate ID should be a string",
-        "string.hex": "Candidate ID must be a valid ObjectId",
-        "string.length": "Candidate ID should be 24 characters long",
-        "any.required": "Candidate ID is required"
-    }),
+
     voteId: joi.string().hex().length(24).required().messages({
         "string.base": "Vote ID should be a string",
         "string.hex": "Vote ID must be a valid ObjectId",

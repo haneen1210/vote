@@ -41,31 +41,39 @@ export const getspecificCandidateinvotes = async (req, res) => {
 
 }
 export const requestWithdrawal = async (req, res) => {
-   
-        const { voteId, reason } = req.body;
-        const user_id = req.user._id;//candidateId
-        // تحقق من أن المرشح موجود وله الصلاحية
-        const candidate = await userModel.findOne({ _id: user_id, role: 'Candidate' });
-        if (!candidate) {
-            return res.status(404).json({ message: "Candidate not found or unauthorized" });
-        }
+    const { voteId, reason } = req.body;
+    const candidateId = req.user._id; // candidateId
 
-        // تحقق من أن التصويت موجود
-        const vote = await VoteModel.findById(voteId);
-        if (!vote) {
-            return res.status(404).json({ message: "Vote not found" });
-        }
+    // تحقق من أن المرشح موجود وله الصلاحية
+    const candidate = await userModel.findOne({ _id: candidateId, role: 'Candidate' });
+    if (!candidate) {
+        return res.status(404).json({ message: "Candidate not found or unauthorized" });
+    }
 
-        // تحقق من أن المرشح مشارك في التصويت
-        if (!vote.candidates.includes(user_id)) {
-            return res.status(400).json({ message: "Candidate not participating in the vote" });
-        }
+    // تحقق من أن التصويت موجود
+    const vote = await VoteModel.findById(voteId);
+    if (!vote) {
+        return res.status(404).json({ message: "Vote not found" });
+    }
 
-        // أنشئ طلب انسحاب جديد
-        const withdrawalRequest = await WithdrawalModel.create({user_id,voteId, reason });
+    // تحقق من أن المرشح مشارك في التصويت
+    if (!vote.candidates.includes(candidateId)) {
+        return res.status(400).json({ message: "Candidate not participating in the vote" });
+    }
 
-        res.status(201).json({ message: "Withdrawal request submitted successfully",withdrawalRequest });
-           
-       
+    // تحقق من عدم وجود طلب انسحاب مكرر
+    const existingWithdrawalRequest = await WithdrawalModel.findOne({ candidateId, voteId });
+    if (existingWithdrawalRequest) {
+        return res.status(409).json({ message: "Withdrawal request already submitted for this vote" });
+    }
 
+    // التحقق من وجود حقل "reason"
+    if (!reason || reason.trim() === "") {
+        return res.status(400).json({ message: "Reason for withdrawal is required" });
+    }
+
+    // إنشاء طلب انسحاب جديد
+    const withdrawalRequest = await WithdrawalModel.create({ candidateId, voteId, reason });
+
+    res.status(201).json({ message: "Withdrawal request submitted successfully", withdrawalRequest });
 };

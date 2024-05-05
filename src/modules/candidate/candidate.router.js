@@ -12,6 +12,6 @@ router.get('/AllVotesParticipateIn',auth(endPoint.AllVotesParticipateIn),asynHan
 router.get('/getcandidate', auth(endPoint.getcandidate), asynHandler(candidateservices.getcandidate));
 router.get('/:CandidateID', auth(endPoint.getspecificCandidate), validation(validators.getspecificCandidate), asynHandler(candidateservices.getspecificCandidateinvote));
 router.get('/CandidateIDvalid/:CandidateID', auth(endPoint.getspecificCandidate), validation(validators.getspecificCandidate), asynHandler(candidateservices.getspecificCandidate));
-router.post('/requestWithdrawal', auth(endPoint.getcandidate), validation(validators.requestWithdrawal),asynHandler(candidateservices.requestWithdrawal));
+router.post('/requestWithdrawal', auth(endPoint.requestWithdrawal), validation(validators.requestWithdrawal),asynHandler(candidateservices.requestWithdrawal));
 
 export default router;
