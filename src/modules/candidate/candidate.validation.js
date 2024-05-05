@@ -7,7 +7,7 @@ export const getspecificCandidate=joi.object({
 
 
 export const requestWithdrawal=joi.object({
-
+    
     voteName: joi.string().min(3).max(25).required().messages({
         "string.base": "Vote name should be a string",
         "string.min": "Vote name should be at least 3 characters long",
