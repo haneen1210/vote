@@ -662,3 +662,27 @@ export const getspesificUser = async (req, res, next) => {
   return res.status(200).json({ message: "User found", User });
 
 }
+
+export const manageWithdrawalRequest = async (req, res) => {
+
+      const { requestId } = req.params; // معرف طلب الانسحاب
+      const { status } = req.body; // الحالة الجديدة المراد تحديثها
+
+      // التحقق من صحة الحالة
+      const validStatuses = ['Pending', 'Approved', 'Rejected'];
+      if (!validStatuses.includes(status)) {
+          return res.status(400).json({
+              message: "Invalid status. Must be one of: 'Pending', 'Approved', 'Rejected', 'On Hold'"
+          });
+      }
+
+      // تحديث طلب الانسحاب بالحالة الجديدة
+      const updatedRequest = await WithdrawalModel.findByIdAndUpdate( requestId, { status }, { new: true }  );
+
+      if (!updatedRequest) {
+          return res.status(404).json({ message: "Withdrawal request not found" });
+      }
+
+      res.status(200).json({ message: `Withdrawal request ${status.toLowerCase()} successfully`, updatedRequest });
+
+};

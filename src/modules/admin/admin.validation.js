@@ -39,3 +39,11 @@ export const updatPassword = joi.object({
     newPassword:generalFields.password.required(),
     Cpassword: joi.string().valid(joi.ref('newPassword')).required(),
 });
+
+
+export const manageWithdrawalRequest = joi.object({
+    requestId: joi.string().min(24).max(24).required(),
+    status: joi.string().valid('Pending', 'Approved', 'Rejected').required(),
+});
+
+

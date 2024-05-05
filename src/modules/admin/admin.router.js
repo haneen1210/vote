@@ -27,6 +27,6 @@ router.post('/addCandidate', auth(endPoint.addCandidate), fileUpload(fileValidat
 router.post('/addCandidateExcel', auth(endPoint.addCandidate), fileUpload(fileValidation.excel).single('file'), 
 asynHandler(Adminservices.addCandidateExcel));
 router.patch('/updatPassword', auth(Object.values(roles)),validation(validators.updatPassword), asynHandler(Adminservices.updatPassword));
-
+router.patch('/withdrawal-request/:requestId',  auth(endPoint.manageWithdrawalRequest),validation(validators.manageWithdrawalRequest), asynHandler(Adminservices.manageWithdrawalRequest));
 export default router;
 
