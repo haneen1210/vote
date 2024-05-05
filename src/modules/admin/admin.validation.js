@@ -43,7 +43,8 @@ export const updatPassword = joi.object({
 
 export const manageWithdrawalRequest = joi.object({
     requestId: joi.string().min(24).max(24).required(),
-    status: joi.string().valid('Pending', 'Approved', 'Rejected').required(),
+  //  status: joi.string().valid('Pending', 'Approved', 'Rejected').required(),
+    status: joi.string().valid('Pending', 'Approved', 'Rejected').required()
 });
 
 
