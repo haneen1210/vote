@@ -695,20 +695,17 @@ export const manageWithdrawalRequest = async (req, res) => {
 };
 
 
-
-export const withdrawals = async (req, res, next) => {
-    // Fetch withdrawals with associated vote and candidate information
-    const withdrawals = await WithdrawalModel.find({ status: 'Pending' })
+export const withdrawals = async (req, res) => {
+  // Fetch withdrawals with associated vote and candidate information
+  const withdrawals = await WithdrawalModel.find({ status: 'Pending' })
       .populate({
-        path: 'Vote', // Replace with the correct field name in WithdrawalModel
-        select: 'voteName', // Assuming the 'name' field represents the vote name
+          path: 'voteId', // Use the correct field name in WithdrawalModel
+          select: 'voteName' // Assuming the 'voteName' field represents the vote name
       })
       .populate({
-        path: 'User', // Replace with the correct field name in WithdrawalModel
-        select: 'userName', // Assuming the 'name' field represents the candidate name
+          path: 'candidateId', // Use the correct field name in WithdrawalModel
+          select: 'userName' // Assuming the 'userName' field represents the candidate name
       });
 
-    return res.status(200).json({ message: "success", withdrawals });
-
-}
-
+  return res.status(200).json({ message: "success", withdrawals });
+};
