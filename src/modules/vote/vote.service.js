@@ -367,7 +367,7 @@ export const findUserVotes = async (req, res) => {
   const { userId } = req.params;
       // استعلام لجلب جميع معرفات التصويتات التي شارك فيها المستخدم
       const userVotes = await ResultModel.find({ userId }) .select('VoteId -_id'); // اختيار فقط حقل VoteId وإخفاء _id
-console.log(userVotes);
+
       // تحويل النتيجة إلى مصفوفة من معرفات التصويت
       const voteIds = userVotes.map(vote => vote.VoteId);
       // استعلام لجلب تفاصيل التصويتات باستخدام معرفات التصويت

@@ -1,5 +1,6 @@
 import userModel from "../../../DB/models/admin.model.js";
 import VoteModel from "../../../DB/models/vote.model.js";
+import WithdrawalModel from "../../../DB/models/withdrawa.model.js";
 
 
 export const getcandidate = async (req, res, next) => {
@@ -39,3 +40,32 @@ export const getspecificCandidateinvotes = async (req, res) => {
     return res.status(200).json({ message: "candidate found", voteNames ,id:user_id });
 
 }
+export const requestWithdrawal = async (req, res) => {
+   
+        const { candidateId, voteId, reason } = req.body;
+
+        // تحقق من أن المرشح موجود وله الصلاحية
+        const candidate = await userModel.findOne({ _id: candidateId, role: 'Candidate' });
+        if (!candidate) {
+            return res.status(404).json({ message: "Candidate not found or unauthorized" });
+        }
+
+        // تحقق من أن التصويت موجود
+        const vote = await VoteModel.findById(voteId);
+        if (!vote) {
+            return res.status(404).json({ message: "Vote not found" });
+        }
+
+        // تحقق من أن المرشح مشارك في التصويت
+        if (!vote.candidates.includes(candidateId)) {
+            return res.status(400).json({ message: "Candidate not participating in the vote" });
+        }
+
+        // أنشئ طلب انسحاب جديد
+        const withdrawalRequest = await WithdrawalModel.create({candidateId,voteId, reason });
+
+        res.status(201).json({ message: "Withdrawal request submitted successfully",withdrawalRequest });
+           
+       
+
+};
