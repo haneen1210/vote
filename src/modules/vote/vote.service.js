@@ -430,7 +430,7 @@ export const uploadExcelCandidateToVote = async (req, res, next) => {
 //localhost:5000/
 
 
-
+/*
 export const getUserVotes = async (req, res) => {
 
   // احصل على معرف المستخدم من التوكين
@@ -451,4 +451,41 @@ export const getUserVotes = async (req, res) => {
       votes
   });
 
+};*/
+
+export const getUserVotes = async (req, res) => {
+  try {
+      // احصل على معرف المستخدم من التوكين
+      const userId = req.user._id;
+
+      // العثور على جميع التصويتات التي شارك فيها المستخدم
+      const userVotes = await ResultModel.find({ userId })
+          .populate({
+              path: 'VoteId',
+              select: 'voteName VotingStatus StartDateVote EndDateVote description image'
+          })
+          .populate({
+              path: 'userId',
+              select: 'userName'
+          });
+
+      // تحويل النتائج إلى تنسيق مناسب
+      const votes = userVotes.map(result => ({
+          userName: result.userId?.userName || "Unknown User",
+          voteName: result.VoteId?.voteName || "Unknown Vote",
+        //  VotingStatus: result.VoteId?.VotingStatus || "Unknown",
+        //  StartDateVote: result.VoteId?.StartDateVote || "Unknown",
+         // EndDateVote: result.VoteId?.EndDateVote || "Unknown",
+         // description: result.VoteId?.description || "Unknown",
+        //  image: result.VoteId?.image || {},
+      }));
+
+      res.status(200).json({
+          message: "Successfully retrieved user's votes",
+          votes
+      });
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'An error occurred while fetching votes', error: error.message });
+  }
 };
