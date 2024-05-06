@@ -428,3 +428,27 @@ export const uploadExcelCandidateToVote = async (req, res, next) => {
 };*/
 
 //localhost:5000/
+
+
+
+export const getUserVotes = async (req, res) => {
+
+  // احصل على معرف المستخدم من التوكين
+  const userId = req.user._id;
+
+  // العثور على جميع التصويتات التي شارك فيها المستخدم
+  const userVotes = await ResultModel.find({ userId })
+      .populate({
+          path: 'VoteId',
+          select: 'voteName VotingStatus StartDateVote EndDateVote description image'
+      });
+
+  // استخراج التصويتات فقط من نتائج الاستعلام
+  const votes = userVotes.map(result => result.VoteId);
+
+  res.status(200).json({
+      message: "Successfully retrieved user's votes",
+      votes
+  });
+
+};
