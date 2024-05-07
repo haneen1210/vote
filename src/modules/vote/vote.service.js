@@ -490,7 +490,7 @@ export const getUserVotes = async (req, res) => {
   }
 };
 export const getCandidateVotes = async (req, res) => {
-  try {
+
       // احصل على معرف المرشح من التوكين
       const candidateId = req.user._id;
 
@@ -527,8 +527,5 @@ export const getCandidateVotes = async (req, res) => {
           message: "Successfully retrieved candidate's votes",
           votes
       });
-  } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'An error occurred while fetching votes', error: error.message });
-  }
+ 
 };
