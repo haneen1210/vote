@@ -13,8 +13,8 @@ const router = Router();
 
 router.get('/getAdmin', auth(endPoint.getAdmin), asynHandler(Adminservices.getAdmin));
 router.get('/getUsers', auth(endPoint.getAdmin), asynHandler(Adminservices.getUser));
-router.patch('/UpdateStatuseUser/:idUser', auth(endPoint.updateadmin),validation(validators.UpdateStatuseUser), asynHandler(Adminservices.UpdateStatuseUser));
 router.put('/updateProfile', auth(Object.values(roles)), fileUpload(fileValidation.image).single('image'),validation(validators.UpdateSchema), asynHandler(Adminservices.updateProfile));
+router.patch('/UpdateStatuseUser/:idUser', auth(endPoint.updateadmin),validation(validators.UpdateStatuseUser), asynHandler(Adminservices.UpdateStatuseUser));
 router.get('/getAdmin/:AdminID', auth(endPoint.getAdmin), asynHandler(Adminservices.getspesificAdmin));
 router.get('/getUser/:UserID', auth(endPoint.getAdmin), asynHandler(Adminservices.getspesificUser));
 router.post('/addadmin', auth(endPoint.addadmin), validation(AuthValidators.signupSchema), asynHandler(authservices.Signup));
