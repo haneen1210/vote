@@ -457,7 +457,7 @@ export const getUserVotes = async (req, res) => {
  
       // احصل على معرف المستخدم من التوكين
       const userId = req.user._id;
-      const user = await userModel.find({ _id: userId, role: 'User' });
+      const user = await userModel.findOne({ _id: userId, role: 'User' });
      
       if (!user) {
           return res.status(403).json({ message: "Unauthorized: You are not a user" });
@@ -541,7 +541,7 @@ export const getCandidateVotes = async (req, res) => {
 
       // احصل على معرف المستخدم من التوكين
       const userId = req.user._id;
-      const candidate = await userModel.find({ _id: userId, role: 'Candidate' });
+      const candidate = await userModel.findOne({ _id: userId, role: 'Candidate' });
      
       if (!candidate) {
           return res.status(403).json({ message: "Unauthorized: You are not a candidate" });
