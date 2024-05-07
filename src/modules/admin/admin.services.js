@@ -62,11 +62,13 @@ export const restore = async (req, res) => {
 
 
 export const updateadmin = async (req, res, next) => {
+  
     const { id } = req.params;
     const admin = await userModel.findOne({ _id: id });
     if (!admin) {
         return res.status(404).json({ message: `${user.role} not found` });
     }
+   
     if (await userModel.findOne({ email: req.body.email, _id: { $ne: id } }).select('email')) {
         return res.status(409).json({ message: `${admin.role} ${req.body.email} alredy exists` })
     }
@@ -98,18 +100,18 @@ export const updateadmin = async (req, res, next) => {
     }
         
     }
-    admin.email = req.body.email;
-    admin.userName = req.body.userName;
-    admin.address = req.body.address;
-    admin.statuse = req.body.statuse;
-    admin.phone = req.body.phone;
-     
+    
+    admin.email = req.body.email || admin.email;
+    admin.userName = req.body.userName || admin.userName;
+    admin.address = req.body.address || admin.address;
+    admin.statuse = req.body.statuse || admin.statuse;
+    admin.phone = req.body.phone || admin.phone;
+   
     await admin.save();
+ 
     return res.status(200).json({ message: "success", admin });
 
 }
-
-
 
 export const updateProfile = async (req, res, next) => {
   const  id  = req.user._id;
@@ -148,11 +150,11 @@ export const updateProfile = async (req, res, next) => {
   }
       
   }
-  admin.email = req.body.email;
-  admin.userName = req.body.userName;
-  admin.address = req.body.address;
-  admin.statuse = req.body.statuse;
-  admin.phone = req.body.phone;
+  admin.email = req.body.email || admin.email;
+  admin.userName = req.body.userName || admin.userName;
+  admin.address = req.body.address || admin.address;
+  admin.statuse = req.body.statuse || admin.statuse;
+  admin.phone = req.body.phone || admin.phone;
    
   await admin.save();
   return res.status(200).json({ message: "success", admin });
