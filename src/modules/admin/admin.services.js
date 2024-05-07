@@ -130,7 +130,6 @@ export const updateProfile = async (req, res, next) => {
 }
 
 */
-
 export const updateProfile = async (req, res, next) => {
   try {
       const id = req.user._id;
@@ -166,11 +165,7 @@ export const updateProfile = async (req, res, next) => {
       user.statuse = req.body.statuse || user.statuse;
       user.phone = req.body.phone || user.phone;
 
-      // احذر من تحديث حقل "votes" مباشرة إلا إذا كنت متأكدًا من القيم
-      if (Array.isArray(req.body.votes)) {
-          const validVoteIds = req.body.votes.filter(vote => mongoose.Types.ObjectId.isValid(vote));
-          user.votes = validVoteIds;
-      }
+   
 
       await user.save();
       return res.status(200).json({ message: "Success", user });
