@@ -454,10 +454,14 @@ export const getUserVotes = async (req, res) => {
 };*/
 
 export const getUserVotes = async (req, res) => {
-  try {
+ 
       // احصل على معرف المستخدم من التوكين
       const userId = req.user._id;
-
+      const user = await userModel.find({ _id: userId, role: 'User' });
+     
+      if (!user) {
+          return res.status(403).json({ message: "Unauthorized: You are not a user" });
+      }
       // العثور على جميع التصويتات التي شارك فيها المستخدم
       const userVotes = await ResultModel.find({ userId })
           .populate({
@@ -484,22 +488,23 @@ export const getUserVotes = async (req, res) => {
           message: "Successfully retrieved user's votes",
           votes
       });
-  } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'An error occurred while fetching votes', error: error.message });
-  }
+ 
 };
+
+
+/*
 export const getCandidateVotes = async (req, res) => {
 
       // احصل على معرف المرشح من التوكين
       const candidateId = req.user._id;
-
+      
       // تحقق مما إذا كان المستخدم هو بالفعل مرشح
-      const candidate = await userModel.findOne({ _id: candidateId, role: 'Candidate' });
+      const candidate = await userModel.find({ _id: candidateId, role: 'Candidate' });
+     
       if (!candidate) {
           return res.status(403).json({ message: "Unauthorized: You are not a candidate" });
       }
-
+      
       // العثور على جميع التصويتات التي شارك فيها المرشح
       const candidateVotes = await ResultModel.find({ candidateId })
           .populate({
@@ -510,7 +515,6 @@ export const getCandidateVotes = async (req, res) => {
               path: 'candidateId',
               select: 'userName image' // إضافة حقل الصورة
           });
-
       // تحويل النتائج إلى تنسيق مناسب
       const votes = candidateVotes.map(result => ({
           candidateName: result.candidateId?.userName || "Unknown Candidate",
@@ -529,3 +533,46 @@ export const getCandidateVotes = async (req, res) => {
       });
  
 };
+*/
+
+
+export const getCandidateVotes = async (req, res) => {
+
+
+      // احصل على معرف المستخدم من التوكين
+      const userId = req.user._id;
+      const candidate = await userModel.find({ _id: userId, role: 'Candidate' });
+     
+      if (!candidate) {
+          return res.status(403).json({ message: "Unauthorized: You are not a candidate" });
+      }
+      // العثور على جميع التصويتات التي شارك فيها المستخدم
+      const userVotes = await ResultModel.find({ userId })
+          .populate({
+              path: 'VoteId',
+              select: 'voteName VotingStatus StartDateVote EndDateVote description image'
+          })
+          .populate({
+              path: 'userId',
+              select: 'userName image'
+          });
+
+      // تحويل النتائج إلى تنسيق مناسب
+      const votes = userVotes.map(result => ({
+        candidateName: result.userId?.userName || "Unknown User",
+          voteName: result.VoteId?.voteName || "Unknown Vote",
+          candidateImage: result.userId?.image || {},
+        //  VotingStatus: result.VoteId?.VotingStatus || "Unknown",
+        //  StartDateVote: result.VoteId?.StartDateVote || "Unknown",
+         // EndDateVote: result.VoteId?.EndDateVote || "Unknown",
+         // description: result.VoteId?.description || "Unknown",
+        //  image: result.VoteId?.image || {},
+      }));
+
+      res.status(200).json({
+          message: "Successfully retrieved user's votes",
+          votes
+      });
+
+}
+
