@@ -52,54 +52,57 @@ export const restore = async (req, res) => {
     }
     return res.status(200).json({ message:  `success restore${user.role}` });
 }
+export const updateProfile = async (req, res, next) => {
+  try {
+      const id = req.user._id;
+      const admin = await userModel.findOne({ _id: id });
 
-export const updateadmin = async (req, res, next) => {
-    const { id } = req.params;
-    const admin = await userModel.findOne({ _id: id });
-    if (!admin) {
-        return res.status(404).json({ message: `${user.role} not found` });
-    }
-    if (await userModel.findOne({ email: req.body.email, _id: { $ne: id } }).select('email')) {
-        return res.status(409).json({ message: `${admin.role} ${req.body.email} alredy exists` })
-    }
-    
-    if(req.file){
+      if (!admin) {
+          return res.status(404).json({ message: `${admin.role} not found` });
+      }
 
-        if (admin.role === 'Candidate') {
-            const { secure_url, public_id } = await cloudinary.uploader.upload(req.file.path, {
-                folder: `${process.env.APP_NAME}/Candidate`
-            })
-            cloudinary.uploader.destroy(admin.image.public_id);
-            admin.image={ secure_url, public_id };
-        }
+      // تحقق من البريد الإلكتروني لتجنب التكرار
+      const existingUser = await userModel.findOne({ email: req.body.email, _id: { $ne: id } }).select('email');
+      if (existingUser) {
+          return res.status(409).json({ message: `${admin.role} ${req.body.email} already exists` });
+      }
 
-     else if (admin.role === 'Admin') {
-        const { secure_url, public_id } = await cloudinary.uploader.upload(req.file.path, {
-            folder: `${process.env.APP_NAME}/Admin`
-        })
-        cloudinary.uploader.destroy(admin.image.public_id);
-        admin.image={ secure_url, public_id };
-    }
+      // تحديث الصورة باستخدام Cloudinary
+      if (req.file) {
+          let folderName = `${process.env.APP_NAME}/users`;
 
-    else {
-        const { secure_url, public_id } = await cloudinary.uploader.upload(req.file.path, {
-            folder: `${process.env.APP_NAME}/users`
-        })
-        cloudinary.uploader.destroy(admin.image.public_id);
-        admin.image={ secure_url, public_id };
-    }
-        
-    }
-    admin.email = req.body.email;
-    admin.userName = req.body.userName;
-    admin.address = req.body.address;
-    admin.statuse = req.body.statuse;
-    admin.phone = req.body.phone;
-     
-    await admin.save();
-    return res.status(200).json({ message: "success", admin });
+          if (admin.role === 'Candidate') {
+              folderName = `${process.env.APP_NAME}/Candidate`;
+          } else if (admin.role === 'Admin') {
+              folderName = `${process.env.APP_NAME}/Admin`;
+          }
 
-}
+          const { secure_url, public_id } = await cloudinary.uploader.upload(req.file.path, {
+              folder: folderName
+          });
+
+          if (admin.image && admin.image.public_id) {
+              await cloudinary.uploader.destroy(admin.image.public_id);
+          }
+
+          admin.image = { secure_url, public_id };
+      }
+
+      // تحديث بيانات المستخدم
+      admin.email = req.body.email || admin.email;
+      admin.userName = req.body.userName || admin.userName;
+      admin.address = req.body.address || admin.address;
+      admin.statuse = req.body.statuse || admin.statuse;
+      admin.phone = req.body.phone || admin.phone;
+
+      await admin.save();
+      return res.status(200).json({ message: "Success", admin });
+
+  } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: "An error occurred", error: error.message });
+  }
+};
 /*
 
 export const updateProfile = async (req, res, next) => {
@@ -130,7 +133,7 @@ export const updateProfile = async (req, res, next) => {
 */
 
 
-
+/*
 export const updateProfile = async (req, res, next) => {
   try {
       const id = req.user._id;
@@ -159,12 +162,14 @@ export const updateProfile = async (req, res, next) => {
           user.image = { secure_url, public_id };
       }
 
-      // تحديث بيانات المستخدم
+      // تحديث بيانات المستخدم بدون تعديل حقل votes
       user.email = req.body.email || user.email;
       user.userName = req.body.userName || user.userName;
       user.address = req.body.address || user.address;
       user.statuse = req.body.statuse || user.statuse;
       user.phone = req.body.phone || user.phone;
+
+      // لا تعدل حقل votes هنا
 
       await user.save();
       return res.status(200).json({ message: "Success", user });
@@ -173,8 +178,7 @@ export const updateProfile = async (req, res, next) => {
       console.error(error);
       return res.status(500).json({ message: "An error occurred", error: error.message });
   }
-};
-
+};*/
 export const addCandidateExcel = async (req, res, next) => {
     try{
     const woorkBook = XLSX.readFile(req.file.path);

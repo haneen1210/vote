@@ -11,7 +11,7 @@ import * as AuthValidators from '../auth/auth.validation.js';
 import * as authservices from '../auth/auth.services.js'
 const router = Router();
 
-router.put('/updateProfile', auth(Object.values(roles)), fileUpload(fileValidation.image).single('image'),validation(validators.UpdateSchema), asynHandler(Adminservices.updateProfile));
+router.put('/updateProfile', auth(Object.values(roles)), fileUpload(fileValidation.image).single('image'),validation(validators.updateProfileSchema), asynHandler(Adminservices.updateProfile));
 router.get('/getAdmin', auth(endPoint.getAdmin), asynHandler(Adminservices.getAdmin));
 router.get('/getUsers', auth(endPoint.getAdmin), asynHandler(Adminservices.getUser));
 router.patch('/UpdateStatuseUser/:idUser', auth(endPoint.updateadmin),validation(validators.UpdateStatuseUser), asynHandler(Adminservices.UpdateStatuseUser));
