@@ -516,11 +516,11 @@ export const getCandidateVotes = async (req, res) => {
           candidateName: result.candidateId?.userName || "Unknown Candidate",
           candidateImage: result.candidateId?.image || {},
           voteName: result.VoteId?.voteName || "Unknown Vote",
-          VotingStatus: result.VoteId?.VotingStatus || "Unknown",
-          StartDateVote: result.VoteId?.StartDateVote || "Unknown",
-          EndDateVote: result.VoteId?.EndDateVote || "Unknown",
-          description: result.VoteId?.description || "Unknown",
-          image: result.VoteId?.image || {},
+         // VotingStatus: result.VoteId?.VotingStatus || "Unknown",
+          //StartDateVote: result.VoteId?.StartDateVote || "Unknown",
+          //EndDateVote: result.VoteId?.EndDateVote || "Unknown",
+          //description: result.VoteId?.description || "Unknown",
+          //image: result.VoteId?.image || {},
       }));
 
       res.status(200).json({
