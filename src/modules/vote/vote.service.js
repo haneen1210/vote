@@ -489,3 +489,44 @@ export const getUserVotes = async (req, res) => {
       res.status(500).json({ message: 'An error occurred while fetching votes', error: error.message });
   }
 };
+
+
+export const getCandidateVotes = async (req, res) => {
+  
+      // احصل على معرف المرشح من التوكين
+      const candidateId = req.user._id;
+
+      // تحقق مما إذا كان المستخدم هو بالفعل مرشح
+      const candidate = await userModel.findOne({ _id: candidateId, role: 'Candidate' });
+      if (!candidate) {
+          return res.status(403).json({ message: "Unauthorized: You are not a candidate" });
+      }
+
+      // العثور على جميع التصويتات التي شارك فيها المرشح
+      const candidateVotes = await ResultModel.find({ candidateId })
+          .populate({
+              path: 'VoteId',
+              select: 'voteName VotingStatus StartDateVote EndDateVote description image'
+          })
+          .populate({
+              path: 'candidateId',
+              select: 'userName'
+          });
+
+      // تحويل النتائج إلى تنسيق مناسب
+      const votes = candidateVotes.map(result => ({
+          candidateName: result.candidateId?.userName || "Unknown Candidate",
+          voteName: result.VoteId?.voteName || "Unknown Vote",
+          //VotingStatus: result.VoteId?.VotingStatus || "Unknown",
+          //StartDateVote: result.VoteId?.StartDateVote || "Unknown",
+          //EndDateVote: result.VoteId?.EndDateVote || "Unknown",
+          //description: result.VoteId?.description || "Unknown",
+          //image: result.VoteId?.image || {},
+      }));
+
+      res.status(200).json({
+          message: "Successfully retrieved candidate's votes",
+          votes
+      });
+
+};

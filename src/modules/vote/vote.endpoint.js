@@ -10,6 +10,7 @@ export const endPoint = {
     join:[roles.User],
     updatejoin:[roles.Admin],
     User:[roles.User],
+    candidate:[roles.Candidate],
 }
 
 
