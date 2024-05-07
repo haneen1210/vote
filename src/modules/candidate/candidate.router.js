@@ -9,6 +9,7 @@ import * as validators from './candidate.validation.js';
 
 const router = Router();
 router.get('/AllVotesParticipateIn',auth(endPoint.AllVotesParticipateIn),asynHandler(candidateservices.getspecificCandidateinvotes));
+router.get('/getCandidatePosts',auth(endPoint.AllVotesParticipateIn),asynHandler(candidateservices.getCandidatePosts));
 router.get('/getcandidate', auth(endPoint.getcandidate), asynHandler(candidateservices.getcandidate));
 router.get('/:CandidateID', auth(endPoint.getspecificCandidate), validation(validators.getspecificCandidate), asynHandler(candidateservices.getspecificCandidateinvote));
 router.get('/CandidateIDvalid/:CandidateID', auth(endPoint.getspecificCandidate), validation(validators.getspecificCandidate), asynHandler(candidateservices.getspecificCandidate));

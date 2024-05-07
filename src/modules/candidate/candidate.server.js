@@ -28,18 +28,6 @@ export const getspecificCandidate = async (req, res) => {
 
 }
 
-/*
-export const getspecificCandidateinvotes = async (req, res) => {
-    
-    const user_id = req.user._id;
-    const votes = await VoteModel.find({ candidates: user_id }).populate('candidates');
-    const voteNames = votes.map(vote => vote.voteName);
-    if (!votes) {
-        return res.status(404).json({ message: "candidate not found" });
-    }
-    return res.status(200).json({ message: "candidate found", voteNames ,id:user_id });
-
-}*/
 
 export const getspecificCandidateinvotes = async (req, res) => {
     try {
@@ -75,45 +63,7 @@ export const getspecificCandidateinvotes = async (req, res) => {
     }
 };
 
-/*
-export const requestWithdrawal = async (req, res) => {
-    const { voteId, reason } = req.body;
-    const candidateId = req.user._id; // candidateId
 
-    // تحقق من أن المرشح موجود وله الصلاحية
-    const candidate = await userModel.findOne({ _id: candidateId, role: 'Candidate' });
-    if (!candidate) {
-        return res.status(404).json({ message: "Candidate not found or unauthorized" });
-    }
-
-    // تحقق من أن التصويت موجود
-    const vote = await VoteModel.findById(voteId);
-    if (!vote) {
-        return res.status(404).json({ message: "Vote not found" });
-    }
-
-    // تحقق من أن المرشح مشارك في التصويت
-    if (!vote.candidates.includes(candidateId)) {
-        return res.status(400).json({ message: "Candidate not participating in the vote" });
-    }
-
-    // تحقق من عدم وجود طلب انسحاب مكرر
-    const existingWithdrawalRequest = await WithdrawalModel.findOne({ candidateId, voteId });
-    if (existingWithdrawalRequest) {
-        return res.status(409).json({ message: "Withdrawal request already submitted for this vote" });
-    }
-
-    // التحقق من وجود حقل "reason"
-    if (!reason || reason.trim() === "") {
-        return res.status(400).json({ message: "Reason for withdrawal is required" });
-    }
-
-    // إنشاء طلب انسحاب جديد
-    const withdrawalRequest = await WithdrawalModel.create({ candidateId, voteId, reason });
-
-    res.status(201).json({ message: "Withdrawal request submitted successfully", withdrawalRequest });
-};
-*/
 
 
 export const requestWithdrawal = async (req, res) => {
@@ -156,4 +106,50 @@ export const requestWithdrawal = async (req, res) => {
     });
 
     res.status(201).json({ message: "Withdrawal request submitted successfully", withdrawalRequest });
+};
+
+
+
+
+
+export const getCandidatePosts = async (req, res) => {
+    try {
+        // احصل على معرف المستخدم من التوكين
+        const candidateId = req.user._id;
+
+        // تحقق مما إذا كان المستخدم هو بالفعل مرشح
+        const candidate = await userModel.findOne({ _id: candidateId, role: 'Candidate' });
+        if (!candidate) {
+            return res.status(403).json({ message: "Unauthorized: You are not a candidate" });
+        }
+
+        // احصل على جميع البوستات الخاصة بالمرشح
+        const posts = await PostModel.find({ userId: candidateId, isDeleted: false })
+            .select('title caption image like unlike createdAt updatedAt') // اختر فقط الحقول المطلوبة
+            .populate({
+                path: 'userId',
+                select: 'userName image'
+            });
+
+        // تحويل النتائج إلى تنسيق مناسب
+        const formattedPosts = posts.map(post => ({
+            title: post.title,
+            caption: post.caption || "",
+            image: post.image || {},
+            candidateName: post.userId?.userName || "Unknown Candidate",
+            candidateImage: post.userId?.image || {},
+            likes: post.like.length,
+            unlikes: post.unlike.length,
+            createdAt: post.createdAt,
+            updatedAt: post.updatedAt
+        }));
+
+        res.status(200).json({
+            message: "Successfully retrieved candidate's posts",
+            posts: formattedPosts
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'An error occurred while fetching candidate posts', error: error.message });
+    }
 };
