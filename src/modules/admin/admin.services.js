@@ -100,7 +100,7 @@ export const updateadmin = async (req, res, next) => {
     return res.status(200).json({ message: "success", admin });
 
 }
-
+/*
 
 export const updateProfile = async (req, res, next) => {
     const  id  = req.user._id;
@@ -129,7 +129,57 @@ export const updateProfile = async (req, res, next) => {
 
 }
 
+*/
 
+export const updateProfile = async (req, res, next) => {
+  try {
+      const id = req.user._id;
+      const user = await userModel.findById(id);
+
+      if (!user) {
+          return res.status(404).json({ message: "User not found" });
+      }
+
+      // تحقق من البريد الإلكتروني لتجنب التكرار
+      const existingUser = await userModel.findOne({ email: req.body.email, _id: { $ne: id } }).select('email');
+      if (existingUser) {
+          return res.status(409).json({ message: `User with email ${req.body.email} already exists` });
+      }
+
+      // تحديث الصورة باستخدام Cloudinary
+      if (req.file) {
+          const { secure_url, public_id } = await cloudinary.uploader.upload(req.file.path, {
+              folder: `${process.env.APP_NAME}/user`
+          });
+
+          if (user.image && user.image.public_id) {
+              await cloudinary.uploader.destroy(user.image.public_id);
+          }
+
+          user.image = { secure_url, public_id };
+      }
+
+      // تحديث بيانات المستخدم
+      user.email = req.body.email || user.email;
+      user.userName = req.body.userName || user.userName;
+      user.address = req.body.address || user.address;
+      user.statuse = req.body.statuse || user.statuse;
+      user.phone = req.body.phone || user.phone;
+
+      // احذر من تحديث حقل "votes" مباشرة إلا إذا كنت متأكدًا من القيم
+      if (Array.isArray(req.body.votes)) {
+          const validVoteIds = req.body.votes.filter(vote => mongoose.Types.ObjectId.isValid(vote));
+          user.votes = validVoteIds;
+      }
+
+      await user.save();
+      return res.status(200).json({ message: "Success", user });
+
+  } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: "An error occurred", error: error.message });
+  }
+};
 export const addCandidateExcel = async (req, res, next) => {
     try{
     const woorkBook = XLSX.readFile(req.file.path);
