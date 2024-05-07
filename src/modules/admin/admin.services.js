@@ -24,6 +24,8 @@ export const getspesificAdmin = async (req, res, next) => {
 
 }
 
+
+
 export const softDeletAdmin = async (req, res) => {
     const { id } = req.params;
     const user =await userModel.findOneAndUpdate({ _id: id, isDeleted: false }, { isDeleted: true }, { new: true });
@@ -33,6 +35,8 @@ export const softDeletAdmin = async (req, res) => {
 
     return res.status(200).json({ message: `success delet${user.role}` });
 }
+
+
 
 export const Harddeleteadmin = async (req, res, next) => {
     const { id } = req.params;
@@ -44,6 +48,8 @@ export const Harddeleteadmin = async (req, res, next) => {
     return res.status(200).json({ message: `success delet${user.role}` });
 }
 
+
+
 export const restore = async (req, res) => {
     const { id } = req.params;
     const user = await userModel.findOneAndUpdate({ _id: id, isDeleted: true}, { isDeleted: false }, { new: true })    ;
@@ -52,6 +58,8 @@ export const restore = async (req, res) => {
     }
     return res.status(200).json({ message:  `success restore${user.role}` });
 }
+
+
 
 export const updateadmin = async (req, res, next) => {
     const { id } = req.params;
@@ -100,6 +108,8 @@ export const updateadmin = async (req, res, next) => {
     return res.status(200).json({ message: "success", admin });
 
 }
+
+
 
 export const updateProfile = async (req, res, next) => {
   const  id  = req.user._id;
@@ -224,6 +234,8 @@ export const updateProfile = async (req, res, next) => {
       return res.status(500).json({ message: "An error occurred", error: error.message });
   }
 };*/
+
+
 export const addCandidateExcel = async (req, res, next) => {
     try{
     const woorkBook = XLSX.readFile(req.file.path);
@@ -478,6 +490,7 @@ export const addCandidateExcel = async (req, res, next) => {
     .json({ message: "Error while uploading candidates " });
 }
 }
+
 
 
 export const updatPassword = async (req, res, next) => {
@@ -743,11 +756,15 @@ export const updatPassword = async (req, res, next) => {
   
   }
 
+
+
   export const getUser = async (req, res, next) => {
     const Users = await userModel.find({ isDeleted: false , role : 'User'});
     return res.status(200).json({ message: "success", Users });
 
 }
+
+
   
 export const getspesificUser = async (req, res, next) => {
   const { UserID } = req.params;
@@ -758,6 +775,8 @@ export const getspesificUser = async (req, res, next) => {
   return res.status(200).json({ message: "User found", User });
 
 }
+
+
 
 export const manageWithdrawalRequest = async (req, res) => {
 
@@ -787,6 +806,8 @@ export const manageWithdrawalRequest = async (req, res) => {
       res.status(200).json({ message: `Withdrawal request ${status.toLowerCase()} successfully`, updatedRequest });
 
 };
+
+
 
 
 export const withdrawals = async (req, res) => {

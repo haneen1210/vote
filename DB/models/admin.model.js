@@ -74,7 +74,8 @@ const UserSchema = new Schema({
         type:Boolean,
         default:false,
     },
-    votes: [{ type:Types.ObjectId, ref: 'Vote' }]
+    //votes: [{ type:Types.ObjectId, ref: 'Vote' }]
+    votes: [{ type: Types.ObjectId, ref: 'Vote' }] 
    
 }, {
     timestamps: true,
