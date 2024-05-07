@@ -128,6 +128,9 @@ export const updateProfile = async (req, res, next) => {
     return res.status(200).json({ message: "success", user });
 }
 */
+
+
+
 export const updateProfile = async (req, res, next) => {
   try {
       const id = req.user._id;
@@ -163,8 +166,6 @@ export const updateProfile = async (req, res, next) => {
       user.statuse = req.body.statuse || user.statuse;
       user.phone = req.body.phone || user.phone;
 
-   
-
       await user.save();
       return res.status(200).json({ message: "Success", user });
 
@@ -173,6 +174,7 @@ export const updateProfile = async (req, res, next) => {
       return res.status(500).json({ message: "An error occurred", error: error.message });
   }
 };
+
 export const addCandidateExcel = async (req, res, next) => {
     try{
     const woorkBook = XLSX.readFile(req.file.path);
