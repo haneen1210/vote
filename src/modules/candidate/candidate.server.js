@@ -1,4 +1,5 @@
 import userModel from "../../../DB/models/admin.model.js";
+import PostModel from "../../../DB/models/post.model.js";
 import VoteModel from "../../../DB/models/vote.model.js";
 import WithdrawalModel from "../../../DB/models/withdrawa.model.js";
 
