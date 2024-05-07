@@ -489,10 +489,8 @@ export const getUserVotes = async (req, res) => {
       res.status(500).json({ message: 'An error occurred while fetching votes', error: error.message });
   }
 };
-
-
 export const getCandidateVotes = async (req, res) => {
-  
+  try {
       // احصل على معرف المرشح من التوكين
       const candidateId = req.user._id;
 
@@ -510,23 +508,27 @@ export const getCandidateVotes = async (req, res) => {
           })
           .populate({
               path: 'candidateId',
-              select: 'userName'
+              select: 'userName image' // إضافة حقل الصورة
           });
 
       // تحويل النتائج إلى تنسيق مناسب
       const votes = candidateVotes.map(result => ({
           candidateName: result.candidateId?.userName || "Unknown Candidate",
+          candidateImage: result.candidateId?.image || {},
           voteName: result.VoteId?.voteName || "Unknown Vote",
-          //VotingStatus: result.VoteId?.VotingStatus || "Unknown",
-          //StartDateVote: result.VoteId?.StartDateVote || "Unknown",
-          //EndDateVote: result.VoteId?.EndDateVote || "Unknown",
-          //description: result.VoteId?.description || "Unknown",
-          //image: result.VoteId?.image || {},
+          VotingStatus: result.VoteId?.VotingStatus || "Unknown",
+          StartDateVote: result.VoteId?.StartDateVote || "Unknown",
+          EndDateVote: result.VoteId?.EndDateVote || "Unknown",
+          description: result.VoteId?.description || "Unknown",
+          image: result.VoteId?.image || {},
       }));
 
       res.status(200).json({
           message: "Successfully retrieved candidate's votes",
           votes
       });
-
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'An error occurred while fetching votes', error: error.message });
+  }
 };
