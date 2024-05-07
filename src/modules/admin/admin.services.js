@@ -126,9 +126,7 @@ export const updateProfile = async (req, res, next) => {
      
     await user.save();
     return res.status(200).json({ message: "success", user });
-
 }
-
 */
 export const updateProfile = async (req, res, next) => {
   try {
