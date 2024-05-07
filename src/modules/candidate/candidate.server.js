@@ -28,7 +28,7 @@ export const getspecificCandidate = async (req, res) => {
 
 }
 
-
+/*
 export const getspecificCandidateinvotes = async (req, res) => {
     
     const user_id = req.user._id;
@@ -39,7 +39,42 @@ export const getspecificCandidateinvotes = async (req, res) => {
     }
     return res.status(200).json({ message: "candidate found", voteNames ,id:user_id });
 
-}
+}*/
+
+export const getspecificCandidateinvotes = async (req, res) => {
+    try {
+        const user_id = req.user._id;
+
+        // تحقق من أن المستخدم مرشح
+        const candidate = await userModel.findOne({ _id: user_id, role: 'Candidate' });
+        if (!candidate) {
+            return res.status(403).json({ message: "Unauthorized: You are not a candidate" });
+        }
+
+        // الحصول على جميع التصويتات التي يشارك فيها المرشح
+        const votes = await VoteModel.find({ candidates: user_id }).populate('candidates');
+
+        // تحويل نتائج التصويت إلى التنسيق المناسب
+        const voteNames = votes.map(vote => vote.voteName);
+
+        // إضافة تفاصيل المرشح
+        const candidateDetails = {
+            userName: candidate.userName,
+            image: candidate.image,
+            voteNames
+        };
+
+        res.status(200).json({
+            message: "Successfully retrieved candidate votes",
+            candidate: candidateDetails,
+            id: user_id
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'An error occurred while fetching candidate votes', error: error.message });
+    }
+};
+
 /*
 export const requestWithdrawal = async (req, res) => {
     const { voteId, reason } = req.body;
