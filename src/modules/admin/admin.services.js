@@ -735,7 +735,7 @@ export const addCandidateExcel = async (req, res, next) => {
 
       const passwordString = String(password);
       const hashedPassword = await bcrypt.hash(passwordString, parseInt(process.env.SALT_ROUND));
-      const token = jwt.sign({ email }, process.env.CONFIRM_EMAIL_SECRET);
+      const token = jwt.sign({ email }, process.env.CONFTRAMEMAILSECRET);
 
       const html = `<!DOCTYPE html>
         <html>
