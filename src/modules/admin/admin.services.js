@@ -708,8 +708,8 @@ export const addCandidateExcel = async (req, res, next) => {
 export const addCandidateExcel = async (req, res, next) => {
   try {
     // تأكد من وجود المفتاح السري في متغيرات البيئة
-    if (!process.env.CONFIRM_EMAIL_SECRET) {
-      throw new Error("CONFIRM_EMAIL_SECRET must have a value");
+    if (!process.env.CONFTRAMEMAILSECRET) {
+      throw new Error("CONFTRAMEMAILSECRET must have a value");
     }
 
     const workBook = XLSX.readFile(req.file.path);
