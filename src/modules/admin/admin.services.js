@@ -886,7 +886,9 @@ export const addCandidateExcel = async (req, res, next) => {
           },
         });
         successes.push(createUser.userName);
+        emails.push(email);
       }
+
       for (const email of emails) {
       // إرسال بريد تأكيد البريد الإلكتروني
       const html = `<!DOCTYPE html>
@@ -958,7 +960,7 @@ export const addCandidateExcel = async (req, res, next) => {
         try {
           await sendEmail(email, "Confirm Your Email", html);
           // إضافة البريد الإلكتروني إلى المصفوفة بعد تأكيد الإرسال بنجاح
-          emails.push(email);
+         
         } catch (emailError) {
           // تسجيل أي خطأ في إرسال البريد الإلكتروني
           errors.push({ message: "Failed to send confirmation email", email, error: emailError.message });
