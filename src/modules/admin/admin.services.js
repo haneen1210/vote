@@ -428,16 +428,7 @@ export const addCandidateExcel = async (req, res, next) => {
     const failedRows = [];
 
     for (const row of users) {
-      const {
-        userName,
-        email,
-        password,
-        cardnumber,
-        phone,
-        address,
-        gender,
-        role = "Candidate"
-      } = row;
+      const {userName,email,password,cardnumber,phone,address,gender,role = "Candidate"} = row;
       if (role !== "Candidate") {
         failedRows.push({ row, reason: "Only Candidate role is allowed" });
         continue;
@@ -595,15 +586,7 @@ export const addCandidateExcel = async (req, res, next) => {
         </html>`;
 
         await sendEmail(email, "confirm email", html);
-        const createUser = await userModel.create({
-          userName,
-          email,
-          password: hashedPassword,
-          cardnumber,
-          phone,
-          address,
-          gender,
-          image: {
+        const createUser = await userModel.create({  userName, email, password: hashedPassword, cardnumber, phone, address, gender,role, image: {
             secure_url:
               "https://drive.google.com/file/d/1-Dp4LJv73Z-aFyLUJRb1kiMtdVyeuHmn/view?usp=sharing"
           }
