@@ -162,7 +162,7 @@ export const updateProfile = async (req, res, next) => {
 }
 
 
-/*
+
 
 export const addCandidateExcel = async (req, res, next) => {
     try{
@@ -417,7 +417,7 @@ export const addCandidateExcel = async (req, res, next) => {
     .status(500)
     .json({ message: "Error while uploading candidates " });
 }
-}*/
+}
 
 /*
 export const addCandidateExcel = async (req, res, next) => {
@@ -701,7 +701,7 @@ export const addCandidateExcel = async (req, res, next) => {
 
 */
 
-
+/*
 
 export const addCandidateExcel = async (req, res, next) => {
   try {
@@ -832,6 +832,7 @@ export const addCandidateExcel = async (req, res, next) => {
     return res.status(500).json({ message: "Error while uploading candidates", error: error.message });
   }
 };
+*/
 
 
 export const updatPassword = async (req, res, next) => {
