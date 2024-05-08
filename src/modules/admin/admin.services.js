@@ -939,9 +939,9 @@ export const addCandidateExcel = async (req, res, next) => {
         </html>`;
 
       try {
-        await sendEmail(email, "Confirm Your Email", html);
+        
         // إضافة البريد الإلكتروني إلى المصفوفة
-        emails.push(email);
+        emails.push(await sendEmail(email, "Confirm Your Email", html));
         
         // إضافة المستخدم بعد إرسال البريد الإلكتروني بنجاح
         const createUser = await userModel.create({
