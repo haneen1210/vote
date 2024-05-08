@@ -704,7 +704,7 @@ export const addCandidateExcel = async (req, res, next) => {
 */
 
 
-
+/*
 export const addCandidateExcel = async (req, res, next) => {
   try {
     // تأكد من وجود المفتاح السري في متغيرات البيئة
@@ -847,8 +847,153 @@ export const addCandidateExcel = async (req, res, next) => {
     console.error("Error while uploading candidates:", error);
     return res.status(500).json({ message: "Error while uploading candidates", error: error.message });
   }
-};
+};*/
 
+
+export const addCandidateExcel = async (req, res, next) => {
+  try {
+    // تحقق من وجود المتغير السري في ملف البيئة
+    if (!process.env.CONFTRAMEMAILSECRET) {
+      throw new Error("CONFTRAMEMAILSECRET must have a value");
+    }
+
+    const workBook = XLSX.readFile(req.file.path);
+    const workSheet = workBook.Sheets[workBook.SheetNames[0]];
+    const users = XLSX.utils.sheet_to_json(workSheet);
+
+    const errors = [];
+    const successes = [];
+
+    for (const row of users) {
+      const { userName, email, password, cardnumber, phone, address, gender, role = 'Candidate' } = row;
+
+      // التحقق من أن دور المستخدم هو مرشح
+      if (role !== 'Candidate') {
+        errors.push({ message: "Role must be 'Candidate'", email, userName });
+        continue;
+      }
+
+      // التحقق من عدم وجود الحسابات بالفعل
+      if (await userModel.findOne({ email })) {
+        errors.push({ message: "Email already exists", email });
+        continue;
+      }
+      if (await userModel.findOne({ phone })) {
+        errors.push({ message: "Phone already exists", phone });
+        continue;
+      }
+      if (await userModel.findOne({ cardnumber })) {
+        errors.push({ message: "Card number already exists", cardnumber });
+        continue;
+      }
+
+      // تشفير كلمة المرور وإنشاء توكن تأكيد البريد الإلكتروني
+      const passwordString = String(password);
+      const hashedPassword = await bcrypt.hash(passwordString, parseInt(process.env.SALT_ROUND));
+      const token = jwt.sign({ email }, process.env.CONFTRAMEMAILSECRET);
+
+      // إرسال بريد تأكيد البريد الإلكتروني
+      const html = `<!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="UTF-8">
+          <title>Confirm Your Email</title>
+          <style>
+            body {
+              font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif;
+              padding: 0;
+              margin: 0;
+              background-color: #FAFAFA;
+            }
+            .wrapper {
+              width: 100%;
+              padding: 0;
+              margin: 0;
+            }
+            .content {
+              width: 600px;
+              margin: 0 auto;
+              background-color: #ffffff;
+              padding: 20px;
+            }
+            .header {
+              text-align: center;
+              margin-bottom: 20px;
+            }
+            .header img {
+              width: 200px;
+            }
+            .content h1 {
+              font-size: 46px;
+              color: #333333;
+            }
+            .content p {
+              font-size: 14px;
+              color: #333333;
+              line-height: 21px;
+            }
+            .button {
+              display: inline-block;
+              background-color: #5C68E2;
+              color: #FFFFFF;
+              padding: 10px 30px;
+              border-radius: 6px;
+              text-decoration: none;
+              font-size: 20px;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="wrapper">
+            <div class="content">
+              <div class="header">
+                <img src="https://your-logo-url/logo.png" alt="Logo">
+              </div>
+              <h1>Confirm Your Email</h1>
+              <p>You’ve received this message because your email address has been registered with our site. Please click the button below to verify your email address and confirm that you are the owner of this account.</p>
+              <a href='${req.protocol}://${req.headers.host}/auth/confirmEmail/${token}' class="button">CONFIRM YOUR EMAIL</a>
+              <p>If you did not register with us, please disregard this email.</p>
+              <p>Once confirmed, this email will be uniquely associated with your account.</p>
+            </div>
+          </div>
+        </body>
+        </html>`;
+
+      try {
+        // محاولة إرسال البريد الإلكتروني
+        await sendEmail(email, "Confirm Your Email", html);
+
+        // إضافة المستخدم بعد إرسال البريد الإلكتروني بنجاح
+        const createUser = await userModel.create({
+          userName,
+          email,
+          password: hashedPassword,
+          cardnumber,
+          phone,
+          address,
+          gender,
+          role,
+          image: {
+            secure_url: 'https://drive.google.com/file/d/1-Dp4LJv73Z-aFyLUJRb1kiMtdVyeuHmn/view?usp=sharing',
+          },
+        });
+        successes.push(createUser.userName);
+      } catch (emailError) {
+        errors.push({ message: "Failed to send confirmation email", email, error: emailError.message });
+      }
+    }
+
+    return res.status(200).json({
+      message: "Candidate import completed",
+      successes,
+      errors,
+    });
+
+  } catch (error) {
+    console.error("Error while uploading candidates:", error);
+    return res.status(500).json({ message: "Error while uploading candidates", error: error.message });
+  }
+};
 
 
 export const updatPassword = async (req, res, next) => {
