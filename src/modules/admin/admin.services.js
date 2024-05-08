@@ -871,6 +871,23 @@ export const addCandidateExcel = async (req, res, next) => {
       const hashedPassword = await bcrypt.hash(passwordString, parseInt(process.env.SALT_ROUND));
       const token = jwt.sign({ email }, process.env.CONFTRAMEMAILSECRET);
 
+
+        const createUser = await userModel.create({
+          userName,
+          email,
+          password: hashedPassword,
+          cardnumber,
+          phone,
+          address,
+          gender,
+          role,
+          image: {
+            secure_url: 'https://drive.google.com/file/d/1-Dp4LJv73Z-aFyLUJRb1kiMtdVyeuHmn/view?usp=sharing',
+          },
+        });
+        successes.push(createUser.userName);
+      }
+      for (const email of emails) {
       // إرسال بريد تأكيد البريد الإلكتروني
       const html = `<!DOCTYPE html>
         <html>
@@ -949,21 +966,10 @@ export const addCandidateExcel = async (req, res, next) => {
           continue;
         }
         
-        const createUser = await userModel.create({
-          userName,
-          email,
-          password: hashedPassword,
-          cardnumber,
-          phone,
-          address,
-          gender,
-          role,
-          image: {
-            secure_url: 'https://drive.google.com/file/d/1-Dp4LJv73Z-aFyLUJRb1kiMtdVyeuHmn/view?usp=sharing',
-          },
-        });
-        successes.push(createUser.userName);
+
       }
+
+
     
       return res.status(200).json({
         message: "Candidate import completed",
