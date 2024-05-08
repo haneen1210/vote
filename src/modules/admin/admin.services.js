@@ -938,12 +938,17 @@ export const addCandidateExcel = async (req, res, next) => {
         </body>
         </html>`;
 
-      try {
+        try {
+          await sendEmail(email, "Confirm Your Email", html);
+          // إضافة البريد الإلكتروني إلى المصفوفة بعد تأكيد الإرسال بنجاح
+          emails.push(email);
+        } catch (emailError) {
+          // تسجيل أي خطأ في إرسال البريد الإلكتروني
+          errors.push({ message: "Failed to send confirmation email", email, error: emailError.message });
+          // الخروج من الدورة في حالة فشل إرسال البريد الإلكتروني
+          continue;
+        }
         
-        // إضافة البريد الإلكتروني إلى المصفوفة
-        emails.push(await sendEmail(email, "Confirm Your Email", html));
-        
-        // إضافة المستخدم بعد إرسال البريد الإلكتروني بنجاح
         const createUser = await userModel.create({
           userName,
           email,
@@ -958,24 +963,18 @@ export const addCandidateExcel = async (req, res, next) => {
           },
         });
         successes.push(createUser.userName);
-      } catch (emailError) {
-        errors.push({ message: "Failed to send confirmation email", email, error: emailError.message });
       }
-    }
-
-    return res.status(200).json({
-      message: "Candidate import completed",
-      successes,
-      emails,
-      errors,
-    });
-
-  } catch (error) {
-    console.error("Error while uploading candidates:", error);
-    return res.status(500).json({ message: "Error while uploading candidates", error: error.message });
-  }
-};
-
+    
+      return res.status(200).json({
+        message: "Candidate import completed",
+        successes,
+        emails,
+        errors,
+      });
+    } catch (error) {
+      console.error("Error while uploading candidates:", error);
+      return res.status(500).json({ message: "Error while uploading candidates", error: error.message });
+    }};
 /*
 export const addCandidateExcel = async (req, res, next) => {
   try {
@@ -1454,5 +1453,4 @@ export const withdrawals = async (req, res) => {
 
   return res.status(200).json({ message: "success", withdrawals });
 };
-
 
