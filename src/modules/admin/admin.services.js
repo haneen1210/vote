@@ -438,7 +438,10 @@ export const addCandidateExcel = async (req, res, next) => {
         gender,
         role = "Candidate"
       } = row;
-
+      if (role !== "Candidate") {
+        failedRows.push({ row, reason: "Only Candidate role is allowed" });
+        continue;
+      }
       try {
         if (await userModel.findOne({ email })) {
           failedRows.push({ row, reason: "email already exists" });
