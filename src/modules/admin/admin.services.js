@@ -163,7 +163,7 @@ export const updateProfile = async (req, res, next) => {
 
 
 
-
+/*
 export const addCandidateExcel = async (req, res, next) => {
     try{
     const woorkBook = XLSX.readFile(req.file.path);
@@ -418,6 +418,8 @@ export const addCandidateExcel = async (req, res, next) => {
     .json({ message: "Error while uploading candidates " });
 }
 }
+*/
+
 
 /*
 export const addCandidateExcel = async (req, res, next) => {
@@ -701,13 +703,18 @@ export const addCandidateExcel = async (req, res, next) => {
 
 */
 
-/*
+
 
 export const addCandidateExcel = async (req, res, next) => {
   try {
-    const woorkBook = XLSX.readFile(req.file.path);
-    const woorkSheet = woorkBook.Sheets[woorkBook.SheetNames[0]];
-    const users = XLSX.utils.sheet_to_json(woorkSheet);
+    // تأكد من وجود المفتاح السري في متغيرات البيئة
+    if (!process.env.CONFIRM_EMAIL_SECRET) {
+      throw new Error("CONFIRM_EMAIL_SECRET must have a value");
+    }
+
+    const workBook = XLSX.readFile(req.file.path);
+    const workSheet = workBook.Sheets[workBook.SheetNames[0]];
+    const users = XLSX.utils.sheet_to_json(workSheet);
 
     const errors = [];
     const successes = [];
@@ -715,11 +722,13 @@ export const addCandidateExcel = async (req, res, next) => {
     for (const row of users) {
       const { userName, email, password, cardnumber, phone, address, gender, role = 'Candidate' } = row;
 
+      // التحقق من أن دور المستخدم هو مرشح
       if (role !== 'Candidate') {
         errors.push({ message: "Role must be 'Candidate'", email, userName });
         continue;
       }
 
+      // التحقق من عدم وجود الحسابات بالفعل
       if (await userModel.findOne({ email })) {
         errors.push({ message: "Email already exists", email });
         continue;
@@ -733,10 +742,12 @@ export const addCandidateExcel = async (req, res, next) => {
         continue;
       }
 
+      // تشفير كلمة المرور وإنشاء توكن تأكيد البريد الإلكتروني
       const passwordString = String(password);
       const hashedPassword = await bcrypt.hash(passwordString, parseInt(process.env.SALT_ROUND));
       const token = jwt.sign({ email }, process.env.CONFTRAMEMAILSECRET);
 
+      // إرسال بريد تأكيد البريد الإلكتروني
       const html = `<!DOCTYPE html>
         <html>
         <head>
@@ -803,22 +814,27 @@ export const addCandidateExcel = async (req, res, next) => {
         </body>
         </html>`;
 
-      await sendEmail(email, "Confirm Your Email", html);
+      try {
+        await sendEmail(email, "Confirm Your Email", html);
 
-      const createUser = await userModel.create({
-        userName,
-        email,
-        password: hashedPassword,
-        cardnumber,
-        phone,
-        address,
-        gender,
-        role,
-        image: {
-          secure_url: 'https://drive.google.com/file/d/1-Dp4LJv73Z-aFyLUJRb1kiMtdVyeuHmn/view?usp=sharing',
-        },
-      });
-      successes.push(createUser.userName);
+        // إضافة المستخدم بعد إرسال البريد الإلكتروني بنجاح
+        const createUser = await userModel.create({
+          userName,
+          email,
+          password: hashedPassword,
+          cardnumber,
+          phone,
+          address,
+          gender,
+          role,
+          image: {
+            secure_url: 'https://drive.google.com/file/d/1-Dp4LJv73Z-aFyLUJRb1kiMtdVyeuHmn/view?usp=sharing',
+          },
+        });
+        successes.push(createUser.userName);
+      } catch (emailError) {
+        errors.push({ message: "Failed to send confirmation email", email, error: emailError.message });
+      }
     }
 
     return res.status(200).json({
@@ -832,7 +848,7 @@ export const addCandidateExcel = async (req, res, next) => {
     return res.status(500).json({ message: "Error while uploading candidates", error: error.message });
   }
 };
-*/
+
 
 
 export const updatPassword = async (req, res, next) => {
