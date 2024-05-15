@@ -60,7 +60,7 @@ const UserSchema = new Schema({
     role: {
         type: String,
         default: 'User',
-        enum: ['User', 'Admin', 'Candidate'],
+        enum: ['User', 'Admin', 'Candidate','SuperAdmin'],
 
     },
     sendCode: {

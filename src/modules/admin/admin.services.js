@@ -25,10 +25,42 @@ export const getspesificAdmin = async (req, res, next) => {
 }
 
 
+export const softDeletSuperAdmin = async (req, res) => {
+  const { id } = req.params;
+  const user = await userModel.findOneAndUpdate({ _id: id, isDeleted: false, role: 'admin' }, { isDeleted: true }, { new: true });
+  if (!user) {
+      return res.status(400).json({ message: "Can't delete this record" });
+  }
+
+  return res.status(200).json({ message: `success delete ${user.role}` });
+}
+
+
+export const HarddeleteSuperAdmin = async (req, res, next) => {
+  const { id } = req.params;
+  const user = await userModel.findOneAndDelete({ _id: id, isDeleted: true, role: 'admin' });
+
+  if (!user) {
+      return res.status(400).json({ message: "Can't delete this record" });
+  }
+  return res.status(200).json({ message: `success delete ${user.role}` });
+}
+
+
+export const restoreSuperAdmin = async (req, res) => {
+  const { id } = req.params;
+  const user = await userModel.findOneAndUpdate({ _id: id, isDeleted: true, role: 'admin' }, { isDeleted: false }, { new: true });
+  if (!user) {
+      return res.status(400).json({ message: "Admin not found" });
+  }
+  return res.status(200).json({ message: `success restore ${user.role}` });
+}
+
+
 
 export const softDeletAdmin = async (req, res) => {
     const { id } = req.params;
-    const user =await userModel.findOneAndUpdate({ _id: id, isDeleted: false }, { isDeleted: true }, { new: true });
+    const user = await userModel.findOneAndUpdate({ _id: id, isDeleted: false, role: { $in: ['User', 'Candidate'] } }, { isDeleted: true }, { new: true });
     if (!user) {
         return res.status(400).json({ message: "Can't delete this record" });
     }
@@ -40,7 +72,7 @@ export const softDeletAdmin = async (req, res) => {
 
 export const Harddeleteadmin = async (req, res, next) => {
     const { id } = req.params;
-    const user = await userModel.findOneAndDelete({ _id: id, isDeleted: true });
+    const user = await userModel.findOneAndDelete({ _id: id, isDeleted: true, role: { $in: ['User', 'Candidate'] } });
 
     if (!user) {
         return res.status(400).json({ message: "cont delete this record" });
@@ -52,7 +84,7 @@ export const Harddeleteadmin = async (req, res, next) => {
 
 export const restore = async (req, res) => {
     const { id } = req.params;
-    const user = await userModel.findOneAndUpdate({ _id: id, isDeleted: true}, { isDeleted: false }, { new: true })    ;
+    const user = await userModel.findOneAndUpdate({ _id: id, isDeleted: true, role: { $in: ['user', 'candidate'] } }, { isDeleted: false }, { new: true });
     if (!user) {
         return res.status(400).json({ message: "user not found" });
     }
@@ -164,13 +196,14 @@ export const updateProfile = async (req, res, next) => {
 
 
 
-
 export const addCandidateExcel = async (req, res, next) => {
   try {
     // تأكد من وجود المفتاح السري في متغيرات البيئة
     if (!process.env.CONFTRAMEMAILSECRET) {
+  
       throw new Error("CONFTRAMEMAILSECRET must have a value");
     }
+    
     const workBook = XLSX.readFile(req.file.path);
     const workSheet = workBook.Sheets[workBook.SheetNames[0]];
     const users = XLSX.utils.sheet_to_json(workSheet);
@@ -293,8 +326,6 @@ export const addCandidateExcel = async (req, res, next) => {
     return res.status(500).json({ message: "Error while uploading candidates", error: error.message });
   }
 };
-
-
 
 
 

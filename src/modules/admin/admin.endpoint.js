@@ -10,6 +10,7 @@ export const endPoint = {
     addCandidate: [roles.Admin],
     updateCandidate: [roles.Admin],
     manageWithdrawalRequest:[roles.Admin],
+    SuperAdmin:[roles.SuperAdmin],
 }
 
 

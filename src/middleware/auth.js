@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import userModel from "../../DB/models/admin.model.js";
 
 export const roles = {
-    Admin:'Admin',User:'User',Candidate:'Candidate'
+    Admin:'Admin',User:'User',Candidate:'Candidate',SuperAdmin:'SuperAdmin'
 }
 export const auth=(accessRoles =[])=>{
 
