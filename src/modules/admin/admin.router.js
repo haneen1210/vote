@@ -28,6 +28,7 @@ router.patch('/restoreAdmin/:id', auth(endPoint.SuperAdmin), validation(validato
 router.patch('/softDelet/:id', auth(endPoint.deleteByadmin), validation(validators.DeletAdminAndRestore), asynHandler(Adminservices.softDeletAdmin));
 router.delete('/hrddDeleted/:id', auth(endPoint.deleteByadmin), validation(validators.DeletAdminAndRestore), asynHandler(Adminservices.Harddeleteadmin));
 router.patch('/restore/:id', auth(endPoint.restore), validation(validators.DeletAdminAndRestore), asynHandler(Adminservices.restore));
+router.put('/updateSuperAdmin/:id', auth(endPoint.updateadmin), fileUpload(fileValidation.image).single('image'),validation(validators.UpdateSchema), asynHandler(Adminservices.updateSuperAdmin));
 router.put('/:id', auth(endPoint.updateadmin), fileUpload(fileValidation.image).single('image'),validation(validators.UpdateSchema), asynHandler(Adminservices.updateadmin));
 router.put('/updateCandidate/:id', auth(endPoint.updateCandidate), fileUpload(fileValidation.image).single('image'),validation(validators.UpdateSchema), asynHandler(Adminservices.updateadmin));
 router.patch('/withdrawal-request/:requestId',  auth(endPoint.manageWithdrawalRequest),validation(validators.manageWithdrawalRequest), asynHandler(Adminservices.manageWithdrawalRequest));

@@ -84,19 +84,50 @@ export const Harddeleteadmin = async (req, res, next) => {
 
 export const restore = async (req, res) => {
     const { id } = req.params;
-    const user = await userModel.findOneAndUpdate({ _id: id, isDeleted: true, role: { $in: ['user', 'candidate'] } }, { isDeleted: false }, { new: true });
+    const user = await userModel.findOneAndUpdate({ _id: id, isDeleted: true, role: { $in: ['User', 'Candidate'] } }, { isDeleted: false }, { new: true });
     if (!user) {
         return res.status(400).json({ message: "user not found" });
     }
     return res.status(200).json({ message:  `success restore${user.role}` });
 }
 
+export const updateSuperAdmin = async (req, res, next) => {
+  const { id } = req.params;
+  const admin = await userModel.findOne({ _id: id, role: 'admin' }); // التحقق من أن المستخدم هو أدمن
+  if (!admin) {
+      return res.status(404).json({ message: "Admin not found" });
+  }
+
+  if (await userModel.findOne({ email: req.body.email, _id: { $ne: id } }).select('email')) {
+      return res.status(409).json({ message: `Admin with email ${req.body.email} already exists` });
+  }
+
+  if (req.file) {
+      const { secure_url, public_id } = await cloudinary.uploader.upload(req.file.path, {
+          folder: `${process.env.APP_NAME}/Admin`
+      });
+      if (admin.image && admin.image.public_id) {
+          await cloudinary.uploader.destroy(admin.image.public_id);
+      }
+      admin.image = { secure_url, public_id };
+  }
+
+  admin.email = req.body.email || admin.email;
+  admin.userName = req.body.userName || admin.userName;
+  admin.address = req.body.address || admin.address;
+  admin.status = req.body.status || admin.status;
+  admin.phone = req.body.phone || admin.phone;
+
+  await admin.save();
+
+  return res.status(200).json({ message: "success", admin });
+}
 
 
 export const updateadmin = async (req, res, next) => {
   
     const { id } = req.params;
-    const admin = await userModel.findOne({ _id: id });
+    const admin = await userModel.findOne({ _id: id,role: { $in: ['User', 'Candidate'] } } );
     if (!admin) {
         return res.status(404).json({ message: `${user.role} not found` });
     }
@@ -114,14 +145,6 @@ export const updateadmin = async (req, res, next) => {
             cloudinary.uploader.destroy(admin.image.public_id);
             admin.image={ secure_url, public_id };
         }
-
-     else if (admin.role === 'Admin') {
-        const { secure_url, public_id } = await cloudinary.uploader.upload(req.file.path, {
-            folder: `${process.env.APP_NAME}/Admin`
-        })
-        cloudinary.uploader.destroy(admin.image.public_id);
-        admin.image={ secure_url, public_id };
-    }
 
     else {
         const { secure_url, public_id } = await cloudinary.uploader.upload(req.file.path, {
