@@ -687,7 +687,7 @@ export const withdrawals = async (req, res) => {
 
 
 export const Role = async (req, res) => {
-  const userId = req.user._id;
+  const userId = req.user;
 
   return res.status(200).json({ role:userId.role});
 
