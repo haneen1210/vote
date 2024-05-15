@@ -23,14 +23,13 @@ router.patch('/UpdateStatuseUser/:idUser', auth(endPoint.updateadmin),validation
 router.get('/getAdmin/:AdminID', auth(endPoint.getAdmin), asynHandler(Adminservices.getspesificAdmin));
 router.get('/getUser/:UserID', auth(endPoint.getAdmin), asynHandler(Adminservices.getspesificUser));
 router.patch('/softDeleteAdmin/:id', auth(endPoint.SuperAdmin), validation(validators.DeletAdminAndRestore), asynHandler(Adminservices.softDeletSuperAdmin));
-router.delete('/hrddDeletedAdin/:id', auth(endPoint.SuperAdmin), validation(validators.DeletAdminAndRestore), asynHandler(Adminservices.HarddeleteSuperAdmin));
+router.delete('/hrddDeletedAdmin/:id', auth(endPoint.SuperAdmin), validation(validators.DeletAdminAndRestore), asynHandler(Adminservices.HarddeleteSuperAdmin));
 router.patch('/restoreAdmin/:id', auth(endPoint.SuperAdmin), validation(validators.DeletAdminAndRestore), asynHandler(Adminservices.restoreSuperAdmin));
 router.patch('/softDelet/:id', auth(endPoint.deleteByadmin), validation(validators.DeletAdminAndRestore), asynHandler(Adminservices.softDeletAdmin));
 router.delete('/hrddDeleted/:id', auth(endPoint.deleteByadmin), validation(validators.DeletAdminAndRestore), asynHandler(Adminservices.Harddeleteadmin));
 router.patch('/restore/:id', auth(endPoint.restore), validation(validators.DeletAdminAndRestore), asynHandler(Adminservices.restore));
-router.put('/updateSuperAdmin/:id', auth(endPoint.updateadmin), fileUpload(fileValidation.image).single('image'),validation(validators.UpdateSchema), asynHandler(Adminservices.updateSuperAdmin));
+router.put('/updateSuperAdmin/:id', auth(endPoint.SuperAdmin), fileUpload(fileValidation.image).single('image'),validation(validators.UpdateSchema), asynHandler(Adminservices.updateSuperAdmin));
 router.put('/:id', auth(endPoint.updateadmin), fileUpload(fileValidation.image).single('image'),validation(validators.UpdateSchema), asynHandler(Adminservices.updateadmin));
 router.put('/updateCandidate/:id', auth(endPoint.updateCandidate), fileUpload(fileValidation.image).single('image'),validation(validators.UpdateSchema), asynHandler(Adminservices.updateadmin));
 router.patch('/withdrawal-request/:requestId',  auth(endPoint.manageWithdrawalRequest),validation(validators.manageWithdrawalRequest), asynHandler(Adminservices.manageWithdrawalRequest));
 export default router;
-
