@@ -685,3 +685,11 @@ export const withdrawals = async (req, res) => {
   return res.status(200).json({ message: "success", withdrawals });
 };
 
+
+export const Role = async (req, res) => {
+  const userId = req.user._id;
+
+  return res.status(200).json({ role:userId.Role});
+
+
+}
