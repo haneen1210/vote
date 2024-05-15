@@ -27,7 +27,7 @@ export const getspesificAdmin = async (req, res, next) => {
 
 export const softDeletSuperAdmin = async (req, res) => {
   const { id } = req.params;
-  const user = await userModel.findOneAndUpdate({ _id: id, isDeleted: false, role: 'admin' }, { isDeleted: true }, { new: true });
+  const user = await userModel.findOneAndUpdate({ _id: id, isDeleted: false, role: 'Admin' }, { isDeleted: true }, { new: true });
   if (!user) {
       return res.status(400).json({ message: "Can't delete this record" });
   }
@@ -38,7 +38,7 @@ export const softDeletSuperAdmin = async (req, res) => {
 
 export const HarddeleteSuperAdmin = async (req, res, next) => {
   const { id } = req.params;
-  const user = await userModel.findOneAndDelete({ _id: id, isDeleted: true, role: 'admin' });
+  const user = await userModel.findOneAndDelete({ _id: id, isDeleted: true, role: 'Admin' });
 
   if (!user) {
       return res.status(400).json({ message: "Can't delete this record" });
@@ -49,7 +49,7 @@ export const HarddeleteSuperAdmin = async (req, res, next) => {
 
 export const restoreSuperAdmin = async (req, res) => {
   const { id } = req.params;
-  const user = await userModel.findOneAndUpdate({ _id: id, isDeleted: true, role: 'admin' }, { isDeleted: false }, { new: true });
+  const user = await userModel.findOneAndUpdate({ _id: id, isDeleted: true, role: 'Admin' }, { isDeleted: false }, { new: true });
   if (!user) {
       return res.status(400).json({ message: "Admin not found" });
   }
@@ -93,7 +93,7 @@ export const restore = async (req, res) => {
 
 export const updateSuperAdmin = async (req, res, next) => {
   const { id } = req.params;
-  const admin = await userModel.findOne({ _id: id, role: 'admin' }); // التحقق من أن المستخدم هو أدمن
+  const admin = await userModel.findOne({ _id: id, role: 'Admin' }); // التحقق من أن المستخدم هو أدمن
   if (!admin) {
       return res.status(404).json({ message: "Admin not found" });
   }
