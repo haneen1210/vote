@@ -26,7 +26,7 @@ export const getVotes = async (req, res, next) => {
 };
 
 export const getVotesByAdmin = async (req, res, next) => {
-  const { adminId } = req.params;
+  const adminId  = req.user._id;
   const votes = await voteModel.find({ AdminID: adminId });
   if (!votes) {
     return res.status(404).json({ message: "No votes found for this admin" });
@@ -218,7 +218,7 @@ export const removeCandidateFromVote = async (req, res) => {
     
     const candidate = await userModel.findOne({userName, role: "Candidate", });
     const vote = await voteModel.findOne({ voteName});
-    
+
     if (Admin_id.toString() !== vote.AdminID.toString()) {
       return res.status(403).json({ message: "Unauthorized action" });
     }
