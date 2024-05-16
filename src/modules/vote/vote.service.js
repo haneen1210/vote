@@ -42,7 +42,7 @@ export const updateVotingStatus = async (req, res, next) => {
   if (Admin_id.toString() !== vote.AdminID.toString()) {
     return res.status(403).json({ message: "Unauthorized action" });
   }
-  
+
   if (!vote) {
     return res.status(404).json({ message: "vote not found" });
   }
@@ -76,6 +76,7 @@ export const updateVotingStatus = async (req, res, next) => {
   }
 };
 
+
 export const sendReminderVotingStatus = async (req, res, next) => {
     try {
         // العثور على جميع التصويتات التي موعدها انتهى
@@ -93,14 +94,18 @@ export const sendReminderVotingStatus = async (req, res, next) => {
 
 
 }
+
+
 export const getVoteOpen = async (req, res, next) => {
   const votes = await voteModel.find({ VotingStatus: "Active" });
   return res.status(200).json({ message: "success", votes });
 };
+
 export const getpreviousvotes = async (req, res, next) => {
     const votes = await voteModel.find({ VotingStatus: "Inactive",EndDateVote: { $lt: new Date() }  });
     return res.status(200).json({ message: "success", votes });
   };
+
 
 export const getspecificVote = async (req, res) => {
   const { id } = req.params;
@@ -120,6 +125,7 @@ export const getallVoteandcatecory = async (req, res) => {
   });
   return res.status(200).json({ message: "success", subvote });
 };
+
 
 // وظيفة لإضافة مرشح موجود إلى التصويت
 export const addExistingCandidateToVote = async (req, res) => {
@@ -250,6 +256,11 @@ export const join1 = async (req, res, next) => {
 export const join1 = async (req, res, next) => {
   const { idvote, idcandidate } = req.params;
   const user_id = req.user._id;
+  const Admin_id = req.user._id; 
+  const vote = await voteModel.findOne({ idvote});
+  if (Admin_id.toString() !== vote.AdminID.toString()) {
+     return res.status(403).json({ message: "Unauthorized action" });
+   }
   // Check if both vote and candidate IDs are provided
   if (!idvote || !idcandidate) {
     return res.status(404).json({ message: "Vote or Candidate not found" });
