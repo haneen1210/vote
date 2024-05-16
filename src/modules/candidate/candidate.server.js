@@ -95,7 +95,7 @@ export const requestWithdrawal = async (req, res) => {
     }
 
     // تحقق من عدم وجود طلب انسحاب مكرر
-    const existingWithdrawalRequest = await WithdrawalModel.findOne({ candidateId, voteId: vote._id ,AdminID:Admin. AdminID});
+    const existingWithdrawalRequest = await WithdrawalModel.findOne({ candidateId, voteId: vote._id ,AdminID:Admin._id});
     if (existingWithdrawalRequest) {
         return res.status(409).json({ message: "Withdrawal request already submitted for this vote" });
     }
@@ -110,7 +110,7 @@ export const requestWithdrawal = async (req, res) => {
         candidateId,
         voteId: vote._id,
         reason,
-        AdminID:Admin. AdminID
+        AdminID:Admin._id
     });
 
     res.status(201).json({ message: "Withdrawal request submitted successfully", withdrawalRequest });
