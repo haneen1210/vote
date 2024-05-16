@@ -118,10 +118,14 @@ export const getallVoteandcatecory = async (req, res) => {
 // وظيفة لإضافة مرشح موجود إلى التصويت
 export const addExistingCandidateToVote = async (req, res) => {
   const { userName, voteName } = req.body;
- 
+  const Admin_id = req.user._id; 
+
   const candidate = await userModel.findOne({userName, role: "Candidate" });
   const vote = await voteModel.findOne({ voteName});
-
+ 
+  if (Admin_id.toString() !== vote.AdminID.toString()) {
+    return res.status(403).json({ message: "Unauthorized action" });
+  }
   if (!vote || !candidate) {
     return res.status(404).json({ message: "Vote or Candidate not found" });
   }
