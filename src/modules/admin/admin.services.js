@@ -692,6 +692,9 @@ export const withdrawals = async (req, res) => {
           select: 'userName' // Assuming the 'userName' field represents the candidate name
       });
 
+
+
+
   return res.status(200).json({ message: "success", withdrawals });
 };
 
