@@ -14,6 +14,8 @@ export const getAdmin = async (req, res, next) => {
     return res.status(200).json({ message: "success", Admins });
 
 }
+
+
 export const getspesificAdmin = async (req, res, next) => {
     const { AdminID } = req.params;
     const Admin = await userModel.findOne({ _id: AdminID , role : 'Admin'});
@@ -91,6 +93,7 @@ export const restore = async (req, res) => {
     return res.status(200).json({ message:  `success restore${user.role}` });
 }
 
+
 export const updateSuperAdmin = async (req, res, next) => {
   const { id } = req.params;
   const admin = await userModel.findOne({ _id: id, role: 'Admin' }); // التحقق من أن المستخدم هو أدمن
@@ -124,6 +127,7 @@ export const updateSuperAdmin = async (req, res, next) => {
 }
 
 
+
 export const updateadmin = async (req, res, next) => {
   
     const { id } = req.params;
@@ -146,7 +150,7 @@ export const updateadmin = async (req, res, next) => {
             admin.image={ secure_url, public_id };
         }
 
-    else {
+    else  if (admin.role === 'User') {
         const { secure_url, public_id } = await cloudinary.uploader.upload(req.file.path, {
             folder: `${process.env.APP_NAME}/users`
         })
@@ -167,6 +171,7 @@ export const updateadmin = async (req, res, next) => {
     return res.status(200).json({ message: "success", admin });
 
 }
+
 
 export const updateProfile = async (req, res, next) => {
   const  id  = req.user._id;

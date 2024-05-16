@@ -111,8 +111,6 @@ export const requestWithdrawal = async (req, res) => {
 
 
 
-
-
 export const getCandidatePosts = async (req, res) => {
     try {
         // احصل على معرف المستخدم من التوكين
