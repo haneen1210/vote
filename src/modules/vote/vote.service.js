@@ -256,11 +256,7 @@ export const join1 = async (req, res, next) => {
 export const join1 = async (req, res, next) => {
   const { idvote, idcandidate } = req.params;
   const user_id = req.user._id;
-  const Admin_id = req.user._id; 
-  const vote = await voteModel.findOne({ idvote});
-  if (Admin_id.toString() !== vote.AdminID.toString()) {
-     return res.status(403).json({ message: "Unauthorized action" });
-   }
+  
   // Check if both vote and candidate IDs are provided
   if (!idvote || !idcandidate) {
     return res.status(404).json({ message: "Vote or Candidate not found" });
