@@ -78,12 +78,12 @@ export const requestWithdrawal = async (req, res) => {
     }
 
     // ابحث عن التصويت باستخدام `voteName` بدلاً من `voteId`
-    const vote = await VoteModel.findOne({ AdminName });
+    const vote = await VoteModel.findOne({ voteName });
     if (!vote) {
         return res.status(404).json({ message: "Vote not found" });
     }
 
-    const Admin = await userModel.findOne({ userName });
+    const Admin = await userModel.findOne({ AdminName });
     if (!Admin) {
         return res.status(404).json({ message: "Admin not found" });
     }
