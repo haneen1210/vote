@@ -1,46 +1,17 @@
 import joi from "joi";
 import { generalFields, validation } from "../../middleware/validation.js";
-import moment from 'moment';
-/*
+
 
 const datePattern = /^(0[1-9]|1[0-2])\/(0[1-9]|[12][0-9]|3[01])\/\d{4}$/;
 export const createVoteSchema = joi.object({
     voteName: joi.string().min(3).max(25).required(),
     VotingStatus: joi.string().valid('Active', 'Inactive').required(),
     description: joi.string().min(10).max(100).required(),
-    StartDateVote: joi.string().pattern(datePattern).required().custom((value, helpers) => {
-        const date = moment(value, 'MM/DD/YYYY hh:mm A').format('MM/DD/YYYY HH:mm');
-        return date;
-    }),
-  EndDateVote: joi.string().pattern(datePattern).required().custom((value, helpers) => {
-    const date = moment(value, 'MM/DD/YYYY hh:mm A').format('MM/DD/YYYY HH:mm');
-    return date;
-}),
+    StartDateVote: joi.string().pattern(datePattern).required(),
+  EndDateVote: joi.string().pattern(datePattern).required(),
     file: generalFields.file.required(),
     AdminID:joi.string().min(24).max(24).required(),
 });
-*/
-const datePattern = /^(0[1-9]|1[0-2])\/(0[1-9]|[12][0-9]|3[01])\/\d{4}$/;
-
-
-export const createVoteSchema = joi.object({
-    
-    voteName: joi.string().min(3).max(25).required(),
-    VotingStatus: joi.string().valid('Active', 'Inactive').required(),
-    description: joi.string().min(10).max(100).required(),
-    StartDateVote: joi.string().pattern(datePattern).required().custom((value, helpers) => {
-        const date = moment(value, 'MM/DD/YYYY hh:mm A').toDate();
-        return date;
-    }),
-    EndDateVote: joi.string().pattern(datePattern).required().custom((value, helpers) => {
-        const date = moment(value, 'MM/DD/YYYY hh:mm A').toDate();
-        return date;
-    }),
-    file: generalFields.file.required(),
-    AdminID: joi.string().min(24).max(24).required(),
-});
-
-
 
 export const updateVoteSchema = joi.object({
     id: joi.string().custom(validation).required(),
