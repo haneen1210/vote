@@ -682,7 +682,7 @@ export const manageWithdrawalRequest = async (req, res) => {
 export const withdrawals = async (req, res) => {
   const Admin_id = req.user._id; 
   // Fetch withdrawals with associated vote and candidate information
-  const withdrawals = await WithdrawalModel.find({Admin_id:_id, status: 'Pending' })
+  const withdrawals = await WithdrawalModel.find({AdminID:Admin_id, status: 'Pending' })
       .populate({
           path: 'voteId', // Use the correct field name in WithdrawalModel
           select: 'voteName' // Assuming the 'voteName' field represents the vote name
