@@ -30,11 +30,11 @@ export const createVoteSchema = joi.object({
     description: joi.string().min(10).max(100).required(),
     StartDateVote: joi.string().pattern(datePattern).required().custom((value, helpers) => {
         const date = moment(value, 'MM/DD/YYYY hh:mm A').toDate();
-        return helpers.date.date = date;
+        return date;
     }),
     EndDateVote: joi.string().pattern(datePattern).required().custom((value, helpers) => {
         const date = moment(value, 'MM/DD/YYYY hh:mm A').toDate();
-        return helpers.date.date = date;
+        return date;
     }),
     file: generalFields.file.required(),
     AdminID: joi.string().min(24).max(24).required(),
