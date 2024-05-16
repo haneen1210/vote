@@ -2,7 +2,7 @@ import joi from "joi";
 import { generalFields, validation } from "../../middleware/validation.js";
 
 
-const datePattern = /^(\d{2})-(\d{2})-(\d{4}) (\d{2}):(\d{2}):(\d{2})$/;
+const datePattern = /^(\d{2})-(\d{2})-(\d{4}) (\d{1,2}):(\d{2}) (AM|PM)$/;
 export const createVoteSchema = joi.object({
     voteName: joi.string().min(3).max(25).required(),
     VotingStatus: joi.string().valid('Active', 'Inactive').required(),
