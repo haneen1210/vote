@@ -14,7 +14,7 @@ router.get('/role',  auth(Object.values(roles)), asynHandler(Adminservices.Role)
 router.get('/getAdmin', auth(endPoint.SuperAdmin), asynHandler(Adminservices.getAdmin));
 router.get('/getUsers', auth(endPoint.getAdmin), asynHandler(Adminservices.getUser));
 router.put('/updateProfile', auth(Object.values(roles)), fileUpload(fileValidation.image).single('image'),validation(validators.updateProfileSchema), asynHandler(Adminservices.updateProfile));
-router.post('/addadmin', auth(endPoint.SuperAdmin), validation(AuthValidators.signupSchema), asynHandler(authservices.Signup));
+router.post('/addadmin', auth(endPoint.SuperAdmin), fileUpload(fileValidation.image).single('image'), validation(AuthValidators.signupSchema), asynHandler(authservices.Signup));
 router.post('/addCandidate', auth(endPoint.addCandidate), fileUpload(fileValidation.image).single('image'), validation(AuthValidators.signupSchema), asynHandler(authservices.Signup));
 router.post('/addCandidateExcel', auth(endPoint.addCandidate), fileUpload(fileValidation.excel).single('file'), asynHandler(Adminservices.addCandidateExcel));
 router.get('/withdrawal', auth(endPoint.getAdmin), asynHandler(Adminservices.withdrawals));
