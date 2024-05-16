@@ -1,5 +1,6 @@
 import joi from "joi";
 import { generalFields, validation } from "../../middleware/validation.js";
+import moment from 'moment';
 /*
 
 const datePattern = /^(0[1-9]|1[0-2])\/(0[1-9]|[12][0-9]|3[01])\/\d{4}$/;
@@ -21,7 +22,9 @@ export const createVoteSchema = joi.object({
 */
 const datePattern = /^(0[1-9]|1[0-2])\/(0[1-9]|[12][0-9]|3[01])\/\d{4}$/;
 
+
 export const createVoteSchema = joi.object({
+    
     voteName: joi.string().min(3).max(25).required(),
     VotingStatus: joi.string().valid('Active', 'Inactive').required(),
     description: joi.string().min(10).max(100).required(),
