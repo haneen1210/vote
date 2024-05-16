@@ -68,7 +68,7 @@ export const getspecificCandidateinvotes = async (req, res) => {
 
 
 export const requestWithdrawal = async (req, res) => {
-    const { voteName, reason ,userName} = req.body; //userName=Admin
+    const { voteName, reason ,AdminName} = req.body; //userName=Admin
     const candidateId = req.user._id; // candidateId
 
     // تحقق من أن المرشح موجود وله الصلاحية
@@ -78,7 +78,7 @@ export const requestWithdrawal = async (req, res) => {
     }
 
     // ابحث عن التصويت باستخدام `voteName` بدلاً من `voteId`
-    const vote = await VoteModel.findOne({ voteName });
+    const vote = await VoteModel.findOne({ AdminName });
     if (!vote) {
         return res.status(404).json({ message: "Vote not found" });
     }
