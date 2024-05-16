@@ -647,7 +647,8 @@ export const manageWithdrawalRequest = async (req, res) => {
 
       const { requestId } = req.params; // معرف طلب الانسحاب
       const { status } = req.body; // الحالة الجديدة المراد تحديثها
-
+      const Admin_id = req.user._id; 
+     
       // التحقق من صحة الحالة
       const validStatuses = ['Pending', 'Approved', 'Rejected'];
       if (!validStatuses.includes(status)) {
@@ -656,6 +657,9 @@ export const manageWithdrawalRequest = async (req, res) => {
 
       // تحديث طلب الانسحاب بالحالة الجديدة
       const updatedRequest = await WithdrawalModel.findByIdAndUpdate(requestId, { status }, { new: true });
+      if (Admin_id.toString() !== updatedRequest.AdminID.toString()) {
+        return res.status(403).json({ message: "Unauthorized action" });
+      }
 
       if (!updatedRequest) {
           return res.status(404).json({ message: "Withdrawal request not found" });
@@ -676,8 +680,9 @@ export const manageWithdrawalRequest = async (req, res) => {
 
 
 export const withdrawals = async (req, res) => {
+  const Admin_id = req.user._id; 
   // Fetch withdrawals with associated vote and candidate information
-  const withdrawals = await WithdrawalModel.find({ status: 'Pending' })
+  const withdrawals = await WithdrawalModel.find({Admin_id:_id, status: 'Pending' })
       .populate({
           path: 'voteId', // Use the correct field name in WithdrawalModel
           select: 'voteName' // Assuming the 'voteName' field represents the vote name
