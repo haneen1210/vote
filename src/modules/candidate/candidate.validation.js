@@ -21,7 +21,7 @@ export const requestWithdrawal=joi.object({
         "any.required": "Reason is required"
     }),
 
-    AdminName: joi.string().min(3).max(25).required().messages({
+    userName: joi.string().min(3).max(25).required().messages({
         "string.base": "Vote name should be a string",
         "string.min": "Vote name should be at least 3 characters long",
         "string.max": "Vote name should not exceed 25 characters",
