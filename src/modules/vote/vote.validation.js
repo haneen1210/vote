@@ -10,6 +10,7 @@ export const createVoteSchema = joi.object({
     StartDateVote: joi.string().pattern(datePattern).required(),
   EndDateVote: joi.string().pattern(datePattern).required(),
     file: generalFields.file.required(),
+    AdminID:joi.string().min(24).max(24).required(),
 });
 
 export const updateVoteSchema = joi.object({
