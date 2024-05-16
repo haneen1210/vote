@@ -133,7 +133,7 @@ export const updateadmin = async (req, res, next) => {
     const { id } = req.params;
     const admin = await userModel.findOne({ _id: id,role: { $in: ['User', 'Candidate'] } } );
     if (!admin) {
-        return res.status(404).json({ message: `${user.role} not found` });
+        return res.status(404).json({ message: `${admin.role} not found` });
     }
    
     if (await userModel.findOne({ email: req.body.email, _id: { $ne: id } }).select('email')) {
