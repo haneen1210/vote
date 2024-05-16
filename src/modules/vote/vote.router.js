@@ -14,6 +14,7 @@ const router = Router();
 
 router.post('/createVote', auth(endPoint.SuperAdmin),fileUpload(fileValidation.image).single('image'),validation(validators.createVoteSchema), asynHandler(voteservices.createVote));
 router.get('/getvotes', auth(Object.values(roles)), asynHandler(voteservices.getVotes));
+router.get('/getvotesadmin', auth(endPoint.getAdminvote), asynHandler(voteservices.getVotesByAdmin));
 router.patch('/updateVotingStatus/:id', auth(endPoint.updateVotingStatus), validation(validators.updateVoteSchema), asynHandler(voteservices.updateVotingStatus));
 router.get('/Result', auth(Object.values(roles)), asynHandler(voteservices.countVotesForCandidates ));
 router.get('/getVoteOpen', auth(Object.values(roles)), asynHandler(voteservices.getVoteOpen));

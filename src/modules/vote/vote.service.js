@@ -25,6 +25,15 @@ export const getVotes = async (req, res, next) => {
   return res.status(200).json({ message: "success", votes });
 };
 
+export const getVotesByAdmin = async (req, res, next) => {
+  const { adminId } = req.params;
+  const votes = await VoteModel.find({ AdminID: adminId });
+  if (!votes) {
+    return res.status(404).json({ message: "No votes found for this admin" });
+  }
+  return res.status(200).json({ message: "success", votes });
+};
+
 export const updateVotingStatus = async (req, res, next) => {
   const { id } = req.params;
   const vote = await voteModel.findOne({ _id: id });
