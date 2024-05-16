@@ -6,14 +6,7 @@ import XLSX from "xlsx";
 import ResultModel from "../../../DB/models/Result.model.js";
 
 export const createVote = async (req, res, next) => {
-  const {
-    voteName,
-    VotingStatus,
-    description,
-    StartDateVote,
-    EndDateVote,
-    image,
-  } = req.body;
+  const { voteName, VotingStatus, description, StartDateVote, EndDateVote, image, AdminID } = req.body;
   if (await voteModel.findOne({ voteName })) {
     return next(new Error("voteName already exists", { cause: 409 }));
   }
@@ -23,14 +16,7 @@ export const createVote = async (req, res, next) => {
       folder: `${process.env.APP_NAME}/vote`,
     },
   );
-  const createVote = await voteModel.create({
-    voteName,
-    VotingStatus,
-    description,
-    StartDateVote,
-    EndDateVote,
-    image: { secure_url, public_id },
-  });
+  const createVote = await voteModel.create({voteName, VotingStatus, description, StartDateVote, EndDateVote, image: { secure_url, public_id },AdminID});
   return res.status(201).json({ message: "success", createVote });
 };
 

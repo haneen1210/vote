@@ -12,7 +12,7 @@ import fileUpload, { fileValidation } from "../../utls/multer.js";
 
 const router = Router();
 
-router.post('/createVote', auth(endPoint.createVote),fileUpload(fileValidation.image).single('image'),validation(validators.createVoteSchema), asynHandler(voteservices.createVote));
+router.post('/createVote', auth(endPoint.SuperAdmin),fileUpload(fileValidation.image).single('image'),validation(validators.createVoteSchema), asynHandler(voteservices.createVote));
 router.get('/getvotes', auth(Object.values(roles)), asynHandler(voteservices.getVotes));
 router.patch('/updateVotingStatus/:id', auth(endPoint.updateVotingStatus), validation(validators.updateVoteSchema), asynHandler(voteservices.updateVotingStatus));
 router.get('/Result', auth(Object.values(roles)), asynHandler(voteservices.countVotesForCandidates ));

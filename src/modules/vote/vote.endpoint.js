@@ -11,6 +11,7 @@ export const endPoint = {
     updatejoin:[roles.Admin],
     User:[roles.User],
     candidate:[roles.Candidate],
+    SuperAdmin:[roles.SuperAdmin],
 }
 
 
