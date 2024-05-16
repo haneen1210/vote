@@ -10,6 +10,11 @@ const WithdrawalSchema = new Schema({
         default: 'Pending',
         enum: ['Pending', 'Approved', 'Rejected']
     },
+    AdminID:{
+        type:Types.ObjectId,
+        ref:'User',
+        required:true,
+    },
 }, {
     timestamps: true,
 });
