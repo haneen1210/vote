@@ -35,8 +35,14 @@ export const getVotesByAdmin = async (req, res, next) => {
 };
 
 export const updateVotingStatus = async (req, res, next) => {
+  const Admin_id = req.user._id; 
+
   const { id } = req.params;
   const vote = await voteModel.findOne({ _id: id });
+  if (Admin_id.toString() !== vote.AdminID.toString()) {
+    return res.status(403).json({ message: "Unauthorized action" });
+  }
+  
   if (!vote) {
     return res.status(404).json({ message: "vote not found" });
   }
