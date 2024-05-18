@@ -12,13 +12,13 @@ import fileUpload, { fileValidation } from "../../utls/multer.js";
 
 const router = Router();
 
+router.get('/getUserinVote', auth(endPoint.User), asynHandler(voteservices.getUserinVote));
 router.post('/createVote', auth(endPoint.SuperAdmin),fileUpload(fileValidation.image).single('image'),validation(validators.createVoteSchema), asynHandler(voteservices.createVote));
 router.get('/getvotes', auth(Object.values(roles)), asynHandler(voteservices.getVotes));
 router.get('/Result', auth(Object.values(roles)), asynHandler(voteservices.countVotesForCandidates ));
 router.get('/getVoteOpen', auth(Object.values(roles)), asynHandler(voteservices.getVoteOpen));
 router.get('/getpreviousvotes', auth(Object.values(roles)), asynHandler(voteservices.getpreviousvotes));
 router.get('/getallvotewithcandidate', auth(Object.values(roles)), asynHandler(voteservices.getallVoteandcatecory));
-router.get('/getUserinVote', auth(endPoint.User), asynHandler(voteservices.getUserinVote));
 router.get('/user-votes',auth(endPoint.getUserVotes), asynHandler(voteservices.getUserVotes));
 router.post('/addcandidatetovote', auth(endPoint.addExistingCandidateToVote), validation(validators.addAndRemoveCandidateToVote), asynHandler(voteservices.addExistingCandidateToVote));
 router.post('/uploadExcelCandidateToVote', auth(endPoint.addExistingCandidateToVote), fileUpload(fileValidation.excel).single('file'), asynHandler(voteservices.uploadExcelCandidateToVote));

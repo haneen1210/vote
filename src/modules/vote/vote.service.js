@@ -137,12 +137,29 @@ export const getallVoteandcatecory = async (req, res) => {
   return res.status(200).json({ message: "success", subvote });
 };
 export const getUserinVote = async (req, res) => {
-  const USer_id = req.user._id;
-  const subvote = await voteModel.find({_id:USer_id}).populate({
-    path: "Users",
-  });
-  return res.status(200).json({ message: "success", subvote });
+  try {
+      const user_id = req.user._id;
+      
+      // ابحث عن التصويتات التي تحتوي على المستخدم في الحقل Users
+      const subvotes = await voteModel.find({ Users: user_id })
+          .select('voteName VotingStatus description image StartDateVote EndDateVote AdminID') // اختر فقط الحقول المطلوبة
+          .populate({
+              path: 'AdminID',
+              select: 'userName'
+          });
+
+      // التحقق إذا كانت النتيجة فارغة
+      if (!subvotes.length) {
+          return res.status(404).json({ message: "No votes found for this user" });
+      }
+
+      return res.status(200).json({ message: "success", subvotes });
+  } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: "An error occurred while fetching votes", error: error.message });
+  }
 };
+
 
 
 // وظيفة لإضافة مرشح موجود إلى التصويت
