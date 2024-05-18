@@ -10,6 +10,8 @@ export const Signup = async (req, res, next) => {
     const { userName, email, password, cardnumber, phone, address, gender, role='User' } = req.body;
 
     
+  
+
     if (await userModel.findOne({ email })) {
         return next(new Error("email already exists", { cause: 409 }));
     }
@@ -42,6 +44,7 @@ export const Signup = async (req, res, next) => {
 
     if (role === 'Admin' || role === 'Candidate') {
     const token = jwt.sign({ email }, process.env.CONFTRAMEMAILSECRET);
+
     //const html=`<a href='${req.protocol}://${req.headers.host}/auth/confimEmail/${token}'>verify</a>`;
     const html = `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
   <html dir="ltr" xmlns="http://www.w3.org/1999/xhtml" xmlns:o="urn:schemas-microsoft-com:office:office" lang="en">
@@ -261,6 +264,7 @@ export const Signup = async (req, res, next) => {
   
   `
     await sendEmail(email, "confirm email", html)
+
     }
     return res.status(201).json({ message: "success", createUser });
 

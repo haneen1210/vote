@@ -24,6 +24,10 @@ export const getVotes = async (req, res, next) => {
   const votes = await voteModel.find();
   return res.status(200).json({ message: "success", votes });
 };
+export const getVotesSuperAdmin = async (req, res, next) => {
+  const votes = await voteModel.find();
+  return res.status(200).json({ message: "success", votes });
+};
 
 export const getVotesByIDAdmin = async (req, res, next) => {
   const {AdminID}  = req.params;
