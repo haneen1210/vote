@@ -13,8 +13,8 @@ router.get('/getCandidatePosts',auth(endPoint.AllVotesParticipateIn),asynHandler
 router.get('/getcandidate', auth(endPoint.getcandidate), asynHandler(candidateservices.getcandidate));
 router.post('/requestWithdrawal', auth(endPoint.requestWithdrawal), validation(validators.requestWithdrawal),asynHandler(candidateservices.requestWithdrawal));
 router.get('/CandidateIDvalid/:CandidateID', auth(endPoint.getspecificCandidate), validation(validators.getspecificCandidate), asynHandler(candidateservices.getspecificCandidate));
-router.get('/:CandidateID', auth(endPoint.getspecificCandidate), validation(validators.getspecificCandidate), asynHandler(candidateservices.getspecificCandidateinvote));
 router.get('/getCandidatePostsShow/:candidateId',auth(Object.values(roles)),asynHandler(candidateservices.getCandidatePostsShow));
+router.get('/:CandidateID', auth(endPoint.getspecificCandidate), validation(validators.getspecificCandidate), asynHandler(candidateservices.getspecificCandidateinvote));
 
 export default router;
 //auth(Object.values(roles))
