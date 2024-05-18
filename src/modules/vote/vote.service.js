@@ -167,7 +167,7 @@ export const addExistingCandidateToVote = async (req, res) => {
     .status(200)
     .json({ message: "Candidate added to vote successfully" });
 };
-/*
+
 export const uploadExcelCandidateToVote = async (req, res, next) => {
   try {
     const Admin_id = req.user._id; 
@@ -210,8 +210,8 @@ export const uploadExcelCandidateToVote = async (req, res, next) => {
     console.error("Error while uploading candidates to votes:",successes, error);
     return res.status(500).json({ message: "Error while uploading candidates to votes" });
   }
-};*/
-
+};
+/*
 export const uploadExcelCandidateToVote = async (req, res, next) => {
   try {
     const Admin_id = req.user._id;
@@ -270,7 +270,7 @@ export const uploadExcelCandidateToVote = async (req, res, next) => {
   }
 };
 
-
+*/
 
 export const removeCandidateFromVote = async (req, res) => {
     const { userName, voteName } = req.body;
