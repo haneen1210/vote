@@ -2,16 +2,17 @@ import joi from "joi";
 import { generalFields, validation } from "../../middleware/validation.js";
 
 
-const datePattern = /^(\d{2})-(\d{2})-(\d{4}) (\d{1,2}):(\d{2}) (AM|PM)$/;
 export const createVoteSchema = joi.object({
     voteName: joi.string().min(3).max(25).required(),
     VotingStatus: joi.string().valid('Active', 'Inactive').required(),
     description: joi.string().min(10).max(100).required(),
-    StartDateVote: joi.string().pattern(datePattern).required(),
-  EndDateVote: joi.string().pattern(datePattern).required(),
+    StartDateVote: joi.date().greater("now").required(),
+    EndDateVote: joi.date().greater("now").required(),
     file: generalFields.file.required(),
     AdminID:joi.string().min(24).max(24).required(),
 });
+
+
 
 export const updateVoteSchema = joi.object({
     id: joi.string().custom(validation).required(),
