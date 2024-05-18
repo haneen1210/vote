@@ -542,7 +542,7 @@ export const getUserVotes = async (req, res) => {
 
 
 
-// وظيفة لإضافة مرشح موجود إلى التصويت
+// وظيفة لإضافة مستخدم موجود إلى التصويت
 export const addExistingUserToVote = async (req, res) => {
   const { userName, voteName } = req.body;
   const Admin_id = req.user._id; 
@@ -574,6 +574,60 @@ export const addExistingUserToVote = async (req, res) => {
 
 
 
+
+export const uploadExcelUSerToVote = async (req, res, next) => {
+  try {
+    const Admin_id = req.user._id;
+    // تحقق من وجود الملف قبل محاولة قراءته
+    if (!req.file || !req.file.path) {
+      return res.status(400).json({ message: "No file uploaded" });
+    }
+    const workBook = XLSX.readFile(req.file.path);
+    const workSheet = workBook.Sheets[workBook.SheetNames[0]];
+    const users = XLSX.utils.sheet_to_json(workSheet);
+    const errors = [];
+    const successes = [];
+
+    for (const row of users) {
+      const { UserName,voteName } = row;
+
+      // Find the vote and candidate in the database
+      const User = await userModel.findOne({ userName: UserName, role: "User" });
+      const vote = await voteModel.findOne({ voteName });
+
+      if (!vote) {
+        errors.push({ message: `Vote not found for voteName: ${voteName}`, UserName });
+        continue;
+      }
+      if (Admin_id.toString() !== vote.AdminID.toString()) {
+        errors.push({ message: "Unauthorized action by this admin", UserName, voteName });
+        continue;
+      }
+
+      if (!User) {
+        errors.push({ message: `User not found: ${UserName}`, voteName });
+        continue;
+      }
+
+      // Check if the User already exists in the vote
+      const existingUser = vote.Users.includes(User._id);
+      if (existingUser) {
+        errors.push({ message: `User ${UserName} already exists in the vote ${voteName}` });
+        continue;
+      }
+      
+      // Add the candidate to the vote
+      vote.Users.push(User._id);
+      await vote.save();
+      successes.push({ message: `User ${UserName} added to vote ${voteName} successfully` });
+    }
+
+    return res.status(200).json({ message: "User processed successfully", successes, errors });
+
+  } catch (error) {
+    return res.status(500).json({ message: "Error while uploading User to votes", error });
+  }
+};
 
 
 
