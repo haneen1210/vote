@@ -205,10 +205,9 @@ export const uploadExcelCandidateToVote = async (req, res, next) => {
       await vote.save();
       successes.push({ message: `Candidate ${CandidateName} added to vote ${voteName} successfully`});
     }
-    return res.status(200).json({ message: "Candidates added to votes successfully" });
+    return res.status(200).json({ message: "Candidates added to votes successfully" ,successes, error});
   } catch (error) {
-    console.error("Error while uploading candidates to votes:",successes, error);
-    return res.status(500).json({ message: "Error while uploading candidates to votes" });
+    return res.status(500).json({ message: "Error while uploading candidates to votes",successes, error });
   }
 };
 /*
