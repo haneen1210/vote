@@ -143,7 +143,7 @@ export const addExistingCandidateToVote = async (req, res) => {
   const { userName, voteName } = req.body;
   const Admin_id = req.user._id; 
 
-  const candidate = await userModel.findOne({userName, role: "Candidate" });
+  const candidate = await userModel.findOne({isDeleted: false,userName, role: "Candidate" });
   const vote = await voteModel.findOne({ voteName});
  
   if (Admin_id.toString() !== vote.AdminID.toString()) {
@@ -502,30 +502,6 @@ export const uploadExcelCandidateToVote = async (req, res, next) => {
 
 //localhost:5000/
 
-
-/*
-export const getUserVotes = async (req, res) => {
-
-  // احصل على معرف المستخدم من التوكين
-  const userId = req.user._id;
-
-  // العثور على جميع التصويتات التي شارك فيها المستخدم
-  const userVotes = await ResultModel.find({ userId })
-      .populate({
-          path: 'VoteId',
-          select: 'voteName VotingStatus StartDateVote EndDateVote description image'
-      });
-
-  // استخراج التصويتات فقط من نتائج الاستعلام
-  const votes = userVotes.map(result => result.VoteId);
-
-  res.status(200).json({
-      message: "Successfully retrieved user's votes",
-      votes
-  });
-
-};*/
-
 export const getUserVotes = async (req, res) => {
  
       // احصل على معرف المستخدم من التوكين
@@ -565,6 +541,36 @@ export const getUserVotes = async (req, res) => {
 };
 
 
+
+// وظيفة لإضافة مرشح موجود إلى التصويت
+export const addExistingUserToVote = async (req, res) => {
+  const { userName, voteName } = req.body;
+  const Admin_id = req.user._id; 
+
+  const User = await userModel.findOne({isDeleted: false,userName, role: "User" });
+  const vote = await voteModel.findOne({ voteName});
+ 
+  if (Admin_id.toString() !== vote.AdminID.toString()) {
+    return res.status(403).json({ message: "Unauthorized action to this Admin" });
+  }
+  if (!User || !candidate) {
+    return res.status(404).json({ message: "Vote or User not found" });
+  }
+  const existingUser = await voteModel.findOne({
+        _id: vote._id,
+        Users: User._id,
+  });
+  if (existingUser) {
+    return res
+      .status(400)
+      .json({ message: "User already exists in the vote" });
+  }
+  vote.Users.push(User);
+  await vote.save();
+  return res
+    .status(200)
+    .json({ message: "User added to vote successfully" });
+};
 
 
 
