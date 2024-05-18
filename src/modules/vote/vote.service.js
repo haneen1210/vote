@@ -167,7 +167,7 @@ export const addExistingCandidateToVote = async (req, res) => {
     .status(200)
     .json({ message: "Candidate added to vote successfully" });
 };
-
+/*
 export const uploadExcelCandidateToVote = async (req, res, next) => {
   try {
     const Admin_id = req.user._id; 
@@ -199,35 +199,33 @@ export const uploadExcelCandidateToVote = async (req, res, next) => {
         continue;
 
       }
-
+    
       // Add the candidate to the vote
       vote.candidates.push(candidate);
       await vote.save();
       successes.push({ message: `Candidate ${CandidateName} added to vote ${voteName} successfully`});
     }
-    return res.status(200).json({ message: "Candidates added to votes successfully" ,successes, error});
+    return res.status(200).json({ message: "Candidates added to votes successfully" ,successes,errors});
   } catch (error) {
-    return res.status(500).json({ message: "Error while uploading candidates to votes",successes, error });
+    return res.status(500).json({ message: "Error while uploading candidates to votes",successes,errors});
   }
-};
-/*
+};*/
+
 export const uploadExcelCandidateToVote = async (req, res, next) => {
   try {
     const Admin_id = req.user._id;
-
     // تحقق من وجود الملف قبل محاولة قراءته
     if (!req.file || !req.file.path) {
       return res.status(400).json({ message: "No file uploaded" });
     }
-
-    const woorkBook = XLSX.readFile(req.file.path);
-    const woorkSheet = woorkBook.Sheets[woorkBook.SheetNames[0]];
-    const users = XLSX.utils.sheet_to_json(woorkSheet);
+    const workBook = XLSX.readFile(req.file.path);
+    const workSheet = workBook.Sheets[workBook.SheetNames[0]];
+    const users = XLSX.utils.sheet_to_json(workSheet);
     const errors = [];
     const successes = [];
 
     for (const row of users) {
-      const { CandidateName, voteName } = row;
+      const { CandidateName,voteName } = row;
 
       // Find the vote and candidate in the database
       const candidate = await userModel.findOne({ userName: CandidateName, role: "Candidate" });
@@ -237,7 +235,6 @@ export const uploadExcelCandidateToVote = async (req, res, next) => {
         errors.push({ message: `Vote not found for voteName: ${voteName}`, CandidateName });
         continue;
       }
-
       if (Admin_id.toString() !== vote.AdminID.toString()) {
         errors.push({ message: "Unauthorized action by this admin", CandidateName, voteName });
         continue;
@@ -254,7 +251,7 @@ export const uploadExcelCandidateToVote = async (req, res, next) => {
         errors.push({ message: `Candidate ${CandidateName} already exists in the vote ${voteName}` });
         continue;
       }
-
+      
       // Add the candidate to the vote
       vote.candidates.push(candidate._id);
       await vote.save();
@@ -264,12 +261,10 @@ export const uploadExcelCandidateToVote = async (req, res, next) => {
     return res.status(200).json({ message: "Candidates processed successfully", successes, errors });
 
   } catch (error) {
-    console.error("Error while uploading candidates to votes:", error);
     return res.status(500).json({ message: "Error while uploading candidates to votes", error });
   }
 };
 
-*/
 
 export const removeCandidateFromVote = async (req, res) => {
     const { userName, voteName } = req.body;
