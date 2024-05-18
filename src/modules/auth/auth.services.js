@@ -9,9 +9,6 @@ import { customAlphabet } from "nanoid";
 export const Signup = async (req, res, next) => {
     const { userName, email, password, cardnumber, phone, address, gender, role='User' } = req.body;
 
-    
-  
-
     if (await userModel.findOne({ email })) {
         return next(new Error("email already exists", { cause: 409 }));
     }
@@ -21,10 +18,8 @@ export const Signup = async (req, res, next) => {
     if (await userModel.findOne({ cardnumber })) {
         return next(new Error("cardnumber already exists", { cause: 409 }));
     }
-
     const hashedPassword = await bcrypt.hash(password, parseInt(process.env.SALT_ROUND));
     let imageUploadFolder = '';
-
     // تحديد مجلد الرفع حسب دور المستخدم
     if (role === 'Candidate') {
         imageUploadFolder = `${process.env.APP_NAME}/Candidates`;
@@ -33,7 +28,6 @@ export const Signup = async (req, res, next) => {
     } else {
         imageUploadFolder = `${process.env.APP_NAME}/Users`;
     }
-
     // رفع الصورة إلى Cloudinary
     const { secure_url, public_id } = await cloudinary.uploader.upload(req.file.path, {
         folder: imageUploadFolder
@@ -266,7 +260,7 @@ export const Signup = async (req, res, next) => {
     await sendEmail(email, "confirm email", html)
 
     }
-    return res.status(201).json({ message: "success", createUser });
+    return res.statuse (201).json({ message: "success", createUser });
 
 }
 
@@ -308,7 +302,7 @@ export const singIn = async (req, res, next) => {
     );
     const refreshToken = jwt.sign({ id: user._id, role: user.role, status: user.status }, process.env.LOGINSECRET,
         { expiresIn: 60 * 60 * 24 * 30 });
-    return res.status(200).json({ message: "success", token, refreshToken, role: user.role });
+    return res.statuse(200).json({ message: "success", token, refreshToken, role: user.role });
 }
 
 export const sendCode = async (req, res, next) => {
@@ -321,8 +315,6 @@ export const sendCode = async (req, res, next) => {
     return res.status(200).json({ message: "sucess", user });
     //هون لازم تحطلو رابط يحولك على فورم ادخل معلومتك الجديدة
 }
-
-
 
 
 export const forgotPassword = async (req, res, next) => {

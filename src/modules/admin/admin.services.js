@@ -231,7 +231,6 @@ export const addCandidateExcel = async (req, res, next) => {
   
       throw new Error("CONFTRAMEMAILSECRET must have a value");
     }
-    
     const workBook = XLSX.readFile(req.file.path);
     const workSheet = workBook.Sheets[workBook.SheetNames[0]];
     const users = XLSX.utils.sheet_to_json(workSheet);
@@ -246,7 +245,6 @@ export const addCandidateExcel = async (req, res, next) => {
         errors.push({ message: "Role must be 'Candidate'", email, userName });
         continue;
       }
-
       // التحقق من عدم وجود الحسابات بالفعل
       if (await userModel.findOne({ email })) {
         errors.push({ message: "Email already exists", email });

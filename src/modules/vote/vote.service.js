@@ -20,11 +20,8 @@ export const createVote = async (req, res, next) => {
   return res.status(201).json({ message: "success", createVote });
 };
 
+
 export const getVotes = async (req, res, next) => {
-  const votes = await voteModel.find();
-  return res.status(200).json({ message: "success", votes });
-};
-export const getVotesSuperAdmin = async (req, res, next) => {
   const votes = await voteModel.find();
   return res.status(200).json({ message: "success", votes });
 };
@@ -170,59 +167,109 @@ export const addExistingCandidateToVote = async (req, res) => {
     .status(200)
     .json({ message: "Candidate added to vote successfully" });
 };
-
+/*
 export const uploadExcelCandidateToVote = async (req, res, next) => {
   try {
+    const Admin_id = req.user._id; 
     const woorkBook = XLSX.readFile(req.file.path);
     const woorkSheet = woorkBook.Sheets[woorkBook.SheetNames[0]];
     const users = XLSX.utils.sheet_to_json(woorkSheet);
-
+    const errors = [];
+    const successes = [];
     for (const row of users) {
       const { CandidateName, voteName } = row;
       // Find the vote and candidate in the database
-      const candidate = await userModel.findOne({
-        userName: CandidateName,
-        role: "Candidate",
-      });
+      const candidate = await userModel.findOne({ userName: CandidateName, role: "Candidate",});
       const vote = await voteModel.findOne({ voteName: voteName });
-      //console.log(vote);
+     
+      if (Admin_id.toString() !== vote.AdminID.toString()) {
+        errors.push({ message:" Unauthorized action of this admin", CandidateName, voteName });
+        continue;
+      }
 
       // Check if the vote and candidate exist
       if (!vote || !candidate) {
-        console.log(
-          `Vote or Candidate not found for voteName ${voteName} and CandidateName ${CandidateName}`,
-        );
-        continue; // Skip to the next row
+        errors.push({ message:"Vote or Candidate not found for voteName", CandidateName, voteName });
+        continue;
       }
       // Check if the candidate already exists in the vote
-      const existingCandidate = await voteModel.findOne({
-        _id: vote._id,
-        candidates: candidate._id,
-      });
+      const existingCandidate = await voteModel.findOne({_id: vote._id, candidates: candidate._id,});
       if (existingCandidate) {
-        console.log(
-          `Candidate ${CandidateName} already exists in the vote ${voteName}`,
-        );
-        continue; // Skip to the next row
+        errors.push({ message:`Candidate ${CandidateName} already exists in the vote ${voteName}`});
+        continue;
+
       }
 
       // Add the candidate to the vote
       vote.candidates.push(candidate);
       await vote.save();
-      console.log(
-        `Candidate ${CandidateName} added to vote ${voteName} successfully`,
-      );
+      successes.push({ message: `Candidate ${CandidateName} added to vote ${voteName} successfully`});
     }
-    return res
-      .status(200)
-      .json({ message: "Candidates added to votes successfully" });
+    return res.status(200).json({ message: "Candidates added to votes successfully" });
+  } catch (error) {
+    console.error("Error while uploading candidates to votes:",successes, error);
+    return res.status(500).json({ message: "Error while uploading candidates to votes" });
+  }
+};*/
+
+export const uploadExcelCandidateToVote = async (req, res, next) => {
+  try {
+    const Admin_id = req.user._id;
+
+    // تحقق من وجود الملف قبل محاولة قراءته
+    if (!req.file || !req.file.path) {
+      return res.status(400).json({ message: "No file uploaded" });
+    }
+
+    const woorkBook = XLSX.readFile(req.file.path);
+    const woorkSheet = woorkBook.Sheets[woorkBook.SheetNames[0]];
+    const users = XLSX.utils.sheet_to_json(woorkSheet);
+    const errors = [];
+    const successes = [];
+
+    for (const row of users) {
+      const { CandidateName, voteName } = row;
+
+      // Find the vote and candidate in the database
+      const candidate = await userModel.findOne({ userName: CandidateName, role: "Candidate" });
+      const vote = await voteModel.findOne({ voteName });
+
+      if (!vote) {
+        errors.push({ message: `Vote not found for voteName: ${voteName}`, CandidateName });
+        continue;
+      }
+
+      if (Admin_id.toString() !== vote.AdminID.toString()) {
+        errors.push({ message: "Unauthorized action by this admin", CandidateName, voteName });
+        continue;
+      }
+
+      if (!candidate) {
+        errors.push({ message: `Candidate not found: ${CandidateName}`, voteName });
+        continue;
+      }
+
+      // Check if the candidate already exists in the vote
+      const existingCandidate = vote.candidates.includes(candidate._id);
+      if (existingCandidate) {
+        errors.push({ message: `Candidate ${CandidateName} already exists in the vote ${voteName}` });
+        continue;
+      }
+
+      // Add the candidate to the vote
+      vote.candidates.push(candidate._id);
+      await vote.save();
+      successes.push({ message: `Candidate ${CandidateName} added to vote ${voteName} successfully` });
+    }
+
+    return res.status(200).json({ message: "Candidates processed successfully", successes, errors });
+
   } catch (error) {
     console.error("Error while uploading candidates to votes:", error);
-    return res
-      .status(500)
-      .json({ message: "Error while uploading candidates to votes" });
+    return res.status(500).json({ message: "Error while uploading candidates to votes", error });
   }
 };
+
 
 
 export const removeCandidateFromVote = async (req, res) => {
