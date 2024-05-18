@@ -30,3 +30,4 @@ router.get('/:id', auth(Object.values(roles)), validation(validators.getspecific
 router.patch('/:idvote/:idcandidate/join',auth(endPoint.join),validation(validators.join),asynHandler(voteservices.join1));
 export default router;
 
+//jjjj
