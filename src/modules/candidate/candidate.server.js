@@ -154,3 +154,49 @@ export const getCandidatePosts = async (req, res) => {
         res.status(500).json({ message: 'An error occurred while fetching candidate posts', error: error.message });
     }
 };
+
+
+
+
+
+export const getCandidatePostsShow = async (req, res) => {
+    try {
+        // احصل على معرف المستخدم من التوكين
+        const candidateId = req.params;
+
+        // تحقق مما إذا كان المستخدم هو بالفعل مرشح
+        const candidate = await userModel.findOne({ _id: candidateId, role: 'Candidate' });
+        if (!candidate) {
+            return res.status(403).json({ message: "Unauthorized: You are not a candidate" });
+        }
+
+        // احصل على جميع البوستات الخاصة بالمرشح
+        const posts = await PostModel.find({ userId: candidateId, isDeleted: false })
+            .select('title caption image like unlike createdAt updatedAt') // اختر فقط الحقول المطلوبة
+            .populate({
+                path: 'userId',
+                select: 'userName image'
+            });
+
+        // تحويل النتائج إلى تنسيق مناسب
+        const formattedPosts = posts.map(post => ({
+            title: post.title,
+            caption: post.caption || "",
+            image: post.image || {},
+            candidateName: post.userId?.userName || "Unknown Candidate",
+            candidateImage: post.userId?.image || {},
+            likes: post.like.length,
+            unlikes: post.unlike.length,
+            createdAt: post.createdAt,
+            updatedAt: post.updatedAt
+        }));
+
+        res.status(200).json({
+            message: "Successfully retrieved candidate's posts",
+            posts: formattedPosts
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'An error occurred while fetching candidate posts', error: error.message });
+    }
+};
