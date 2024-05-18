@@ -136,7 +136,7 @@ export const getallVoteandcatecory = async (req, res) => {
   });
   return res.status(200).json({ message: "success", subvote });
 };
-export const getVoteanduser = async (req, res) => {
+export const getUserinVote = async (req, res) => {
   const USer_id = req.user._id;
   const subvote = await voteModel.find({_id:USer_id}).populate({
     path: "Users",
