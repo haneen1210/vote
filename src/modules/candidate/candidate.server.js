@@ -166,7 +166,7 @@ export const getCandidatePostsShow = async (req, res) => {
         }
 
         const posts = await PostModel.find({ userId: candidateId, isDeleted: false })
-            .select(' _id title caption image like unlike ')
+            .select('  title caption image like unlike ')
             .populate({
                 path: 'userId',
                 select: 'userName image',
@@ -174,7 +174,7 @@ export const getCandidatePostsShow = async (req, res) => {
             .populate({
                 path: 'comment',
                 match: { isDeleted: false },
-                select: 'text userId createdAt',
+                select: 'text userId ',
                 populate: {
                     path: 'userId',
                     select: 'userName image',
@@ -182,6 +182,7 @@ export const getCandidatePostsShow = async (req, res) => {
             });
 
         const formattedPosts = posts.map(post => ({
+            _id: post._id,
             title: post.title,
             caption: post.caption || "",
             image: post.image || {},
@@ -189,13 +190,13 @@ export const getCandidatePostsShow = async (req, res) => {
             candidateImage: post.userId?.image || {},
             likes: post.like.length,
             unlikes: post.unlike.length,
-            createdAt: post.createdAt,
-            updatedAt: post.updatedAt,
+           // createdAt: post.createdAt,
+           // updatedAt: post.updatedAt,
             comments: post.comment.map(comment => ({
                 text: comment.text,
                 userName: comment.userId?.userName || "Unknown User",
                 userImage: comment.userId?.image || {},
-                createdAt: comment.createdAt,
+               // createdAt: comment.createdAt,
             })),
         }));
 
