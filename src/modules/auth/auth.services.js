@@ -302,7 +302,7 @@ export const singIn = async (req, res, next) => {
     );
     const refreshToken = jwt.sign({ id: user._id, role: user.role, status: user.status }, process.env.LOGINSECRET,
         { expiresIn: 60 * 60 * 24 * 30 });
-    return res.statuse(200).json({ message: "success", token, refreshToken, role: user.role });
+    return res.status(200).json({ message: "success", token, refreshToken, role: user.role });
 }
 
 export const sendCode = async (req, res, next) => {
