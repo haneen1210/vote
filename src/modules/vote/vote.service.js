@@ -553,7 +553,7 @@ export const addExistingUserToVote = async (req, res) => {
   if (Admin_id.toString() !== vote.AdminID.toString()) {
     return res.status(403).json({ message: "Unauthorized action to this Admin" });
   }
-  if (!User || !candidate) {
+  if (!User || !vote) {
     return res.status(404).json({ message: "Vote or User not found" });
   }
   const existingUser = await voteModel.findOne({
