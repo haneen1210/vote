@@ -162,7 +162,7 @@ export const getCandidatePosts = async (req, res) => {
 export const getCandidatePostsShow = async (req, res) => {
     try {
         // احصل على معرف المستخدم من التوكين
-        const candidateId = req.params;
+        const { candidateId } = req.params;
 
         // تحقق مما إذا كان المستخدم هو بالفعل مرشح
         const candidate = await userModel.findOne({ _id: candidateId, role: 'Candidate' });
