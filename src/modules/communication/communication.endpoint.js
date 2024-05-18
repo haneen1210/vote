@@ -1,7 +1,7 @@
 import { roles } from "../../middleware/auth.js"
 
 export const endPoint = {
-    communication:[roles.Admin],
+    communication:[roles.SuperAdmin,roles.Admin],
   
     
 }

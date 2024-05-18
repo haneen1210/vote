@@ -1,7 +1,7 @@
 import { roles } from "../../middleware/auth.js"
 
 export const endPoint = {
-    createPost:[roles.Admin,roles.Candidate]
+    createPost:[roles.SuperAdmin,roles.Admin,roles.Candidate]
 
 }
 
