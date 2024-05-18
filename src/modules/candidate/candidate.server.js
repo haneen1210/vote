@@ -165,7 +165,7 @@ export const getCandidatePostsShow = async (req, res) => {
         const { candidateId } = req.params;
 
         // تحقق مما إذا كان المستخدم هو بالفعل مرشح
-        const candidate = await userModel.findOne({ _id: candidateId });
+        const candidate = await userModel.findOne({ _id: candidateId, role: 'Candidate' });
         if (!candidate) {
             return res.status(403).json({ message: "Unauthorized: You are not a candidate" });
         }
