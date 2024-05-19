@@ -29,7 +29,7 @@ router.post('/uploadExcelUserToVote', auth(endPoint.addExistingCandidateToVote),
 router.patch('/updateVotingStatus/:id', auth(endPoint.updateVotingStatus), validation(validators.updateVoteSchema), asynHandler(voteservices.updateVotingStatus));
 router.get('/getvotes/:AdminID', auth(endPoint.SuperAdmin), asynHandler(voteservices.getVotesByIDAdmin));
 router.get('/findUserVotes/:userId', auth(endPoint.User), validation(validators.findUserVotes ), asynHandler(voteservices.findUserVotes));
-router.patch('/:idvote/:idcandidate/join',auth(endPoint.join),validation(validators.join),asynHandler(voteservices.join1));
+router.patch('/:idvote/:idcandidate/join',auth(endPoint.join),validation(validators.join),asynHandler(voteservices.join));
 router.get('/:id', auth(Object.values(roles)), validation(validators.getspecificvote), asynHandler(voteservices.getspecificVote));
 export default router;
 
