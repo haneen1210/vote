@@ -628,12 +628,18 @@ export const updatPassword = async (req, res, next) => {
 
 
 
-  export const getUser = async (req, res, next) => {
+  export const getUserActive = async (req, res, next) => {
     const Users = await userModel.find({ isDeleted: false, statuse:'Active', role : 'User'});
     return res.status(200).json({ message: "success", Users });
 
 }
 
+
+export const getallUser = async (req, res, next) => {
+  const Users = await userModel.find({ isDeleted: false, role : 'User'});
+  return res.status(200).json({ message: "success", Users });
+
+}
   
 
   
