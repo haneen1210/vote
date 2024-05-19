@@ -58,7 +58,7 @@ export const unlikePost = async (req, res, next) => {
     await post.save();
     return res.status(200).json({ message: "success", post });
 }
-
+/*
 export const getPost = async (req, res, next) => {
     const { id } = req.params; // id vote
     const vote = await VoteModel.findOne({_id:id});
@@ -95,6 +95,41 @@ export const getPost = async (req, res, next) => {
 
 
 }
+*/
+export const getPost = async (req, res, next) => {
+    try {
+        const { id } = req.params; // id vote
+        const vote = await VoteModel.findOne({ _id: id });
+        if (!vote) {
+            return res.status(404).json({ message: "Vote not found" });
+        }
+        
+        const postvote = await VoteModel.findById(id).populate({
+            path: "Posts",
+            populate: [
+                {
+                    path: 'userId',
+                    select: 'userName image'
+                },
+                {
+                    path: 'like',
+                    select: 'userName'
+                },
+                {
+                    path: 'unlike',
+                    select: 'userName'
+                },
+                {
+                    path: 'comment'
+                }
+            ]
+        });
+
+        return res.status(200).json({ message: "success", postvote });
+    } catch (error) {
+        next(error);
+    }
+};
 
 
 export const geSpecifictPost = async (req, res, next) => {
