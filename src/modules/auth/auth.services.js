@@ -7,6 +7,7 @@ import { customAlphabet } from "nanoid";
 
 
 export const Signup = async (req, res, next) => {
+  
     const { userName, email, password, cardnumber, phone, address, gender, role='User' } = req.body;
 
     if (await userModel.findOne({ email })) {
@@ -36,7 +37,7 @@ export const Signup = async (req, res, next) => {
     const statuse = role === 'User' ? 'Inactive' : 'Active';
     const createUser = await userModel.create({ userName, email, password: hashedPassword, statuse,cardnumber, phone, address, gender, role, image: { secure_url, public_id } });
 
-    if (role === 'Admin' || role === 'Candidate') {
+    //if (role === 'Admin' || role === 'Candidate') {
     const token = jwt.sign({ email }, process.env.CONFTRAMEMAILSECRET);
 
     //const html=`<a href='${req.protocol}://${req.headers.host}/auth/confimEmail/${token}'>verify</a>`;
@@ -257,11 +258,14 @@ export const Signup = async (req, res, next) => {
   </html>
   
   `
+  
     await sendEmail(email, "confirm email", html)
 
-    }
-    return res.statuse (201).json({ message: "success", createUser });
+    //}
 
+    
+    return res.status(201).json({ message: "success", createUser });
+//
 }
 
 
