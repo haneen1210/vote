@@ -23,21 +23,20 @@ export const getinformation = async (req, res, next) => {
 }
 
 export const getdeleteAdmin = async (req, res, next) => {
-  const userId = req.user;
-  const getinformation = await userModel.find({ _id:userId ,role:'Admin' ,isDeleted: true });
+ 
+  const getinformation = await userModel.find({ role:'Admin' ,isDeleted: true });
   return res.status(200).json({ message: "success", getinformation });
 
 }
 
 export const getdeleteuser = async (req, res, next) => {
-  const userId = req.user;
-  const getinformation = await userModel.find({ _id:userId ,role:'User' ,isDeleted: true });
+  const getinformation = await userModel.find({role:'User' ,isDeleted: true });
   return res.status(200).json({ message: "success", getinformation });
 
 }
 export const getdeleteCandidate = async (req, res, next) => {
-  const userId = req.user;
-  const getinformation = await userModel.find({ _id:userId ,role:'Candidate' ,isDeleted: true });
+ 
+  const getinformation = await userModel.find({ role:'Candidate' ,isDeleted: true });
   return res.status(200).json({ message: "success", getinformation });
 
 }
