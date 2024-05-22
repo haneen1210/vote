@@ -12,6 +12,7 @@ export const endPoint = {
     manageWithdrawalRequest:[roles.SuperAdmin,roles.Admin],
     SuperAdmin:[roles.SuperAdmin],
     getUser:[roles.SuperAdmin,roles.Admin],
+    getdelet:[roles.SuperAdmin,roles.Admin],
 }
 
 
