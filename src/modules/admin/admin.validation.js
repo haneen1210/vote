@@ -8,6 +8,8 @@ export const UpdateSchema = joi.object({
     phone: joi.string().min(10).max(10),
     address: joi.string().alphanum().min(3).max(25),
     statuse: joi.string().valid('Active', 'Inactive'),
+    cardnumber: joi.number().positive().required(),
+    gender: joi.string().valid('Male', 'Female').required(),
     file: generalFields.file,
 });
 export const updateProfileSchema = joi.object({
