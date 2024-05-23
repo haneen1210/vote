@@ -20,7 +20,7 @@ router.get('/getUsersActive', auth(endPoint.getUser), asynHandler(Adminservices.
 router.get('/getallUsers', auth(endPoint.getUser), asynHandler(Adminservices.getallUser));
 router.put('/updateProfile', auth(Object.values(roles)), fileUpload(fileValidation.image).single('image'),validation(validators.updateProfileSchema), asynHandler(Adminservices.updateProfile));
 router.post('/addadmin', auth(endPoint.SuperAdmin), fileUpload(fileValidation.image).single('image'), validation(AuthValidators.signupSchema), asynHandler(authservices.Signup));
-router.post('/addCandidate', auth(endPoint.addCandidate), fileUpload(fileValidation.image).single('image'), validation(AuthValidators.signupSchema), asynHandler(authservices.Signup));
+router.post('/addCandidate', auth(endPoint.addCandidate), fileUpload(fileValidation.image).single('image'), validation(AuthValidators.signupSchema), asynHandler(Adminservices.Signup));
 router.post('/addCandidateExcel', auth(endPoint.addCandidate), fileUpload(fileValidation.excel).single('file'), asynHandler(Adminservices.addCandidateExcel));
 router.get('/withdrawal', auth(endPoint.getAdmin), asynHandler(Adminservices.withdrawals));
 router.patch('/updatPassword', auth(Object.values(roles)),validation(validators.updatPassword), asynHandler(Adminservices.updatPassword));
