@@ -4,8 +4,6 @@ import jwt from "jsonwebtoken";
 import { sendEmail } from "../../utls/email.js";
 import cloudinary from "../../utls/cloudinary.js";
 import XLSX from "xlsx";
-import * as validators from './admin.validation.js';
-import { validation, validation1} from "../../middleware/validation.js";
 import WithdrawalModel from "../../../DB/models/withdrawa.model.js";
 import VoteModel from "../../../DB/models/vote.model.js";
 
@@ -92,14 +90,17 @@ export const softDeleteAdmin = async (req, res) => {
   if (!user) {
       return res.status(400).json({ message: "Can't delete this record" });
   }
-
+  
   if (user.role === 'Candidate') {
+   
       if (AdminId._id.toString() !== user.AdminID.toString()) {
-      
           return res.status(403).json({ message: "Unauthorized action" });
       }
       await userModel.findOneAndUpdate({ _id: id, isDeleted: false, role: 'Candidate' }, { isDeleted: true }, { new: true });
-  } else {
+  } 
+  
+  else {
+    
       await userModel.findOneAndUpdate({ _id: id, isDeleted: false, role: 'User' }, { isDeleted: true }, { new: true });
   }
 
@@ -108,8 +109,6 @@ export const softDeleteAdmin = async (req, res) => {
 
 
 export const Harddeleteadmin = async (req, res, next) => {
-
-//const user = await userModel.findOneAndDelete({ _id: id, isDeleted: true, role: { $in: ['User', 'Candidate'] } });
     const { id } = req.params;
     const AdminId = req.user;
     const user = await userModel.findOne({ _id: id, role: { $in: ['User', 'Candidate'] } });
