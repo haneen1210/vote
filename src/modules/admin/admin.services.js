@@ -868,7 +868,7 @@ export const Signup = async (req, res, next) => {
   });
 
   const statuse = role === 'User' ? 'Inactive' : 'Active';
-  const createUser = await userModel.create({ userName, email, password: hashedPassword, statuse,cardnumber, phone, address, gender, role, image: { secure_url, public_id },AdminID:AdminId });
+  const createUser = await userModel.create({ userName, email, password: hashedPassword, statuse,cardnumber, phone, address, gender, role, image: { secure_url, public_id },AdminID:AdminId._id });
 
   //if (role === 'Admin' || role === 'Candidate') {
   const token = jwt.sign({ email }, process.env.CONFTRAMEMAILSECRET);
