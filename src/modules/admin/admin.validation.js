@@ -12,6 +12,7 @@ export const UpdateSchema = joi.object({
     gender: joi.string().valid('Male', 'Female').required(),
     file: generalFields.file,
 });
+
 export const updateProfileSchema = joi.object({
     email: joi.string().email(),
     userName: joi.string().alphanum().min(3).max(25),
@@ -19,6 +20,32 @@ export const updateProfileSchema = joi.object({
     address: joi.string().alphanum().min(3).max(25),
     statuse: joi.string().valid('Active', 'Inactive'),
     file: generalFields.file,
+});
+
+export const signupSchemacandidate = joi.object({
+    userName: joi.string().alphanum().min(3).max(25).required(),
+    cardnumber: joi.number().positive().required(),
+    email: generalFields.email,
+    password: generalFields.password,
+    Cpassword: joi.string().valid(joi.ref('password')).required(),
+    phone: joi.string().required().min(10).max(10),
+    address: joi.string().alphanum().min(3).max(25).required(),
+    gender: joi.string().valid('Male', 'Female').required(),
+    role: joi.string().valid('User', 'Admin', 'Candidate'),
+    file: generalFields.file.required(),
+    AdminID:joi.string().alphanum().min(3).max(25).required(),
+});
+
+export const updatecandidate = joi.object({
+    userName: joi.string().alphanum().min(3).max(25).required(),
+    cardnumber: joi.number().positive().required(),
+    email: generalFields.email,
+    password: generalFields.password,
+    phone: joi.string().required().min(10).max(10),
+    address: joi.string().alphanum().min(3).max(25).required(),
+    gender: joi.string().valid('Male', 'Female').required(),
+    file: generalFields.file.required(),
+    AdminID:joi.string().alphanum().min(3).max(25).required(),
 });
 
 export const UpdateStatuseUser = joi.object({

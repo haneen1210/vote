@@ -13,6 +13,8 @@ export const signupSchema = joi.object({
     file: generalFields.file.required(),
 
 });
+
+
 export const signinSchema = joi.object({
     email: generalFields.email,
     password: generalFields.password,
