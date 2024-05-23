@@ -44,7 +44,7 @@ export const updatecandidate = joi.object({
     address: joi.string().alphanum().min(3).max(25).required(),
     gender: joi.string().valid('Male', 'Female').required(),
     file: generalFields.file.required(),
-    AdminID:joi.string().alphanum().min(3).max(25).required(),
+    AdminID:joi.string().min(24).max(24).required(),
 });
 
 export const UpdateStatuseUser = joi.object({
