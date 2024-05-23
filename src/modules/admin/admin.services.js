@@ -246,12 +246,9 @@ export const updateCandidateByadmin = async (req, res, next) => {
   const AdminId = req.user;
   const { id } = req.params;
   const admin = await userModel.findOne({ _id: id,role: 'Candidate' } );
-
   if (!admin) {
     return res.status(404).json({ message: "Candidate not found" });
   }
-
- 
     if (AdminId._id.toString() !== admin.AdminID.toString()) {
         return res.status(403).json({ message: "Unauthorized action" });
     }

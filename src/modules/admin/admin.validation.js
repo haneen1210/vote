@@ -36,6 +36,7 @@ export const signupSchemacandidate = joi.object({
 });
 
 export const updatecandidate = joi.object({
+    id: joi.string().required(), 
     userName: joi.string().alphanum().min(3).max(25).required(),
     cardnumber: joi.number().positive().required(),
     email: generalFields.email,
