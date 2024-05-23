@@ -34,7 +34,7 @@ export const getdeleteuser = async (req, res, next) => {
 }
 export const getdeleteCandidate = async (req, res, next) => {
   const AdminId = req.user;
-  const getinformation = await userModel.find({ role:'Candidate' ,isDeleted: true, AdminID:AdminId});
+  const getinformation = await userModel.find({ role:'Candidate' ,isDeleted: true, AdminID:AdminId._id});
   return res.status(200).json({ message: "success", getinformation });
 
 }
