@@ -92,7 +92,6 @@ export const softDeleteAdmin = async (req, res) => {
   }
   
   if (user.role === 'Candidate') {
-   
       if (AdminId._id.toString() !== user.AdminID.toString()) {
           return res.status(403).json({ message: "Unauthorized action" });
       }
@@ -100,10 +99,8 @@ export const softDeleteAdmin = async (req, res) => {
   } 
   
   else {
-    
       await userModel.findOneAndUpdate({ _id: id, isDeleted: false, role: 'User' }, { isDeleted: true }, { new: true });
   }
-
   return res.status(200).json({ message: `Successfully deleted ${user.role}` });
 }
 
@@ -154,9 +151,6 @@ export const restore = async (req, res) => {
 
 
 
-
-
-
 export const updateSuperAdmin = async (req, res, next) => {
   const { id } = req.params;
   const admin = await userModel.findOne({ _id: id, role: 'Admin' }); // التحقق من أن المستخدم هو أدمن
@@ -167,6 +161,13 @@ export const updateSuperAdmin = async (req, res, next) => {
   if (await userModel.findOne({ email: req.body.email, _id: { $ne: id } }).select('email')) {
       return res.status(409).json({ message: `Admin with email ${req.body.email} already exists` });
   }
+  if (await userModel.findOne({ phone:req.body.phone, _id: { $ne: id } }).select('phone')) {
+    return res.status(409).json({ message: `Admin with email ${req.body.phone} already exists` });
+}
+if (await userModel.findOne({ cardnumber:req.body.cardnumber, _id: { $ne: id } }).select('cardnumber')) {
+  return res.status(409).json({ message: `Admin with email ${req.body.cardnumber} already exists` });
+}
+
 
   if (req.file) {
       const { secure_url, public_id } = await cloudinary.uploader.upload(req.file.path, {
@@ -183,7 +184,10 @@ export const updateSuperAdmin = async (req, res, next) => {
   admin.address = req.body.address || admin.address;
   admin.status = req.body.status || admin.status;
   admin.phone = req.body.phone || admin.phone;
-
+  admin.cardnumber = req.body.cardnumber || admin.cardnumber;
+  admin.gender = req.body.gender || admin.gender;
+  
+  
   await admin.save();
 
   return res.status(200).json({ message: "success", admin });
@@ -192,28 +196,65 @@ export const updateSuperAdmin = async (req, res, next) => {
 
 
 export const updateadmin = async (req, res, next) => {
-  
+    const AdminId = req.user;
     const { id } = req.params;
     const admin = await userModel.findOne({ _id: id,role: { $in: ['User', 'Candidate'] } } );
+    
     if (!admin) {
       return res.status(404).json({ message: "User not found" });
     }
-   
+
+    if (admin.role === 'Candidate') {
+      if (AdminId._id.toString() !== admin.AdminID.toString()) {
+          return res.status(403).json({ message: "Unauthorized action" });
+      }
+    
     if (await userModel.findOne({ email: req.body.email, _id: { $ne: id } }).select('email')) {
         return res.status(409).json({ message: `${admin.role} ${req.body.email} alredy exists` })
     }
-    
-    if(req.file){
-
-        if (admin.role === 'Candidate') {
+    if (await userModel.findOne({ phone:req.body.phone, _id: { $ne: id } }).select('phone')) {
+      return res.status(409).json({ message: `Admin with email ${req.body.phone} already exists` });
+  }
+  if (await userModel.findOne({ cardnumber:req.body.cardnumber, _id: { $ne: id } }).select('cardnumber')) {
+    return res.status(409).json({ message: `Admin with email ${req.body.cardnumber} already exists` });
+  }
+  
+      if(req.file){
             const { secure_url, public_id } = await cloudinary.uploader.upload(req.file.path, {
                 folder: `${process.env.APP_NAME}/Candidate`
             })
             cloudinary.uploader.destroy(admin.image.public_id);
             admin.image={ secure_url, public_id };
         }
+        admin.email = req.body.email || admin.email;
+        admin.userName = req.body.userName || admin.userName;
+        admin.address = req.body.address || admin.address;
+        admin.statuse = req.body.statuse || admin.statuse;
+        admin.phone = req.body.phone || admin.phone;
+        admin.cardnumber = req.body.cardnumber || admin.cardnumber;
+        admin.gender = req.body.gender || admin.gender;
+        
+        await admin.save();
+     
+        return res.status(200).json({ message: "success", admin });
+    
+  } 
+  
+  else {
+  
+  if (await userModel.findOne({ email: req.body.email, _id: { $ne: id } }).select('email')) {
+      return res.status(409).json({ message: `${admin.role} ${req.body.email} alredy exists` })
+  }
+  if (await userModel.findOne({ phone:req.body.phone, _id: { $ne: id } }).select('phone')) {
+    return res.status(409).json({ message: `Admin with email ${req.body.phone} already exists` });
+}
+if (await userModel.findOne({ cardnumber:req.body.cardnumber, _id: { $ne: id } }).select('cardnumber')) {
+  return res.status(409).json({ message: `Admin with email ${req.body.cardnumber} already exists` });
+}
 
-    else  if (admin.role === 'User') {
+    if(req.file){
+
+      if (admin.role === 'User') {
         const { secure_url, public_id } = await cloudinary.uploader.upload(req.file.path, {
             folder: `${process.env.APP_NAME}/users`
         })
@@ -228,10 +269,15 @@ export const updateadmin = async (req, res, next) => {
     admin.address = req.body.address || admin.address;
     admin.statuse = req.body.statuse || admin.statuse;
     admin.phone = req.body.phone || admin.phone;
+    admin.cardnumber = req.body.cardnumber || admin.cardnumber;
+    admin.gender = req.body.gender || admin.gender;
+    
    
     await admin.save();
  
     return res.status(200).json({ message: "success", admin });
+ 
+  }
 
 }
 
@@ -245,7 +291,13 @@ export const updateProfile = async (req, res, next) => {
   if (await userModel.findOne({ email: req.body.email, _id: { $ne: id } }).select('email')) {
       return res.status(409).json({ message: `${admin.role} ${req.body.email} alredy exists` })
   }
-  
+  if (await userModel.findOne({ phone:req.body.phone, _id: { $ne: id } }).select('phone')) {
+    return res.status(409).json({ message: `Admin with email ${req.body.phone} already exists` });
+}
+if (await userModel.findOne({ cardnumber:req.body.cardnumber, _id: { $ne: id } }).select('cardnumber')) {
+  return res.status(409).json({ message: `Admin with email ${req.body.cardnumber} already exists` });
+}
+
   if(req.file){
 
       if (admin.role === 'Candidate') {

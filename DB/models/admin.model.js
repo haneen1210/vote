@@ -77,7 +77,7 @@ const UserSchema = new Schema({
     AdminID:{
         type:Types.ObjectId,
         ref:'User',
-        required:true,
+
     },
     //votes: [{ type:Types.ObjectId, ref: 'Vote' }]
     votes: [{ type: Types.ObjectId, ref: 'Vote' }] 
