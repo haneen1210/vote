@@ -19,6 +19,8 @@ export const updateProfileSchema = joi.object({
     phone: joi.string().min(10).max(10),
     address: joi.string().alphanum().min(3).max(25),
     statuse: joi.string().valid('Active', 'Inactive'),
+    gender: joi.string().valid('Male', 'Female'),
+    cardnumber: joi.number().positive(),
     file: generalFields.file,
 });
 
@@ -37,14 +39,14 @@ export const signupSchemacandidate = joi.object({
 
 export const updatecandidate = joi.object({
     id: joi.string().required(), 
-    userName: joi.string().alphanum().min(3).max(25).required(),
-    cardnumber: joi.number().positive().required(),
-    email: generalFields.email,
+    userName: joi.string().alphanum().min(3).max(25),
+    cardnumber: joi.number().positive(),
+    email: joi.string().email(),
     phone: joi.string().required().min(10).max(10),
-    address: joi.string().alphanum().min(3).max(25).required(),
-    gender: joi.string().valid('Male', 'Female').required(),
-    file: generalFields.file.required(),
-    AdminID:joi.string().min(24).max(24).required(),
+    address: joi.string().alphanum().min(3).max(25),
+    gender: joi.string().valid('Male', 'Female'),
+    file: generalFields.file,
+    AdminID:joi.string().min(24).max(24),
 });
 
 export const UpdateStatuseUser = joi.object({
