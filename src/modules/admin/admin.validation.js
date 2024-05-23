@@ -40,7 +40,6 @@ export const updatecandidate = joi.object({
     userName: joi.string().alphanum().min(3).max(25).required(),
     cardnumber: joi.number().positive().required(),
     email: generalFields.email,
-    password: generalFields.password,
     phone: joi.string().required().min(10).max(10),
     address: joi.string().alphanum().min(3).max(25).required(),
     gender: joi.string().valid('Male', 'Female').required(),
