@@ -33,7 +33,6 @@ export const signupSchemacandidate = joi.object({
     gender: joi.string().valid('Male', 'Female').required(),
     role: joi.string().valid('User', 'Admin', 'Candidate'),
     file: generalFields.file.required(),
-    AdminID:joi.string().alphanum().min(3).max(25).required(),
 });
 
 export const updatecandidate = joi.object({
