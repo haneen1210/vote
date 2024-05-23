@@ -30,7 +30,7 @@ router.get('/getUser/:UserID', auth(endPoint.getAdmin), asynHandler(Adminservice
 router.patch('/softDeleteAdmin/:id', auth(endPoint.SuperAdmin), validation(validators.DeletAdminAndRestore), asynHandler(Adminservices.softDeletSuperAdmin));
 router.delete('/hrddDeletedAdmin/:id', auth(endPoint.SuperAdmin), validation(validators.DeletAdminAndRestore), asynHandler(Adminservices.HarddeleteSuperAdmin));
 router.patch('/restoreAdmin/:id', auth(endPoint.SuperAdmin), validation(validators.DeletAdminAndRestore), asynHandler(Adminservices.restoreSuperAdmin));
-router.patch('/softDelet/:id', auth(endPoint.deleteByadmin), validation(validators.DeletAdminAndRestore), asynHandler(Adminservices.softDeletAdmin));
+router.patch('/softDelet/:id', auth(endPoint.deleteByadmin), validation(validators.DeletAdminAndRestore), asynHandler(Adminservices.softDeleteAdmin));
 router.delete('/hrddDeleted/:id', auth(endPoint.deleteByadmin), validation(validators.DeletAdminAndRestore), asynHandler(Adminservices.Harddeleteadmin));
 router.patch('/restore/:id', auth(endPoint.restore), validation(validators.DeletAdminAndRestore), asynHandler(Adminservices.restore));
 router.put('/updateSuperAdmin/:id', auth(endPoint.SuperAdmin), fileUpload(fileValidation.image).single('image'),validation(validators.UpdateSchema), asynHandler(Adminservices.updateSuperAdmin));

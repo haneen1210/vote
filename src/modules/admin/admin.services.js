@@ -54,6 +54,7 @@ export const getspesificAdmin = async (req, res, next) => {
 
 export const softDeletSuperAdmin = async (req, res) => {
   const { id } = req.params;
+  
   const user = await userModel.findOneAndUpdate({ _id: id, isDeleted: false, role: 'Admin' }, { isDeleted: true }, { new: true });
   if (!user) {
       return res.status(400).json({ message: "Can't delete this record" });
@@ -84,39 +85,77 @@ export const restoreSuperAdmin = async (req, res) => {
 }
 
 
+export const softDeleteAdmin = async (req, res) => {
+  const { id } = req.params;
+  const AdminId = req.user;
+  const user = await userModel.findOne({ _id: id, role: { $in: ['User', 'Candidate'] } });
+  if (!user) {
+      return res.status(400).json({ message: "Can't delete this record" });
+  }
 
-export const softDeletAdmin = async (req, res) => {
-    const { id } = req.params;
-    const user = await userModel.findOneAndUpdate({ _id: id, isDeleted: false, role: { $in: ['User', 'Candidate'] } }, { isDeleted: true }, { new: true });
-    if (!user) {
-        return res.status(400).json({ message: "Can't delete this record" });
-    }
+  if (user.role === 'Candidate') {
+      if (AdminId._id.toString() !== user.AdminID.toString()) {
+      
+          return res.status(403).json({ message: "Unauthorized action" });
+      }
+      await userModel.findOneAndUpdate({ _id: id, isDeleted: false, role: 'Candidate' }, { isDeleted: true }, { new: true });
+  } else {
+      await userModel.findOneAndUpdate({ _id: id, isDeleted: false, role: 'User' }, { isDeleted: true }, { new: true });
+  }
 
-    return res.status(200).json({ message: `success delet${user.role}` });
+  return res.status(200).json({ message: `Successfully deleted ${user.role}` });
 }
 
 
-
 export const Harddeleteadmin = async (req, res, next) => {
-    const { id } = req.params;
-    const user = await userModel.findOneAndDelete({ _id: id, isDeleted: true, role: { $in: ['User', 'Candidate'] } });
 
+//const user = await userModel.findOneAndDelete({ _id: id, isDeleted: true, role: { $in: ['User', 'Candidate'] } });
+    const { id } = req.params;
+    const AdminId = req.user;
+    const user = await userModel.findOne({ _id: id, role: { $in: ['User', 'Candidate'] } });
     if (!user) {
-        return res.status(400).json({ message: "cont delete this record" });
+        return res.status(400).json({ message: "Can't delete this record" });
     }
-    return res.status(200).json({ message: `success delet${user.role}` });
+  
+    if (user.role === 'Candidate') {
+        if (AdminId._id.toString() !== user.AdminID.toString()) {
+        
+            return res.status(403).json({ message: "Unauthorized action" });
+        }
+        await userModel.findOneAndDelete({ _id: id, isDeleted: true, role: 'Candidate'  });
+    } else {
+      await userModel.findOneAndDelete({ _id: id, isDeleted: true, role: 'User'  });
+    }
+  
+    return res.status(200).json({ message: `Successfully deleted ${user.role}` });
 }
 
 
 
 export const restore = async (req, res) => {
-    const { id } = req.params;
-    const user = await userModel.findOneAndUpdate({ _id: id, isDeleted: true, role: { $in: ['User', 'Candidate'] } }, { isDeleted: false }, { new: true });
-    if (!user) {
-        return res.status(400).json({ message: "user not found" });
-    }
-    return res.status(200).json({ message:  `success restore${user.role}` });
+  const { id } = req.params;
+  const AdminId = req.user;
+  const user = await userModel.findOne({ _id: id, role: { $in: ['User', 'Candidate'] } });
+  if (!user) {
+      return res.status(400).json({ message: "Can't delete this record" });
+  }
+
+  if (user.role === 'Candidate') {
+      if (AdminId._id.toString() !== user.AdminID.toString()) {
+      
+          return res.status(403).json({ message: "Unauthorized action" });
+      }
+      await userModel.findOneAndUpdate({ _id: id, isDeleted: true, role: 'Candidate' }, { isDeleted:false  }, { new: true });
+  } else {
+      await userModel.findOneAndUpdate({ _id: id, isDeleted: true, role: 'User' }, { isDeleted: false }, { new: true });
+  }
+
+  return res.status(200).json({ message: `Successfully deleted ${user.role}` });
 }
+
+
+
+
 
 
 export const updateSuperAdmin = async (req, res, next) => {
