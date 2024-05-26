@@ -8,7 +8,7 @@ import * as validators from './contect.validation.js';
 
 
 const router = Router();
-router.post('/newcontect',auth(Object.values(roles)), validation(validators.contect), asynHandler(contectserver.createcontect));
+router.post('/newcontect', validation(validators.contect), asynHandler(contectserver.createcontect));
 router.get('/getcontect', auth(Object.values(roles)), asynHandler(contectserver.getcontect));
 router.get('/:contectID', auth(endPoint.contect), validation(validators.getspecificcontect), asynHandler(contectserver.getspecificcontect));
 router.patch('/:id', auth(endPoint.contect), validation(validators.updatecontectSchema), asynHandler(contectserver.updatecontect));
