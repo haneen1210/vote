@@ -17,8 +17,8 @@ export const createcontect = async (req, res, next) => {
     <p>from : ${fullName}</p>
     <p>message: ${message}</p>
     <p>phone : ${phone}</p>
-    </div>`
-    await sendEmailcontact(email,process.env.EMAILSENDER,html);
+    </div>`;
+    await sendEmailcontact(email,`voteele@gmail.com`,"contact: ",html);
     return res.status(201).json({ message: "success", communication });
 }
 

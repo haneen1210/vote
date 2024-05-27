@@ -24,29 +24,24 @@ const transporter = nodemailer.createTransport({
   return info;
 }
 
-
-export async function sendEmailcontact(to,subject,html) {
-
- 
+export async function sendEmailcontact(from,to, subject,html) {
   const transporter = nodemailer.createTransport({
-   service:'gmail',
-    auth: {
-      user:process.env.EMAILSENDER,
-      pass:process.env.PASSWORDSENDER,
-    },
-  
-    tls: {
-      rejectUnauthorized: false
-  }
+      service: 'gmail',
+      auth: {
+        user:process.env.EMAILSENDER,
+        pass:process.env.PASSWORDSENDER,
+      },
+      tls: {
+          rejectUnauthorized: false
+      }
   });
-  
-    const info = await transporter.sendMail({
-      from,
-      to, 
-      //subject, 
+
+  const info = await transporter.sendMail({
+      from ,
+      to,
+      subject,
       html,
-    });
-  
-    return info;
-  }
-  
+  });
+
+  return info;
+}
