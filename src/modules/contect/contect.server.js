@@ -1,7 +1,7 @@
 
 import contectModel from "../../../DB/models/contect.model.js";
 
-
+// إنشاء بيانات اتصال جديدة
 export const createcontect = async (req, res, next) => {
     const {  fullName,email,phone,message} = req.body;
     
@@ -15,13 +15,13 @@ export const createcontect = async (req, res, next) => {
     return res.status(201).json({ message: "success", communication });
 }
 
-
+// الحصول على جميع بيانات الاتصال
 export const getcontect = async (req, res, next) => {
     const communication = await contectModel. find({});
     return res.status(200).json({ message: "success", communication });
 }
 
-
+// الحصول على بيانات اتصال محددة
 export const getspecificcontect = async (req, res) => {
     const { contectID } = req.params;
     const communication = await contectModel.findOne({ _id: contectID });
@@ -31,7 +31,7 @@ export const getspecificcontect = async (req, res) => {
     return res.status(200).json({ message: "contect found", communication });
 }
 
-
+// تحديث بيانات الاتصال
 export const updatecontect = async (req, res) => {
     const { id } = req.params;
     const communication = await contectModel.findOne({_id:id });
@@ -52,7 +52,7 @@ export const updatecontect = async (req, res) => {
     return res.status(200).json({ message: "success update contect ", communication });
 }
 
-
+// حذف بيانات الاتصال
 export const deletecontect = async (req, res) => {
     const { contectID } = req.params;
     const communication = await contectModel.findOneAndDelete({_id:contectID });

@@ -1,7 +1,7 @@
 
 import ServicesModel from "../../../DB/models/services.model.js";
 
-
+//بإنشاء خدمة جديدة
 export const newServices = async (req, res, next) => {
    
     const { title, description} = req.body;
@@ -9,13 +9,13 @@ export const newServices = async (req, res, next) => {
     return res.status(201).json({ message: "success", createservices });
 
 }
-
+//بارجاع جميع الخدمة 
 export const getServices = async (req, res, next) => {
     const Services = await ServicesModel. find({});
     return res.status(200).json({ message: "success", Services });
 
 }
-
+//بارجاع خدمة معينة
 export const getspecificService = async (req, res) => {
     const { ServiceID } = req.params;
     const Service = await ServicesModel.findOne({ _id: ServiceID });
@@ -24,7 +24,7 @@ export const getspecificService = async (req, res) => {
     }
     return res.status(200).json({ message: "Service found", Service });
 }
-
+//تعديل خدمة معينة
 export const updateservice = async (req, res) => {
     const { id } = req.params;
     const Service = await ServicesModel.findOne({_id:id });
@@ -39,7 +39,7 @@ export const updateservice = async (req, res) => {
     return res.status(200).json({ message: "success update Service ", Service });
 }
 
-
+//حذف خدمة معينة
 export const deleteservice = async (req, res) => {
     const { ServiceID } = req.params;
     const Service = await ServicesModel.findOneAndDelete({_id:ServiceID });

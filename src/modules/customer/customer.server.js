@@ -3,7 +3,7 @@ import customerModel from "../../../DB/models/customers.model.js";
 import cloudinary from "../../utls/cloudinary.js";
  
 
-
+// إنشاء عميل جديد
 export const createcustomer = async (req, res, next) => {
     const {  userName,email,image,phone,address,statuse} = req.body;
     if (await customerModel.findOne({ userName })) {
@@ -23,12 +23,12 @@ export const createcustomer = async (req, res, next) => {
     return res.status(201).json({ message: "success", createcustomer });
 }
 
-
+// الحصول على جميع بيانات العملاء
 export const getcustomer = async (req, res, next) => {
     const customer = await customerModel. find({});
     return res.status(200).json({ message: "success", customer });
 }
-
+// الحصول على بيانات عميل محدد
 export const getspecificCustomer = async (req, res) => {
     const { customerID } = req.params;
     const customer = await customerModel.findOne({ _id: customerID });
@@ -38,7 +38,7 @@ export const getspecificCustomer = async (req, res) => {
     return res.status(200).json({ message: "customer found", customer });
 }
 
-
+// تحديث بيانات عميل
 export const updatecustomer = async (req, res) => {
     const { id } = req.params;
     const customer = await customerModel.findOne({_id:id });
@@ -68,7 +68,7 @@ export const updatecustomer = async (req, res) => {
     return res.status(200).json({ message: "success update customer ", customer });
 }
 
-
+// حذف بيانات عميل
 export const deletecustomer = async (req, res) => {
     const { customerID } = req.params;
     const customer = await customerModel.findOneAndDelete({_id:customerID });

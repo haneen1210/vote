@@ -2,7 +2,7 @@
 import itemModel from "../../../DB/models/item.model.js";
 import PlansModel from "../../../DB/models/plans.model.js";
 
-
+// إنشاء خطة جديدة
 export const newPlans = async (req, res, next) => {
    
     const { planName, description} = req.body;
@@ -10,7 +10,7 @@ export const newPlans = async (req, res, next) => {
     return res.status(201).json({ message: "success", createplans });
 
 }
-
+// إضافة عنصر إلى خطة معينة
 export const additem = async (req, res, next) => {
     req.body.planId=req.params.id;    //id plan
    // req.body.userId=req.user._id;
@@ -22,14 +22,14 @@ export const additem = async (req, res, next) => {
     const planx=await itemModel.create(req.body);
     return res.status(200).json({ message: "success", planx });
 }
-
+// الحصول على جميع الخطط مع العناصر المرتبطة بها
 export const getSplans = async (req, res, next) => {
     const plans = await PlansModel.find({}).populate({
         path: 'item',
     });
     return res.status(200).json({ message: "success", plans });
 }
-
+// الحصول على خطة معينة مع العناصر المرتبطة بها
 export const getspecificplan = async (req, res) => {
     const { PlansID } = req.params;
     const plan = await PlansModel.findOne({ _id: PlansID });
@@ -42,7 +42,7 @@ export const getspecificplan = async (req, res) => {
     return res.status(200).json({ message: "plans found", plans });
 
 }
-
+// تحديث خطة معينة
 export const updateplan = async (req, res) => {
     const { id } = req.params;
     const plan = await PlansModel.findOne({_id:id });
@@ -57,7 +57,7 @@ export const updateplan = async (req, res) => {
     return res.status(200).json({ message: "success update plan ", plan });
 }
 
-
+// حذف خطة معينة
 export const deleteplan = async (req, res) => {
     const { PlansID } = req.params;
     const plan = await PlansModel.findOneAndDelete({_id:PlansID });

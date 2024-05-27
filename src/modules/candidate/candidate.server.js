@@ -3,12 +3,14 @@ import PostModel from "../../../DB/models/post.model.js";
 import VoteModel from "../../../DB/models/vote.model.js";
 import WithdrawalModel from "../../../DB/models/withdrawa.model.js";
 
-
+// الحصول على جميع المرشحين النشطين
 export const getcandidate = async (req, res, next) => {
     const Candidate = await userModel. find({ isDeleted: false , role : 'Candidate',statuse:'Active'});
     return res.status(200).json({ message: "success", Candidate });
 
 }
+
+// الحصول على تصويت محدد يشترك فيه المرشح
 export const getspecificCandidateinvote = async (req, res) => {
     const { CandidateID } = req.params;
     const vote = await VoteModel.findOne({ "candidates": CandidateID });
@@ -19,6 +21,7 @@ export const getspecificCandidateinvote = async (req, res) => {
 
 }
 
+// الحصول على معلومات مرشح محدد
 export const getspecificCandidate = async (req, res) => {
     const { CandidateID } = req.params;
     const candidate = await userModel.findOne({ _id: CandidateID });
@@ -29,7 +32,7 @@ export const getspecificCandidate = async (req, res) => {
 
 }
 
-
+// الحصول على جميع التصويتات التي يشارك فيها المرشح
 export const getspecificCandidateinvotes = async (req, res) => {
     try {
         const user_id = req.user._id;
@@ -66,7 +69,7 @@ export const getspecificCandidateinvotes = async (req, res) => {
 
 
 
-
+// إرسال طلب انسحاب للمرشح
 export const requestWithdrawal = async (req, res) => {
     const { voteName, reason ,AdminName} = req.body; //userName=Admin
     const candidateId = req.user._id; // candidateId
@@ -112,7 +115,7 @@ export const requestWithdrawal = async (req, res) => {
 };
 
 
-
+// الحصول على جميع المنشورات الخاصة بالمرشح
 export const getCandidatePosts = async (req, res) => {
     try {
         // احصل على معرف المستخدم من التوكين
@@ -155,7 +158,7 @@ export const getCandidatePosts = async (req, res) => {
     }
 };
 
-
+// الحصول على جميع المنشورات الخاصة بمرشح محدد (للعرض)
 export const getCandidatePostsShow = async (req, res) => {
     try {
         const { candidateId } = req.params;

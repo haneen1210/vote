@@ -43,6 +43,7 @@ export const validation = (schema) => {
         next();
     }
 }
+
 export const validation1 = (schema) => {
     return async (req, res, next) => {
         try {

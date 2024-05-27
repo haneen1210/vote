@@ -2,6 +2,8 @@ import commentModel from "../../../../DB/models/comment.model.js";
 import PostModel from "../../../../DB/models/post.model.js";
 import cloudinary from "../../../utls/cloudinary.js";
 
+
+//هذه الدالة تقوم بإنشاء تعليق جديد على منشور معين
 export const createComment = async (req, res, next) => {
     req.body.postId=req.params.id;
     req.body.userId=req.user._id;

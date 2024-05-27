@@ -5,7 +5,7 @@ import jwt from "jsonwebtoken"
 import { sendEmail } from "../../utls/email.js";
 import { customAlphabet } from "nanoid";
 
-
+//اضافة المستخدم 
 export const Signup = async (req, res, next) => {
   
     const { userName, email, password, cardnumber, phone, address, gender, role='User' } = req.body;
@@ -268,7 +268,7 @@ export const Signup = async (req, res, next) => {
 
 }
 
-
+//ارسال ايميل تاكيد بانه تم قبول في البرنامج 
 export const confimEmail = async (req, res, next) => {
     const token = req.params.token;
     const decoded = jwt.verify(token, process.env.CONFTRAMEMAILSECRET);
@@ -283,7 +283,7 @@ export const confimEmail = async (req, res, next) => {
     return next(new Error("your email is verified", { cause: 200 }));
 }
 
-
+//تسجيل دخول الى البرنامج 
 export const singIn = async (req, res, next) => {
     const { email, password } = req.body;
     const user = await userModel.findOne({ email });
@@ -308,7 +308,7 @@ export const singIn = async (req, res, next) => {
         { expiresIn: 60 * 60 * 24 * 30 });
     return res.status(200).json({ message: "success", token, refreshToken, role: user.role });
 }
-
+//ارسال كود في حالة نسيان كلمة السر 
 export const sendCode = async (req, res, next) => {
     const { email } = req.body;
     let code = customAlphabet('1234567890abcdABCD', 4)
@@ -320,7 +320,7 @@ export const sendCode = async (req, res, next) => {
     //هون لازم تحطلو رابط يحولك على فورم ادخل معلومتك الجديدة
 }
 
-
+// اعادة تعين كلمة سر 
 export const forgotPassword = async (req, res, next) => {
     try {
 

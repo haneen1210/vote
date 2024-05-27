@@ -4,10 +4,7 @@ import cloudinary from "../../utls/cloudinary.js";
  
 
 
-
-
-
-
+// إنشاء مقال جديد
 export const createblog = async (req, res, next) => {
     const {  titel,short_description,long_description,image} = req.body;
 
@@ -19,12 +16,12 @@ export const createblog = async (req, res, next) => {
     return res.status(201).json({ message: "success", createblog });
 }
 
-
+// الحصول على جميع المقالات
 export const getblog = async (req, res, next) => {
     const blog = await blogsModel. find({});
     return res.status(200).json({ message: "success", blog });
 }
-
+// الحصول على مقال محدد بواسطة الهوية
 export const getspecificblog = async (req, res) => {
     const { blogID } = req.params;
     const blog = await blogsModel.findOne({ _id: blogID });
@@ -34,7 +31,7 @@ export const getspecificblog = async (req, res) => {
     return res.status(200).json({ message: "blog found", blog });
 }
 
-
+// تحديث مقال محدد
 export const updateblog = async (req, res) => {
     const { id } = req.params;
     const blog = await blogsModel.findOne({_id:id });
@@ -59,7 +56,7 @@ export const updateblog = async (req, res) => {
     return res.status(200).json({ message: "success update blog ", blog });
 }
 
-
+// حذف مقال محدد
 export const deleteblog = async (req, res) => {
     const { blogID } = req.params;
     const blog = await blogsModel.findOneAndDelete({_id:blogID });

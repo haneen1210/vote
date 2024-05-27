@@ -5,6 +5,7 @@ import userModel from "../../../DB/models/admin.model.js";
 import XLSX from "xlsx";
 import ResultModel from "../../../DB/models/Result.model.js";
 
+//تقوم بإنشاء تصويت جديد
 export const createVote = async (req, res, next) => {
   const { voteName, VotingStatus, description, StartDateVote, EndDateVote, image, AdminID } = req.body;
   if (await voteModel.findOne({ voteName })) {
@@ -20,12 +21,12 @@ export const createVote = async (req, res, next) => {
   return res.status(201).json({ message: "success", createVote });
 };
 
-
+//تُستخدم لاسترجاع جميع التصويتات المتاحة من قاعدة البيانات
 export const getVotes = async (req, res, next) => {
   const votes = await voteModel.find();
   return res.status(200).json({ message: "success", votes });
 };
-
+//تُستخدم لاسترجاع التصويتات التي تخص مُسؤول معين بناءً على التوكين.
 export const getVotesByIDAdmin = async (req, res, next) => {
   const {AdminID}  = req.params;
   const votes = await voteModel.find({ AdminID });
@@ -35,7 +36,7 @@ export const getVotesByIDAdmin = async (req, res, next) => {
   return res.status(200).json({ message: "success", votes });
 };
 
-
+//تُستخدم لاسترجاع التصويتات التي تخص المُسؤول الحالي (المُسجل الدخول).
 export const getVotesByAdmin = async (req, res, next) => {
   const AdminID  = req.user._id;
   const votes = await voteModel.find({ AdminID });
@@ -45,6 +46,7 @@ export const getVotesByAdmin = async (req, res, next) => {
   return res.status(200).json({ message: "success", votes });
 };
 
+//ستخدم لتحديث حالة التصويت (نشط أو غير نشط) بناءً على طلب المُسؤول.
 export const updateVotingStatus = async (req, res, next) => {
   const Admin_id = req.user._id; 
 
@@ -87,7 +89,7 @@ export const updateVotingStatus = async (req, res, next) => {
   }
 };
 
-
+//ستخدم لتحديث حالة التصويتات التي انتهت مدة صلاحيتها إلى "غير نشط".
 export const sendReminderVotingStatus = async (req, res, next) => {
  
     try {
@@ -108,18 +110,18 @@ export const sendReminderVotingStatus = async (req, res, next) => {
 
 }
 
-
+//تُستخدم لاسترجاع التصويتات التي لا تزال نشطة.
 export const getVoteOpen = async (req, res, next) => {
   const votes = await voteModel.find({ VotingStatus: "Active" });
   return res.status(200).json({ message: "success", votes });
 };
-
+//تُستخدم لاسترجاع التصويتات السابقة التي أصبحت غير نشطة (مدة التصويت انتهت).
 export const getpreviousvotes = async (req, res, next) => {
     const votes = await voteModel.find({ VotingStatus: "Inactive",EndDateVote: { $lt: new Date() }  });
     return res.status(200).json({ message: "success", votes });
   };
 
-
+//تُستخدم لاسترجاع تفاصيل تصويت معين بناءً على مُعرفه.
 export const getspecificVote = async (req, res) => {
   const { id } = req.params;
   const vote = await voteModel.findById(id);
@@ -131,13 +133,15 @@ export const getspecificVote = async (req, res) => {
   });
   return res.status(200).json({ message: "success", subvote });
 };
-
+//تُستخدم لاسترجاع جميع التصويتات مع تفاصيل المرشحين.
 export const getallVoteandcatecory = async (req, res) => {
   const subvote = await voteModel.find().populate({
     path: "candidates",
   });
   return res.status(200).json({ message: "success", subvote });
 };
+
+//تُستخدم لاسترجاع التصويتات التي شارك فيها مستخدم معين.
 export const getUserinVote = async (req, res) => {
   try {
       const user_id = req.user._id;
@@ -161,8 +165,6 @@ export const getUserinVote = async (req, res) => {
       return res.status(500).json({ message: "An error occurred while fetching votes", error: error.message });
   }
 };
-
-
 
 // وظيفة لإضافة مرشح موجود إلى التصويت
 export const addExistingCandidateToVote = async (req, res) => {
@@ -193,50 +195,7 @@ export const addExistingCandidateToVote = async (req, res) => {
     .status(200)
     .json({ message: "Candidate added to vote successfully" });
 };
-/*
-export const uploadExcelCandidateToVote = async (req, res, next) => {
-  try {
-    const Admin_id = req.user._id; 
-    const woorkBook = XLSX.readFile(req.file.path);
-    const woorkSheet = woorkBook.Sheets[woorkBook.SheetNames[0]];
-    const users = XLSX.utils.sheet_to_json(woorkSheet);
-    const errors = [];
-    const successes = [];
-    for (const row of users) {
-      const { CandidateName, voteName } = row;
-      // Find the vote and candidate in the database
-      const candidate = await userModel.findOne({ userName: CandidateName, role: "Candidate",});
-      const vote = await voteModel.findOne({ voteName: voteName });
-     
-      if (Admin_id.toString() !== vote.AdminID.toString()) {
-        errors.push({ message:" Unauthorized action of this admin", CandidateName, voteName });
-        continue;
-      }
-
-      // Check if the vote and candidate exist
-      if (!vote || !candidate) {
-        errors.push({ message:"Vote or Candidate not found for voteName", CandidateName, voteName });
-        continue;
-      }
-      // Check if the candidate already exists in the vote
-      const existingCandidate = await voteModel.findOne({_id: vote._id, candidates: candidate._id,});
-      if (existingCandidate) {
-        errors.push({ message:`Candidate ${CandidateName} already exists in the vote ${voteName}`});
-        continue;
-
-      }
-    
-      // Add the candidate to the vote
-      vote.candidates.push(candidate);
-      await vote.save();
-      successes.push({ message: `Candidate ${CandidateName} added to vote ${voteName} successfully`});
-    }
-    return res.status(200).json({ message: "Candidates added to votes successfully" ,successes,errors});
-  } catch (error) {
-    return res.status(500).json({ message: "Error while uploading candidates to votes",successes,errors});
-  }
-};*/
-
+// وظيفة لإضافة مرشح موجود إلى التصويت عن طريق ملف اكسل 
 export const uploadExcelCandidateToVote = async (req, res, next) => {
   try {
     const Admin_id = req.user._id;
@@ -291,7 +250,7 @@ export const uploadExcelCandidateToVote = async (req, res, next) => {
   }
 };
 
-
+//تُستخدم لإزالة مرشح موجود من التصويت
 export const removeCandidateFromVote = async (req, res) => {
     const { userName, voteName } = req.body;
     const Admin_id = req.user._id; 
@@ -317,66 +276,9 @@ export const removeCandidateFromVote = async (req, res) => {
   await vote.save();
   return res.status(200).json({ message: "Candidate removed from vote successfully" });
 };
-/*
-export const join1 = async (req, res, next) => {
-  const { idvote } = req.params;//id idvote
-  const { idcandidate } = req.params;//id idcandidate
-  const user_id = req.user._id;
-  if (!idvote || !idcandidate) {
-    return res.status(404).json({ message: "Vote or Candidate not found" });
-  }
-  const inactiveVote = await voteModel.findOne({ _id: idvote, VotingStatus: "Inactive" });
-  if (inactiveVote) {
-    return res.status(400).json({ message: "The voting period has ended" });
-  }
-  const join = await voteModel.findByIdAndUpdate(idvote, { $addToSet: { join1: user_id } },
-      {
-          new: true
-      })
-      const result = await ResultModel.create({VoteId:idvote,candidateId:idcandidate,userId: user_id });
-  await join.save();
-  return res.status(200).json({ message: "success", join,result });
-}
-
-*/
 
 
-
-export const join1 = async (req, res, next) => {
-  const { idvote, idcandidate } = req.params;
-  const user_id = req.user._id;
-  
-  // Check if both vote and candidate IDs are provided
-  if (!idvote || !idcandidate) {
-    return res.status(404).json({ message: "Vote or Candidate not found" });
-  }
-  // Check if the vote is inactive
-  const inactiveVote = await voteModel.findOne({ _id: idvote, VotingStatus: "Inactive" });
-  if (inactiveVote) {
-    return res.status(400).json({ message: "The voting period has ended" });
-  }
-
-  // Check if the user has already participated in this vote
-  const existingParticipation = await ResultModel.findOne({ VoteId: idvote, userId: user_id });
-  if (existingParticipation) {
-    return res.status(409).json({ message: "User has already participated in this vote" });
-  }
-
-  // Add user to the vote (assuming that join1 is an array of user IDs)
-  const join = await voteModel.findByIdAndUpdate(
-    idvote,
-    { $addToSet: { join1: user_id } },  // Ensures user is added only once
-    { new: true }
-  );
-
-  // Create a result entry for the user's participation
-  const result = await ResultModel.create({ VoteId: idvote, candidateId: idcandidate, userId: user_id });
-
-  // There's no need to call save after findByIdAndUpdate if you're not making additional changes to 'join'
-  return res.status(200).json({ message: "Success", join, result });
-};
-
-
+//تُستخدم للسماح للمستخدم بالانضمام إلى التصويت مع تحديد المرشح
 export const join = async (req, res, next) => {
   const { idvote, idcandidate } = req.params;
   const user_id = req.user._id;
@@ -418,7 +320,7 @@ export const join = async (req, res, next) => {
   return res.status(200).json({ message: "Success", join, result });
 };
 
-
+//تُستخدم لجمع الأصوات لكل مرشح وإعادة تنسيق النتائج.
 export const countVotesForCandidates = async (req, res) => {
      // استخدام Mongoose لجمع الأصوات وتعبئة التفاصيل ذات الصلة
      const results = await ResultModel.aggregate([
@@ -463,49 +365,7 @@ export const countVotesForCandidates = async (req, res) => {
   });
 
 };
-
-/*
-export const countVotesForCandidates = async (req, res) => {
-
-      const results = await ResultModel.aggregate([
-          { $group: { _id: { VoteId: "$VoteId", candidateId: "$candidateId" }, count: { $sum: 1 } } }
-      ]);
-
-      const populatedResults = await Promise.all(results.map(async result => {
-        const voteDetails = await voteModel.findById(result._id.VoteId);
-        const candidateDetails = await userModel.findById(result._id.candidateId);
-
-          // التحقق من أن voteDetails و candidateDetails ليست null قبل الوصول إلى خصائصها
-          if (!voteDetails || !candidateDetails) {
-              console.log('One of the documents was not found:', { voteDetails, candidateDetails });
-              return {
-                  voteId: result._id.VoteId,
-                  candidateId: result._id.candidateId,
-                  voteName: voteDetails ? voteDetails.voteName : 'Vote details not found',
-                  candidateName: candidateDetails ? candidateDetails.userName : 'Candidate details not found',
-                  voteCount: result.count
-              };
-          }
-
-          return {
-              voteId: result._id.VoteId,
-              candidateId: result._id.candidateId,
-              voteName: voteDetails.voteName,
-              candidateName: candidateDetails.userName,
-              voteCount: result.count
-          };
-      }));
-
-      res.status(200).json({
-          message: "Vote counts for each candidate including candidate names",
-          results: populatedResults
-      });
- 
-};
-
-
-*/
-
+//تُستخدم للبحث عن جميع التصويتات التي شارك فيها مستخدم معين.
 export const findUserVotes = async (req, res) => {
   const { userId } = req.params;
       // استعلام لجلب جميع معرفات التصويتات التي شارك فيها المستخدم
@@ -521,57 +381,7 @@ export const findUserVotes = async (req, res) => {
       });
 };
 
-/*
-export const uploadExcelCandidateToVote = async (req, res, next) => {
-  try {
-    const woorkBook = XLSX.readFile(req.file.path);
-    const woorkSheet = woorkBook.Sheets[woorkBook.SheetNames[0]];
-    const users = XLSX.utils.sheet_to_json(woorkSheet);
-    for (const row of users) {
-      const { CandidateID, voteID } = row;
-      // Find the vote and candidate in the database
-      const vote = await voteModel.findOne({ _id: voteID });
-      const candidate = await userModel.findOne({
-        _id: CandidateID,
-        role: "Candidate",
-      });
-      if (!vote || !candidate) {
-        console.log(
-          `Vote or Candidate not found for voteID ${voteID} and CandidateID ${CandidateID}`,
-        );
-        continue; // Skip to the next row
-      }
-      // Check if the candidate already exists in the vote
-      const existingCandidate = await voteModel.findOne({
-        _id: voteID,
-        candidates: CandidateID,
-      });
-      if (existingCandidate) {
-        console.log(
-          `Candidate ${CandidateID} already exists in the vote ${voteID}`,
-        );
-        continue; // Skip to the next row
-      }
-      // Add the candidate to the vote
-      vote.candidates.push(candidate);
-      await vote.save();
-      console.log(
-        `Candidate ${CandidateID} added to vote ${voteID} successfully`,
-      );
-    }
-    return res
-      .status(200)
-      .json({ message: "Candidates added to votes successfully" });
-  } catch (error) {
-    console.error("Error while uploading candidates to votes:", error);
-    return res
-      .status(500)
-      .json({ message: "Error while uploading candidates to votes" });
-  }
-};*/
-
-//localhost:5000/
-
+//تُستخدم لاسترجاع التصويتات التي شارك فيها المستخدم الحالي.
 export const getUserVotes = async (req, res) => {
  
       // احصل على معرف المستخدم من التوكين
@@ -644,7 +454,7 @@ export const addExistingUserToVote = async (req, res) => {
 
 
 
-
+//تُستخدم لرفع ملف Excel يحتوي على بيانات المستخدمين ليتم إضافتهم إلى التصويت.
 export const uploadExcelUSerToVote = async (req, res, next) => {
   try {
     const Admin_id = req.user._id;

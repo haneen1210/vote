@@ -7,12 +7,14 @@ import XLSX from "xlsx";
 import WithdrawalModel from "../../../DB/models/withdrawa.model.js";
 import VoteModel from "../../../DB/models/vote.model.js";
 
+// دالة لجلب جميع المستخدمين الذين لديهم دور "Admin" وغير محذوفين
 export const getAdmin = async (req, res, next) => {
     const Admins = await userModel.find({ isDeleted: false , role : 'Admin'});
     return res.status(200).json({ message: "success", Admins });
 
 }
 
+// دالة لجلب معلومات المستخدم بناءً على معرف المستخدم في token
 export const getinformation = async (req, res, next) => {
   const userId = req.user;
   const getinformation = await userModel.find({ _id:userId , isDeleted: false });
@@ -20,18 +22,21 @@ export const getinformation = async (req, res, next) => {
 
 }
 
+// دالة لجلب جميع المستخدمين الذين لديهم دور "Admin" وتم حذفهم
 export const getdeleteAdmin = async (req, res, next) => {
  
   const getinformation = await userModel.find({ role:'Admin' ,isDeleted: true });
   return res.status(200).json({ message: "success", getinformation });
 
 }
-
+// دالة لجلب جميع المستخدمين الذين لديهم دور "User" وتم حذفهم
 export const getdeleteuser = async (req, res, next) => {
   const getinformation = await userModel.find({role:'User' ,isDeleted: true });
   return res.status(200).json({ message: "success", getinformation });
 
 }
+
+// دالة لجلب جميع المستخدمين الذين لديهم دور "Candidate" وتم حذفهم بناءً على معرف المسؤول
 export const getdeleteCandidate = async (req, res, next) => {
   const AdminId = req.user;
   const getinformation = await userModel.find({ role:'Candidate' ,isDeleted: true, AdminID:AdminId._id});
@@ -39,15 +44,14 @@ export const getdeleteCandidate = async (req, res, next) => {
 
 }
 
-
-
+// دالة لجلب جميع المستخدمين الذين لديهم دور "Candidate" وغير محذوفين بناءً على معرف المسؤول
 export const getCandidateByAdmin = async (req, res, next) => {
   const AdminId = req.user;
   const getinformation = await userModel.find({ role:'Candidate' ,isDeleted: false, AdminID:AdminId._id});
   return res.status(200).json({ message: "success", getinformation });
 
 }
-
+// دالة لجلب معلومات مسؤول محدد بناءً على معرف المسؤول في المعلمات
 export const getspesificAdmin = async (req, res, next) => {
     const { AdminID } = req.params;
     const Admin = await userModel.findOne({ _id: AdminID , role : 'Admin'});
@@ -59,6 +63,7 @@ export const getspesificAdmin = async (req, res, next) => {
 }
 
 
+// دالة لحذف مسؤول بشكل منطقي (تحديده كمحذوف) بناءً على معرفه في المعلمات
 export const softDeletSuperAdmin = async (req, res) => {
   const { id } = req.params;
   
@@ -71,6 +76,7 @@ export const softDeletSuperAdmin = async (req, res) => {
 }
 
 
+// دالة لحذف مسؤول بشكل دائم بناءً على معرفه في المعلمات
 export const HarddeleteSuperAdmin = async (req, res, next) => {
   const { id } = req.params;
   const user = await userModel.findOneAndDelete({ _id: id, isDeleted: true, role: 'Admin' });
@@ -81,7 +87,7 @@ export const HarddeleteSuperAdmin = async (req, res, next) => {
   return res.status(200).json({ message: `success delete ${user.role}` });
 }
 
-
+// دالة لاستعادة مسؤول محذوف بشكل سوفت بناءً على معرفه في المعلمات
 export const restoreSuperAdmin = async (req, res) => {
   const { id } = req.params;
   const user = await userModel.findOneAndUpdate({ _id: id, isDeleted: true, role: 'Admin' }, { isDeleted: false }, { new: true });
@@ -92,6 +98,7 @@ export const restoreSuperAdmin = async (req, res) => {
 }
 
 
+// دالة لحذف مستخدم أو مرشح بشكل منطقي بناءً على معرفه في المعلمات وتحقق من أذونات المسؤول
 export const softDeleteAdmin = async (req, res) => {
   const { id } = req.params;
   const AdminId = req.user;
@@ -113,7 +120,7 @@ export const softDeleteAdmin = async (req, res) => {
   return res.status(200).json({ message: `Successfully deleted ${user.role}` });
 }
 
-
+// دالة لحذف مستخدم بشكل دائم بناءً على معرفه في المعلمات وتحقق من أذونات المسؤول
 export const Harddeleteadmin = async (req, res, next) => {
     const { id } = req.params;
     const AdminId = req.user;
@@ -136,7 +143,7 @@ export const Harddeleteadmin = async (req, res, next) => {
 }
 
 
-
+// دالة لاستعادة مستخدم محذوف بشكل سوفت بناءً على معرفه في المعلمات وتحقق من أذونات المسؤول
 export const restore = async (req, res) => {
   const { id } = req.params;
   const AdminId = req.user;
@@ -159,7 +166,7 @@ export const restore = async (req, res) => {
 }
 
 
-
+// دالة لتحديث معلومات المسؤول من قبل السوبر ادمن بناءً على معرفه في المعلمات
 export const updateSuperAdmin = async (req, res, next) => {
   const { id } = req.params;
   const admin = await userModel.findOne({ _id: id, role: 'Admin' }); // التحقق من أن المستخدم هو أدمن
@@ -203,7 +210,7 @@ if (await userModel.findOne({ cardnumber:req.body.cardnumber, _id: { $ne: id } }
 }
 
 
-
+// دالة لتحديث معلومات المستخدم من قبل الادمن بناءً على معرفه في المعلمات
 export const updateadmin = async (req, res, next) => {
     const { id } = req.params;
     const admin = await userModel.findOne({ _id: id,role: 'User' } );
@@ -250,7 +257,7 @@ if (await userModel.findOne({ cardnumber:req.body.cardnumber, _id: { $ne: id } }
   }
 
 
-
+// دالة لتحديث معلومات المرشح بواسطة المسؤول بناءً على معرفه في المعلمات وتحقق من أذونات المسؤول
 export const updateCandidateByadmin = async (req, res, next) => {
   const AdminId = req.user;
   const { id } = req.params;
@@ -294,9 +301,7 @@ if (await userModel.findOne({ cardnumber:req.body.cardnumber, _id: { $ne: id } }
 } 
 
 
-
-
-
+// دالة لتحديث الملف الشخصي للمستخدم بناءً على معرفه المخزن في التوكن
 export const updateProfile = async (req, res, next) => {
   const  id  = req.user._id;
   const admin = await userModel.findOne({ _id: id });
@@ -353,7 +358,7 @@ if (await userModel.findOne({ cardnumber:req.body.cardnumber, _id: { $ne: id } }
 
 
 
-
+// عن طريق ملف اكسل اضافة مرشح من قل الادمن الى البرنامج 
 export const addCandidateExcel = async (req, res, next) => {
   try {
     const AdminId = req.user;
@@ -486,7 +491,7 @@ export const addCandidateExcel = async (req, res, next) => {
 
 
 
-
+//تغير كلمة السر لجميع الرول 
 export const updatPassword = async (req, res, next) => {
     const {oldPassword,newPassword}=req.body;
     const user = await userModel.findById(req.user._id);
@@ -508,7 +513,7 @@ export const updatPassword = async (req, res, next) => {
 
 
     
-
+// تحويل حالة المستخدم من غير نشط الى نشط و العكس من قبل الادمن و السوبر ادمن 
     export const UpdateStatuseUser = async (req, res, next) => {
       const { idUser } = req.params;
       const User = await userModel.findOne({ _id: idUser });
@@ -751,14 +756,14 @@ export const updatPassword = async (req, res, next) => {
   }
 
 
-
+// يُسترجع جميع المستخدمين النشطين الذين لم يتم حذفهم ولديهم الدور 'User'.
   export const getUserActive = async (req, res, next) => {
     const Users = await userModel.find({ isDeleted: false, statuse:'Active', role : 'User'});
     return res.status(200).json({ message: "success", Users });
 
 }
 
-
+// يُسترجع جميع المستخدمين الذين لم يتم حذفهم ولديهم الرول 'User'.
 export const getallUser = async (req, res, next) => {
   const Users = await userModel.find({ isDeleted: false, role : 'User'});
   return res.status(200).json({ message: "success", Users });
@@ -766,7 +771,7 @@ export const getallUser = async (req, res, next) => {
 }
   
 
-  
+  // يُسترجع مستخدم معين بواسطة التوكين, طالما أنه لم يتم حذفه ولديه الرول 'User'.
 export const getspesificUser = async (req, res, next) => {
   const { UserID } = req.params;
   const User = await userModel.findOne({ _id: UserID , role : 'User'});
@@ -778,7 +783,7 @@ export const getspesificUser = async (req, res, next) => {
 }
 
 
-
+// إدارة طلبات الانسحاب، تحديث حالة الطلب وإزالة المرشح من قائمة المرشحين في حالة الموافقة
 export const manageWithdrawalRequest = async (req, res) => {
 
       const { requestId } = req.params; // معرف طلب الانسحاب
@@ -814,7 +819,7 @@ export const manageWithdrawalRequest = async (req, res) => {
 
 
 
-
+// استعراض قائمة الانسحابات الحالية التي تحتاج إلى موافقة من المشرف الحالي
 export const withdrawals = async (req, res) => {
   const Admin_id = req.user._id; 
   // Fetch withdrawals with associated vote and candidate information
@@ -834,7 +839,7 @@ export const withdrawals = async (req, res) => {
   return res.status(200).json({ message: "success", withdrawals });
 };
 
-
+// إرجاع الرول المستخدم الحالي
 export const Role = async (req, res) => {
   const userId = req.user;
 
@@ -844,7 +849,7 @@ export const Role = async (req, res) => {
 }
 
 
-
+//اضافة المرشح من قبل الادمن 
 export const Signup = async (req, res, next) => {
   const AdminId = req.user;
   const { userName, email, password, cardnumber, phone, address, gender, role='User' } = req.body;

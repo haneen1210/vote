@@ -1,7 +1,7 @@
 
 import communicationModel from "../../../DB/models/communication.js";
 
-
+// إنشاء معلومات اتصال جديدة
 export const createcommunicatione = async (req, res, next) => {
  
     const {  socialMedia, email, address, logo, phone} = req.body;
@@ -18,12 +18,13 @@ export const createcommunicatione = async (req, res, next) => {
     return res.status(201).json({ message: "success", communication });
 }
 
-
+// الحصول على جميع معلومات الاتصال
 export const getcommunication = async (req, res, next) => {
     const communication = await communicationModel. find({});
     return res.status(200).json({ message: "success", communication });
 }
 
+// الحصول على معلومات اتصال محددة
 export const getspecificcommunication = async (req, res) => {
     const { communicationID } = req.params;
     const communication = await communicationModel.findOne({ _id: communicationID });
@@ -33,7 +34,7 @@ export const getspecificcommunication = async (req, res) => {
     return res.status(200).json({ message: "communication found", communication });
 }
 
-
+// تحديث معلومات الاتصال
 export const updatecommunication = async (req, res) => {
     const { id } = req.params;
     const communication = await communicationModel.findOne({_id:id });
@@ -55,7 +56,7 @@ export const updatecommunication = async (req, res) => {
     return res.status(200).json({ message: "success update communication ", communication });
 }
 
-
+// حذف معلومات الاتصال
 export const deletecommunication = async (req, res) => {
     const { communicationID } = req.params;
     const communication = await communicationModel.findOneAndDelete({_id:communicationID });
