@@ -33,6 +33,7 @@ app.use(async(req,res,next)=>{
   connectDB();
 
   cron.schedule('*/60 * * * *', async () => {
+    //cron.schedule('* * * * * *', async () => {
     await sendReminderVotingStatus();
 }, {
     scheduled: true,

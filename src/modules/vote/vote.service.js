@@ -89,9 +89,11 @@ export const updateVotingStatus = async (req, res, next) => {
 
 
 export const sendReminderVotingStatus = async (req, res, next) => {
+ 
     try {
         // العثور على جميع التصويتات التي موعدها انتهى
         const expiredVotes = await voteModel.find({ EndDateVote: { $lt: new Date() } });
+        console.log( expiredVotes);
 
         // تحديث حالة التصويت لكل تصويت منتهي
         for (const vote of expiredVotes) {

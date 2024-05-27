@@ -11,7 +11,7 @@ import * as AuthValidators from '../auth/auth.validation.js';
 import * as authservices from '../auth/auth.services.js'
 const router = Router();
 router.get('/role',  auth(Object.values(roles)), asynHandler(Adminservices.Role));
-router.get('/getAdmin', auth(endPoint.SuperAdmin), asynHandler(Adminservices.getAdmin));
+router.get('/getAdmin', auth(endPoint.getAdmin), asynHandler(Adminservices.getAdmin));
 router.get('/getinformation', auth(Object.values(roles)), asynHandler(Adminservices.getinformation));
 router.get('/getdeletAdmin', auth((endPoint.SuperAdmin)), asynHandler(Adminservices.getdeleteAdmin));
 router.get('/getdeletuser', auth((endPoint.getdelet)), asynHandler(Adminservices.getdeleteuser));
