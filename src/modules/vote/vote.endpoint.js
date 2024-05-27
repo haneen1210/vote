@@ -3,17 +3,17 @@ import { roles } from "../../middleware/auth.js"
 
 export const endPoint = {
     createVote:[roles.SuperAdmin,roles.Admin],
-    updateVotingStatus:[roles.SuperAdmin,roles.Admin],
-    addExistingCandidateToVote:[roles.SuperAdmin,roles.Admin],
+    updateVotingStatus:[roles.Admin],
+    addExistingCandidateToVote:[roles.Admin],
     getspecificCandidate:[roles.SuperAdmin,roles.Admin],
-    removeCandidateFromVote:[roles.SuperAdmin,roles.Admin],
-    join:[roles.SuperAdmin,roles.User],
+    removeCandidateFromVote:[roles.Admin],
+    join:[roles.User],
     updatejoin:[roles.SuperAdmin,roles.Admin],
-    User:[roles.SuperAdmin,roles.User],
+    User:[roles.User],
     candidate:[roles.SuperAdmin,roles.Candidate],
-    SuperAdmin:[roles.SuperAdmin,roles.SuperAdmin],
-    getAdminvote:[roles.SuperAdmin,roles.Admin],
-    getUserVotes:[roles.Admin,roles.SuperAdmin,roles.User],
+    SuperAdmin:[roles.SuperAdmin],
+    getAdminvote:[roles.Admin],
+    getUserVotes:[roles.User],
 }
 
 

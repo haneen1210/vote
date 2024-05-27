@@ -4,7 +4,6 @@ import { auth, roles } from "../../middleware/auth.js";
 import { endPoint } from "./vote.endpoint.js";
 import { asynHandler } from "../../utls/errorHanding.js";
 import { validation } from "../../middleware/validation.js";
-//import fileUpload, { fileValidation } from "../../utls/multer.js";
 import * as validators from './vote.validation.js';
 import fileUpload, { fileValidation } from "../../utls/multer.js";
 

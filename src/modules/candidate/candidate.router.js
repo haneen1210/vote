@@ -17,5 +17,5 @@ router.get('/getCandidatePostsShow/:candidateId',auth(Object.values(roles)),asyn
 router.get('/:CandidateID', auth(endPoint.getspecificCandidate), validation(validators.getspecificCandidate), asynHandler(candidateservices.getspecificCandidateinvote));
 
 export default router;
-//auth(Object.values(roles))
+
 

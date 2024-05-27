@@ -26,7 +26,7 @@ export const getVotes = async (req, res, next) => {
   const votes = await voteModel.find();
   return res.status(200).json({ message: "success", votes });
 };
-//تُستخدم لاسترجاع التصويتات التي تخص مُسؤول معين بناءً على التوكين.
+//تُستخدم لاسترجاع التصويتات التي تخص مُسؤول معين بناءً على اي دي.
 export const getVotesByIDAdmin = async (req, res, next) => {
   const {AdminID}  = req.params;
   const votes = await voteModel.find({ AdminID });
