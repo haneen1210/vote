@@ -1,5 +1,6 @@
 
 import contectModel from "../../../DB/models/contect.model.js";
+import { sendEmailcontact } from "../../utls/email.js";
 
 // إنشاء بيانات اتصال جديدة
 export const createcontect = async (req, res, next) => {
@@ -12,6 +13,12 @@ export const createcontect = async (req, res, next) => {
             return next(new Error("email already exists", { cause: 409 }));}
 
     const communication = await contectModel.create({ fullName,email,phone,message});
+    const html=`<div>
+    <p>from : ${fullName}</p>
+    <p>from : ${message}</p>
+    <p>from : ${phone}</p>
+    </div>`
+    await sendEmailcontact(email,process.env.EMAILSENDER,html);
     return res.status(201).json({ message: "success", communication });
 }
 
