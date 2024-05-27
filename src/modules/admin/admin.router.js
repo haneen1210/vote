@@ -26,8 +26,8 @@ router.post('/addCandidateExcel', auth(endPoint.addCandidate), fileUpload(fileVa
 router.get('/withdrawal', auth(endPoint.getAdmin), asynHandler(Adminservices.withdrawals));
 router.patch('/updatPassword', auth(Object.values(roles)),validation(validators.updatPassword), asynHandler(Adminservices.updatPassword));
 router.patch('/UpdateStatuseUser/:idUser', auth(endPoint.updateadmin),validation(validators.UpdateStatuseUser), asynHandler(Adminservices.UpdateStatuseUser));
-router.get('/getAdmin/:AdminID', auth(endPoint.getAdmin), asynHandler(Adminservices.getspesificAdmin));
-router.get('/getUser/:UserID', auth(endPoint.getAdmin), asynHandler(Adminservices.getspesificUser));
+router.get('/getAdmin/:AdminID', auth(endPoint.getspesific), asynHandler(Adminservices.getspesificAdmin));
+router.get('/getUser/:UserID', auth(endPoint.getspesific), asynHandler(Adminservices.getspesificUser));
 router.patch('/softDeleteAdmin/:id', auth(endPoint.SuperAdmin), validation(validators.DeletAdminAndRestore), asynHandler(Adminservices.softDeletSuperAdmin));
 router.delete('/hrddDeletedAdmin/:id', auth(endPoint.SuperAdmin), validation(validators.DeletAdminAndRestore), asynHandler(Adminservices.HarddeleteSuperAdmin));
 router.patch('/restoreAdmin/:id', auth(endPoint.SuperAdmin), validation(validators.DeletAdminAndRestore), asynHandler(Adminservices.restoreSuperAdmin));
@@ -38,4 +38,5 @@ router.put('/updateSuperAdmin/:id', auth(endPoint.SuperAdmin), fileUpload(fileVa
 router.put('/:id', auth(endPoint.updateadmin), fileUpload(fileValidation.image).single('image'),validation(validators.UpdateSchema), asynHandler(Adminservices.updateadmin));
 router.put('/updateCandidate/:id', auth(endPoint.updateCandidate), fileUpload(fileValidation.image).single('image'),validation(validators.updatecandidate), asynHandler(Adminservices.updateCandidateByadmin));
 router.patch('/withdrawal-request/:requestId',  auth(endPoint.manageWithdrawalRequest),validation(validators.manageWithdrawalRequest), asynHandler(Adminservices.manageWithdrawalRequest));
+
 export default router;
