@@ -15,8 +15,8 @@ export const createcontect = async (req, res, next) => {
     const communication = await contectModel.create({ fullName,email,phone,message});
     const html=`<div>
     <p>from : ${fullName}</p>
-    <p>from : ${message}</p>
-    <p>from : ${phone}</p>
+    <p>message: ${message}</p>
+    <p>phone : ${phone}</p>
     </div>`
     await sendEmailcontact(email,process.env.EMAILSENDER,html);
     return res.status(201).json({ message: "success", communication });
