@@ -1,10 +1,10 @@
 import voteModel from "../../../DB/models/vote.model.js";
 import cloudinary from "../../utls/cloudinary.js";
-import moment from "moment";
+//import moment from "moment";
 import userModel from "../../../DB/models/admin.model.js";
 import XLSX from "xlsx";
 import ResultModel from "../../../DB/models/Result.model.js";
-
+import moment from 'moment-timezone';
 //تقوم بإنشاء تصويت جديد
 export const createVote = async (req, res, next) => {
   const { voteName, VotingStatus, description, StartDateVote, EndDateVote, image, AdminID } = req.body;
@@ -90,25 +90,34 @@ export const updateVotingStatus = async (req, res, next) => {
 };
 
 //ستخدم لتحديث حالة التصويتات التي انتهت مدة صلاحيتها إلى "غير نشط".
-export const sendReminderVotingStatus = async (req, res, next) => {
- 
-    try {
-        // العثور على جميع التصويتات التي موعدها انتهى
-        const expiredVotes = await voteModel.find({ EndDateVote: { $lt: new Date() } });
-        console.log( expiredVotes);
+function convertUTCDateToLocalDate(date) {
+  var newDate = new Date(date.getTime() - date.getTimezoneOffset()*60*1000);
+  return newDate;   
+}
+export const sendReminderVotingStatus = async () => {
+  try {
+    let currentLocalDate = convertUTCDateToLocalDate(new Date());
+    console.log("current",currentLocalDate);
+    const allVotes = await voteModel.find({});
+    const expiredVotes = [];
 
-        // تحديث حالة التصويت لكل تصويت منتهي
-        for (const vote of expiredVotes) {
-            vote.VotingStatus = "Inactive";
-            await vote.save();
-            console.log(`Voting is optionally chosen to vote: ${vote._id} ${vote.voteName}`);
-        }
-    } catch (error) {
-        console.error("An error occurred while terminating voting automatically:", error.message);
+    for (const vote of allVotes) {
+      let endDate = new Date(vote.EndDateVote);
+      if (endDate <= currentLocalDate) {
+        expiredVotes.push(vote);
+      }
     }
 
+    for (const vote of expiredVotes) {
+      console.log(vote._id);
+      await voteModel.updateOne({_id:vote._id},{VotingStatus:"Inactive"});
+    }
+    console.log("Done");
 
-}
+  } catch (error) {
+    console.error('An error occurred while updating voting status:', error.message);
+  }
+};
 
 //تُستخدم لاسترجاع التصويتات التي لا تزال نشطة.
 export const getVoteOpen = async (req, res, next) => {
