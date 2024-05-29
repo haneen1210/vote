@@ -78,7 +78,6 @@ const UserSchema = new Schema({
         type:String,
 
     },
-    //votes: [{ type:Types.ObjectId, ref: 'Vote' }]
     votes: [{ type: Types.ObjectId, ref: 'Vote' }] 
    
 }, {

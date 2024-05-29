@@ -15,6 +15,7 @@ export const endPoint = {
     getUser:[roles.SuperAdmin,roles.Admin],
     getdelet:[roles.Admin],
     getcandidate:[roles.Admin],
+    getinfcandidate:[roles.Admin,roles.User],
 }
 
 
