@@ -16,7 +16,7 @@ router.get('/getinformation', auth(Object.values(roles)), asynHandler(Adminservi
 router.get('/getdeletAdmin', auth((endPoint.SuperAdmin)), asynHandler(Adminservices.getdeleteAdmin));
 router.get('/getdeletuser', auth((endPoint.getdelet)), asynHandler(Adminservices.getdeleteuser));
 router.get('/getdeletcandidate', auth((endPoint.getdelet)), asynHandler(Adminservices.getdeleteCandidate));
-router.get('/getCandidateByAdmin', auth((endPoint.getinfcandidate)), asynHandler(Adminservices.getCandidateByAdmin));
+router.get('/getCandidateByAdmin', auth((endPoint.getcandidate)), asynHandler(Adminservices.getCandidateByAdmin));
 router.get('/getUsersActive', auth(endPoint.getUser), asynHandler(Adminservices.getUserActive));
 router.get('/getallUsers', auth(endPoint.getUser), asynHandler(Adminservices.getallUser));
 router.put('/updateProfile', auth(Object.values(roles)), fileUpload(fileValidation.image).single('image'),validation(validators.updateProfileSchema), asynHandler(Adminservices.updateProfile));
