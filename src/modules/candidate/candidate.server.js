@@ -71,7 +71,7 @@ export const getspecificCandidateinvotes = async (req, res) => {
 
 // إرسال طلب انسحاب للمرشح
 export const requestWithdrawal = async (req, res) => {
-    const { voteName, reason ,AdminName} = req.body; //userName=Admin
+    const { voteName, reason } = req.body; //userName=Admin
     const candidateId = req.user._id; // candidateId
 
     // تحقق من أن المرشح موجود وله الصلاحية
@@ -86,11 +86,6 @@ export const requestWithdrawal = async (req, res) => {
         return res.status(404).json({ message: "Vote not found" });
     }
 
-    const Admin = await userModel.findOne({ userName:AdminName ,role: 'Admin'});
-    if (!Admin) {
-        return res.status(404).json({ message: "Admin not found" });
-    }
-
 
     // تحقق من أن المرشح مشارك في التصويت
     if (!vote.candidates.includes(candidateId)) {
@@ -98,7 +93,7 @@ export const requestWithdrawal = async (req, res) => {
     }
 
     // تحقق من عدم وجود طلب انسحاب مكرر
-    const existingWithdrawalRequest = await WithdrawalModel.findOne({ candidateId, voteId: vote._id ,AdminID:Admin._id});
+    const existingWithdrawalRequest = await WithdrawalModel.findOne({ candidateId, voteId: vote._id ,AdminID:vote.AdminID});
     if (existingWithdrawalRequest) {
         return res.status(409).json({ message: "Withdrawal request already submitted for this vote" });
     }
@@ -109,7 +104,7 @@ export const requestWithdrawal = async (req, res) => {
     }
 
     // إنشاء طلب انسحاب جديد
-    const withdrawalRequest = await WithdrawalModel.create({candidateId, voteId: vote._id, reason, AdminID:Admin._id });
+    const withdrawalRequest = await WithdrawalModel.create({candidateId, voteId: vote._id, reason, AdminID:vote.AdminID });
 
     res.status(201).json({ message: "Withdrawal request submitted successfully", withdrawalRequest });
 };
