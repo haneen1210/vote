@@ -813,6 +813,7 @@ export const manageWithdrawalRequest = async (req, res) => {
           });
       }
 
+
       res.status(200).json({ message: `Withdrawal request ${status.toLowerCase()} successfully`, updatedRequest });
 
 };

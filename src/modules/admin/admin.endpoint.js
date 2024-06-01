@@ -3,6 +3,7 @@ import { roles } from "../../middleware/auth.js"
 
 export const endPoint = {
     getAdmin: [roles.Admin],
+    getinfAdmin: [roles.SuperAdmin,roles.Admin],
     getspesific: [roles.SuperAdmin,roles.Admin],
     addadmin: [roles.Admin],
     deleteByadmin: [roles.Admin],
