@@ -470,7 +470,7 @@ export const addCandidateExcel = async (req, res, next) => {
       try {
         await sendEmail(email, "Confirm Your Email", html);
         // إضافة المستخدم بعد إرسال البريد الإلكتروني بنجاح
-        const createUser = await userModel.create({ userName, email, password: hashedPassword, cardnumber, phone, address, gender, role,AdminID:AdminId,
+        const createUser = await userModel.create({ userName, email, password: hashedPassword, cardnumber, phone, address, gender, role,AdminID:AdminId._id,
           image: {
             secure_url: 'https://drive.google.com/file/d/1-Dp4LJv73Z-aFyLUJRb1kiMtdVyeuHmn/view?usp=sharing',
           },
