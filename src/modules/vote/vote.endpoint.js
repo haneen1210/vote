@@ -12,7 +12,7 @@ export const endPoint = {
     User:[roles.User],
     candidate:[roles.SuperAdmin,roles.Candidate],
     SuperAdmin:[roles.SuperAdmin],
-    getAdminvote:[roles.Admin],
+    getAdminvote:[roles.SuperAdmin,roles.Admin],
     getUserVotes:[roles.User],
 }
 
