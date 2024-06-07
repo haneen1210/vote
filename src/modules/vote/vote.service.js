@@ -330,8 +330,10 @@ export const join = async (req, res, next) => {
 };
 
 //تُستخدم لجمع الأصوات لكل مرشح وإعادة تنسيق النتائج.
+/*
 export const countVotesForCandidates = async (req, res) => {
      // استخدام Mongoose لجمع الأصوات وتعبئة التفاصيل ذات الصلة
+     
      const results = await ResultModel.aggregate([
       {
           $group: {
@@ -373,7 +375,74 @@ export const countVotesForCandidates = async (req, res) => {
       results: finalResults
   });
 
+};*/
+
+export const countVotesForCandidates = async (req, res) => {
+  // الحصول على معرف المستخدم من الطلب
+  const user_id = req.user._id;
+
+  try {
+      // البحث عن التصويتات التي يكون هذا المستخدم (Admin) مسؤولاً عنها
+      const votes = await voteModel.find({ AdminID: user_id });
+
+      if (votes.length === 0) {
+          return res.status(404).json({ message: 'No votes found for this admin' });
+      }
+
+      // جمع الأصوات وتعبئة التفاصيل ذات الصلة
+      const results = await ResultModel.aggregate([
+          {
+              $match: {
+                  VoteId: { $in: votes.map(vote => vote._id) }
+              }
+          },
+          {
+              $group: {
+                  _id: {
+                      VoteId: "$VoteId",
+                      candidateId: "$candidateId"
+                  },
+                  count: { $sum: 1 }
+              }
+          }
+      ]);
+
+      // تحويل نتائج التجميع إلى وعود لتعبئة تفاصيل التصويت والمرشحين
+      const populatedResults = await Promise.all(
+          results.map(async result => {
+              const voteDetails = await voteModel.findById(result._id.VoteId);
+              const candidateDetails = await userModel.findById(result._id.candidateId);
+
+              // فحص إذا كانت تفاصيل التصويت أو المرشح موجودة
+              if (!voteDetails || !candidateDetails) {
+                  return null;  // يمكنك أيضاً تعديل هذا السلوك ليتناسب مع متطلباتك
+              }
+
+              return {
+                  voteId: result._id.VoteId,
+                  candidateId: result._id.candidateId,
+                  voteName: voteDetails.voteName,
+                  candidateName: candidateDetails.userName,
+                  voteCount: result.count
+              };
+          })
+      );
+
+      // تصفية النتائج الفارغة
+      const finalResults = populatedResults.filter(result => result !== null);
+
+      res.status(200).json({
+          message: "Vote counts for each candidate including candidate names",
+          results: finalResults
+      });
+
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Internal server error' });
+  }
 };
+
+
 //تُستخدم للبحث عن جميع التصويتات التي شارك فيها مستخدم معين.
 export const findUserVotes = async (req, res) => {
   const { userId } = req.params;
