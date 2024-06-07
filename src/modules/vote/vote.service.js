@@ -378,15 +378,30 @@ export const countVotesForCandidates = async (req, res) => {
 };*/
 
 export const countVotesForCandidates = async (req, res) => {
-  // الحصول على معرف المستخدم من الطلب
   const user_id = req.user._id;
+  const user_role = req.user.role;
+
+  let voteFilter;
+
+  // تحديد الفلتر حسب دور المستخدم
+  if (user_role === 'Admin') {
+      voteFilter = { AdminID: user_id };
+  } else if (user_role === 'User') {
+      voteFilter = { Users: user_id };
+  } else if (user_role === 'Candidate') {
+      voteFilter = { candidates: user_id };
+  } else if (user_role === 'SuperAdmin') {
+    voteFilter = {}; // يعرض جميع التصويتات
+} else {
+      return res.status(403).json({ message: 'Access denied' });
+  }
 
   try {
-      // البحث عن التصويتات التي يكون هذا المستخدم (Admin) مسؤولاً عنها
-      const votes = await voteModel.find({ AdminID: user_id });
+      // البحث عن التصويتات بناءً على دور المستخدم
+      const votes = await voteModel.find(voteFilter);
 
       if (votes.length === 0) {
-          return res.status(404).json({ message: 'No votes found for this admin' });
+          return res.status(404).json({ message: 'No votes found for this user' });
       }
 
       // جمع الأصوات وتعبئة التفاصيل ذات الصلة
