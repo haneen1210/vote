@@ -38,6 +38,7 @@ export const likePost = async (req, res, next) => {
     const user_id = req.user._id;
 
     const post = await PostModel.findByIdAndUpdate(id, { $addToSet: { like: user_id } },
+        //addto set بدون تكرار
         {
             new: true
         })

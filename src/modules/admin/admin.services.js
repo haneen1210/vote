@@ -91,6 +91,7 @@ export const HarddeleteSuperAdmin = async (req, res, next) => {
 export const restoreSuperAdmin = async (req, res) => {
   const { id } = req.params;
   const user = await userModel.findOneAndUpdate({ _id: id, isDeleted: true, role: 'Admin' }, { isDeleted: false }, { new: true });
+ //new:true يرجع النسخة المحدثة من user
   if (!user) {
       return res.status(400).json({ message: "Admin not found" });
   }
@@ -367,8 +368,11 @@ export const addCandidateExcel = async (req, res, next) => {
   
       throw new Error("CONFTRAMEMAILSECRET must have a value");
     }
+    // قراءة ملف Excel باستخدام مكتبة XLSX
     const workBook = XLSX.readFile(req.file.path);
+    // اختيار الورقة الأولى من ملف Excel
     const workSheet = workBook.Sheets[workBook.SheetNames[0]];
+    // تحويل محتويات الورقة إلى JSON
     const users = XLSX.utils.sheet_to_json(workSheet);
 
     const errors = [];
@@ -399,7 +403,7 @@ export const addCandidateExcel = async (req, res, next) => {
       const passwordString = String(password);
       const hashedPassword = await bcrypt.hash(passwordString, parseInt(process.env.SALT_ROUND));
       const token = jwt.sign({ email }, process.env.CONFTRAMEMAILSECRET);
-
+//إنشاء توكين JWT: يسهل عملية المصادقة عن طريق إنشاء توكين يحتوي على معلومات المستخدم، والذي يمكن التحقق منه بسهولة في الطلبات المستقبلية.
       // إرسال بريد تأكيد البريد الإلكتروني
       const html = `<!DOCTYPE html>
         <html>

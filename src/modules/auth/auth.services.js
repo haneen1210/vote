@@ -272,6 +272,7 @@ export const Signup = async (req, res, next) => {
 //ارسال ايميل تاكيد بانه تم قبول في البرنامج 
 export const confimEmail = async (req, res, next) => {
     const token = req.params.token;
+    //فك التوكين 
     const decoded = jwt.verify(token, process.env.CONFTRAMEMAILSECRET);
     if (!decoded) {
         return next(new Error("invalid token", { cause: 404 }));
@@ -303,10 +304,10 @@ export const singIn = async (req, res, next) => {
         return next(new Error("data invalid", { cause: 400 }));
     }
     const token = jwt.sign({ id: user._id, role: user.role, status: user.status }, process.env.LOGINSECRET
-        // ,{ expiresIn:'5m'}
+      //  ,{ expiresIn:'5m'}// مدة صلاحية التوكين 
     );
     const refreshToken = jwt.sign({ id: user._id, role: user.role, status: user.status }, process.env.LOGINSECRET,
-        { expiresIn: 60 * 60 * 24 * 30 });
+        { expiresIn: 60 * 60 * 24 * 30 });//30day
     return res.status(200).json({ message: "success", token, refreshToken, role: user.role });
 }
 //ارسال كود في حالة نسيان كلمة السر 

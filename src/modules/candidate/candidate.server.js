@@ -48,7 +48,8 @@ export const getspecificCandidateinvotes = async (req, res) => {
 
         // تحويل نتائج التصويت إلى التنسيق المناسب
         const voteNames = votes.map(vote => vote.voteName);
-
+        //هي دالة تُستخدم لإنشاء مصفوفة جديدة عن طريق تطبيق دالة معينة على كل عنصر في المصفوفة الأصلية
+//لسطر يقوم بإنشاء مصفوفة جديدة تحتوي على قيم voteName لكل تصويت في المصفوفة الأصلية votes باستخدام دالة map.
         // إضافة تفاصيل المرشح
         const candidateDetails = {
             userName: candidate.userName,
@@ -71,7 +72,7 @@ export const getspecificCandidateinvotes = async (req, res) => {
 
 // إرسال طلب انسحاب للمرشح
 export const requestWithdrawal = async (req, res) => {
-    const { voteName, reason } = req.body; //userName=Admin
+    const { voteName, reason } = req.body; 
     const candidateId = req.user._id; // candidateId
 
     // تحقق من أن المرشح موجود وله الصلاحية
@@ -80,7 +81,7 @@ export const requestWithdrawal = async (req, res) => {
         return res.status(404).json({ message: "Candidate not found or unauthorized" });
     }
 
-    // ابحث عن التصويت باستخدام `voteName` بدلاً من `voteId`
+    // ابحث عن التصويت باستخدام `voteName` 
     const vote = await VoteModel.findOne({ voteName });
     if (!vote) {
         return res.status(404).json({ message: "Vote not found" });
@@ -129,7 +130,9 @@ export const getCandidatePosts = async (req, res) => {
                 path: 'userId',
                 select: 'userName image'
             });
-
+//تستخدم دالة map لإنشاء مصفوفة جديدة عن طريق تطبيق دالة معينة على كل عنصر في المصفوفة الأصلية posts
+//الدالة السهمية post => ({ ... }) تُستخدم لتحديد كيفية تحويل كل عنصر في المصفوفة الأصلية إلى عنصر في المصفوفة الجديدة.
+//تأخذ الدالة كائن post وتُرجع كائن جديد يحتوي على الخصائص المنسقة (formatted).
         // تحويل النتائج إلى تنسيق مناسب
         const formattedPosts = posts.map(post => ({
             title: post.title,

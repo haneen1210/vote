@@ -5,6 +5,10 @@ import userModel from "../../../DB/models/admin.model.js";
 import XLSX from "xlsx";
 import ResultModel from "../../../DB/models/Result.model.js";
 import moment from 'moment-timezone';
+import crypto from 'crypto-js';
+
+
+
 //تقوم بإنشاء تصويت جديد
 export const createVote = async (req, res, next) => {
   const { voteName, VotingStatus, description, StartDateVote, EndDateVote, image, AdminID } = req.body;
@@ -286,7 +290,7 @@ export const removeCandidateFromVote = async (req, res) => {
   return res.status(200).json({ message: "Candidate removed from vote successfully" });
 };
 
-
+/*
 //تُستخدم للسماح للمستخدم بالانضمام إلى التصويت مع تحديد المرشح
 export const join = async (req, res, next) => {
   const { idvote, idcandidate } = req.params;
@@ -329,54 +333,180 @@ export const join = async (req, res, next) => {
   return res.status(200).json({ message: "Success", join, result });
 };
 
-//تُستخدم لجمع الأصوات لكل مرشح وإعادة تنسيق النتائج.
-/*
-export const countVotesForCandidates = async (req, res) => {
-     // استخدام Mongoose لجمع الأصوات وتعبئة التفاصيل ذات الصلة
-     
-     const results = await ResultModel.aggregate([
-      {
-          $group: {
-              _id: {
-                  VoteId: "$VoteId",
-                  candidateId: "$candidateId"
-              },
-              count: { $sum: 1 }
-          }
+*/
+
+// تُستخدم للسماح للمستخدم بالانضمام إلى التصويت مع تحديد المرشح
+export const join = async (req, res, next) => {
+  const { idvote, idcandidate } = req.params;
+  const user_id = req.user._id;
+
+  // Check if both vote and candidate IDs are provided
+  if (!idvote || !idcandidate) {
+    return res.status(404).json({ message: "Vote or Candidate not found" });
+  }
+
+  // Check if the vote is inactive
+  const inactiveVote = await voteModel.findOne({ _id: idvote, VotingStatus: "Inactive" });
+  if (inactiveVote) {
+    return res.status(400).json({ message: "The voting period has ended" });
+  }
+
+  // تشفير البيانات باستخدام AES
+  const voteData = JSON.stringify({ idvote });
+  const candidateData = JSON.stringify({ idcandidate });
+  const userData = JSON.stringify({ user_id: user_id.toString() });
+
+  const voteHash = crypto.AES.encrypt(voteData, process.env.ENCRYPTION_KEY).toString();
+  const candidateHash = crypto.AES.encrypt(candidateData, process.env.ENCRYPTION_KEY).toString();
+  const userHash = crypto.AES.encrypt(userData, process.env.ENCRYPTION_KEY).toString();
+
+  // فك البيانات المخزنة في ResultModel والتحقق من المشاركة السابقة
+  const results = await ResultModel.find({});
+  for (let result of results) {
+    try {
+      const decryptedVoteId = JSON.parse(crypto.AES.decrypt(result.VoteId, process.env.ENCRYPTION_KEY).toString(crypto.enc.Utf8)).idvote;
+      const decryptedUserId = JSON.parse(crypto.AES.decrypt(result.userId, process.env.ENCRYPTION_KEY).toString(crypto.enc.Utf8)).user_id;
+
+      if (decryptedVoteId === idvote && decryptedUserId === user_id.toString()) {
+        return res.status(409).json({ message: "User has already participated in this vote" });
       }
-  ]);
+    } catch (error) {
+      console.error('Error decrypting result:', error);
+      continue; // إذا كانت هناك مشكلة في فك التشفير، تجاهل هذا السجل وانتقل إلى السجل التالي
+    }
+  }
 
-  // تحويل نتائج التجميع إلى وعدات لتعبئة تفاصيل التصويت والمرشحين
-  const populatedResults = await Promise.all(
-      results.map(async result => {
-          const voteDetails = await voteModel.findById(result._id.VoteId);
-          const candidateDetails = await userModel.findById(result._id.candidateId);
+  // Check if the user is allowed to vote (if the user is in the 'Users' array of the vote)
+  const vote = await voteModel.findById(idvote);
+  if (!vote.Users.includes(user_id)) {
+    return res.status(403).json({ message: "User is not allowed to vote in this election" });
+  }
 
-          // فحص إذا كانت تفاصيل التصويت أو المرشح موجودة
-          if (!voteDetails || !candidateDetails) {
-              return null;  // يمكنك أيضاً تعديل هذا السلوك ليتناسب مع متطلباتك
-          }
-
-          return {
-              voteId: result._id.VoteId,
-              candidateId: result._id.candidateId,
-              voteName: voteDetails.voteName,
-              candidateName: candidateDetails.userName,
-              voteCount: result.count
-          };
-      })
+  // Add user to the vote (assuming that join1 is an array of user IDs)
+  const join = await voteModel.findByIdAndUpdate(
+    idvote,
+    { $addToSet: { join1: user_id } },  // Ensures user is added only once
+    { new: true }
   );
 
-  // تصفية النتائج الفارغة
-  const finalResults = populatedResults.filter(result => result !== null);
-
-  res.status(200).json({
-      message: "Vote counts for each candidate including candidate names",
-      results: finalResults
+  // Create a result entry for the user's participation
+  const result = await ResultModel.create({
+    VoteId: voteHash, 
+    candidateId: candidateHash, 
+    userId: userHash, 
   });
 
-};*/
+  // إرسال الاستجابة مع التجزئات المشفرة
+  return res.status(200).json({ message: "Success", join, result });
+};
 
+
+
+
+const encryptionKey = process.env.ENCRYPTION_KEY;
+
+export const countVotesForCandidates = async (req, res) => {
+  const user_id = req.user._id;
+  const user_role = req.user.role;
+
+  let voteFilter;
+
+  // تحديد الفلتر حسب دور المستخدم
+  if (user_role === 'Admin') {
+    voteFilter = { AdminID: user_id };
+  } else if (user_role === 'User') {
+    voteFilter = { Users: user_id };
+  } else if (user_role === 'Candidate') {
+    voteFilter = { candidates: user_id };
+  } else if (user_role === 'SuperAdmin') {
+    voteFilter = {}; // يعرض جميع التصويتات
+  } else {
+    return res.status(403).json({ message: 'Access denied' });
+  }
+
+  try {
+    // البحث عن التصويتات بناءً على دور المستخدم
+    const votes = await voteModel.find(voteFilter);
+
+    if (votes.length === 0) {
+      return res.status(404).json({ message: 'No votes found for this user' });
+    }
+
+    // جمع معرفات التصويت
+    const voteIds = votes.map(vote => vote._id.toString());
+
+    // جلب جميع نتائج التصويت من ResultModel
+    const results = await ResultModel.find({});
+
+    // فك تشفير نتائج التصويت وتصفية النتائج التي تتطابق مع معرفات التصويت
+    const decryptedResults = results.map(result => {
+      try {
+        const decryptedVoteId = JSON.parse(crypto.AES.decrypt(result.VoteId, encryptionKey).toString(crypto.enc.Utf8)).idvote;
+        const decryptedCandidateId = JSON.parse(crypto.AES.decrypt(result.candidateId, encryptionKey).toString(crypto.enc.Utf8)).idcandidate;
+        if (voteIds.includes(decryptedVoteId)) {
+          return {
+            ...result._doc, // نسخ جميع الحقول الأصلية
+            decryptedVoteId,
+            decryptedCandidateId
+          };
+        }
+        return null; // تجاهل النتائج التي لا تتطابق
+      } catch (error) {
+        console.error('Error decrypting result:', error);
+        return null; // تجاهل النتائج التي لا يمكن فك تشفيرها
+      }
+    }).filter(result => result !== null); // تصفية النتائج الفارغة
+
+    // جمع الأصوات وتعبئة التفاصيل ذات الصلة
+    const aggregatedResults = decryptedResults.reduce((acc, result) => {
+      const key = `${result.decryptedVoteId}-${result.decryptedCandidateId}`;
+      if (!acc[key]) {
+        acc[key] = {
+          voteId: result.decryptedVoteId,
+          candidateId: result.decryptedCandidateId,
+          count: 0
+        };
+      }
+      acc[key].count += 1;
+      return acc;
+    }, {});
+
+    // تحويل نتائج التجميع إلى وعود لتعبئة تفاصيل التصويت والمرشحين
+    const finalResults = await Promise.all(Object.values(aggregatedResults).map(async result => {
+      const voteDetails = await voteModel.findById(result.voteId);
+      const candidateDetails = await userModel.findById(result.candidateId);
+
+      if (!voteDetails || !candidateDetails) {
+        return null;
+      }
+
+      return {
+        voteId: result.voteId,
+        candidateId: result.candidateId,
+        voteName: voteDetails.voteName,
+        candidateName: candidateDetails.userName,
+        voteCount: result.count
+      };
+    }));
+
+    // تصفية النتائج الفارغة
+    const filteredResults = finalResults.filter(result => result !== null);
+
+    res.status(200).json({
+      message: "Vote counts for each candidate including candidate names",
+      results: filteredResults
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+
+
+/*
+//تُستخدم لجمع الأصوات لكل مرشح وإعادة تنسيق النتائج.
 export const countVotesForCandidates = async (req, res) => {
   const user_id = req.user._id;
   const user_role = req.user.role;
@@ -406,6 +536,7 @@ export const countVotesForCandidates = async (req, res) => {
 
       // جمع الأصوات وتعبئة التفاصيل ذات الصلة
       const results = await ResultModel.aggregate([
+        //استخدام التجميع (aggregation) لجمع الأصوات لكل مرشح بناءً على VoteId و candidateId. يتم حساب عدد الأصوات باستخدام $sum
           {
               $match: {
                   VoteId: { $in: votes.map(vote => vote._id) }
@@ -431,6 +562,8 @@ export const countVotesForCandidates = async (req, res) => {
               // فحص إذا كانت تفاصيل التصويت أو المرشح موجودة
               if (!voteDetails || !candidateDetails) {
                   return null;  // يمكنك أيضاً تعديل هذا السلوك ليتناسب مع متطلباتك
+     //إذا لم يتم العثور على تفاصيل التصويت أو المرشحين، يتم إرجاع null.
+
               }
 
               return {
@@ -457,63 +590,119 @@ export const countVotesForCandidates = async (req, res) => {
   }
 };
 
+*/
 
-//تُستخدم للبحث عن جميع التصويتات التي شارك فيها مستخدم معين.
+ // جلب جميع نتائج التصويت من ResultModel
 export const findUserVotes = async (req, res) => {
   const { userId } = req.params;
-      // استعلام لجلب جميع معرفات التصويتات التي شارك فيها المستخدم
-      const userVotes = await ResultModel.find({ userId }) .select('VoteId -_id'); // اختيار فقط حقل VoteId وإخفاء _id
 
-      // تحويل النتيجة إلى مصفوفة من معرفات التصويت
-      const voteIds = userVotes.map(vote => vote.VoteId);
-      // استعلام لجلب تفاصيل التصويتات باستخدام معرفات التصويت
-      const voteDetails = await voteModel.find({ _id: { $in: voteIds } });
-      res.status(200).json({
-          message: 'Retrieved all votes the user has participated in',
-          data: voteDetails
-      });
-};
+  try {
+    // جلب جميع نتائج التصويت من ResultModel
+    const results = await ResultModel.find({});
 
-//تُستخدم لاسترجاع التصويتات التي شارك فيها المستخدم الحالي.
-export const getUserVotes = async (req, res) => {
- 
-      // احصل على معرف المستخدم من التوكين
-      const userId = req.user._id;
-      const user = await userModel.findOne({ _id: userId, role: 'User' });
-     
-      if (!user) {
-          return res.status(403).json({ message: "Unauthorized: You are not a user" });
+    // فك تشفير userId والمقارنة مع userId المطلوب
+    const userVotes = results.filter(result => {
+      try {
+        const decryptedUserId = JSON.parse(crypto.AES.decrypt(result.userId, encryptionKey).toString(crypto.enc.Utf8)).user_id;
+        return decryptedUserId === userId;
+      } catch (error) {
+        console.error('Error decrypting userId:', error);
+        return false;
       }
-      // العثور على جميع التصويتات التي شارك فيها المستخدم
-      const userVotes = await ResultModel.find({ userId })
-          .populate({
-              path: 'VoteId',
-              select: 'voteName VotingStatus StartDateVote EndDateVote description image'
-          })
-          .populate({
-              path: 'userId',
-              select: 'userName'
-          });
+    });
 
-      // تحويل النتائج إلى تنسيق مناسب
-      const votes = userVotes.map(result => ({
-          userName: result.userId?.userName || "Unknown User",
-          voteName: result.VoteId?.voteName || "Unknown Vote",
-        //  VotingStatus: result.VoteId?.VotingStatus || "Unknown",
-        //  StartDateVote: result.VoteId?.StartDateVote || "Unknown",
-         // EndDateVote: result.VoteId?.EndDateVote || "Unknown",
-         // description: result.VoteId?.description || "Unknown",
-        //  image: result.VoteId?.image || {},
-      }));
+    if (userVotes.length === 0) {
+      return res.status(404).json({ message: 'No votes found for this user' });
+    }
 
-      res.status(200).json({
-          message: "Successfully retrieved user's votes",
-          votes
-      });
- 
+    // فك تشفير معرفات التصويت
+    const voteIds = userVotes.map(vote => {
+      try {
+        return JSON.parse(crypto.AES.decrypt(vote.VoteId, encryptionKey).toString(crypto.enc.Utf8)).idvote;
+      } catch (error) {
+        console.error('Error decrypting VoteId:', error);
+        return null;
+      }
+    }).filter(idvote => idvote !== null); // تصفية القيم الفارغة
+
+    // استعلام لجلب تفاصيل التصويتات باستخدام معرفات التصويت المفكوكة
+    const voteDetails = await voteModel.find({ _id: { $in: voteIds } });
+
+    res.status(200).json({
+      message: 'Retrieved all votes the user has participated in',
+      data: voteDetails
+    });
+  } catch (error) {
+    console.error('Error retrieving user votes:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
 };
 
+// تُستخدم لاسترجاع التصويتات التي شارك فيها المستخدم الحالي.
+export const getUserVotes = async (req, res) => {
+  const userId = req.user._id;
 
+  try {
+    // تحقق من أن المستخدم هو من نوع 'User'
+    const user = await userModel.findOne({ _id: userId, role: 'User' });
+    if (!user) {
+      return res.status(403).json({ message: "Unauthorized: You are not a user" });
+    }
+
+    // جلب جميع نتائج التصويت من ResultModel
+    const results = await ResultModel.find({});
+
+    // فك تشفير userId والمقارنة مع userId الحالي
+    const userVotes = results.filter(result => {
+      try {
+        const decryptedUserId = JSON.parse(crypto.AES.decrypt(result.userId, encryptionKey).toString(crypto.enc.Utf8)).user_id;
+        return decryptedUserId === userId.toString();
+      } catch (error) {
+        console.error('Error decrypting userId:', error);
+        return false;
+      }
+    });
+
+    if (userVotes.length === 0) {
+      return res.status(404).json({ message: 'No votes found for this user' });
+    }
+
+    // فك تشفير معرفات التصويت
+    const voteIds = userVotes.map(vote => {
+      try {
+        return JSON.parse(crypto.AES.decrypt(vote.VoteId, encryptionKey).toString(crypto.enc.Utf8)).idvote;
+      } catch (error) {
+        console.error('Error decrypting VoteId:', error);
+        return null;
+      }
+    }).filter(idvote => idvote !== null); // تصفية القيم الفارغة
+
+    // جلب تفاصيل التصويتات باستخدام معرفات التصويت المفكوكة
+    const voteDetails = await voteModel.find({ _id: { $in: voteIds } }).select('voteName VotingStatus StartDateVote EndDateVote description image');
+
+    // تحويل النتائج إلى تنسيق مناسب
+    const votes = userVotes.map(result => {
+      const voteDetail = voteDetails.find(vote => vote._id.toString() === JSON.parse(crypto.AES.decrypt(result.VoteId, encryptionKey).toString(crypto.enc.Utf8)).idvote);
+      return {
+        userName: user.userName,
+        voteName: voteDetail?.voteName || "Unknown Vote",
+        VotingStatus: voteDetail?.VotingStatus || "Unknown",
+        StartDateVote: voteDetail?.StartDateVote || "Unknown",
+        EndDateVote: voteDetail?.EndDateVote || "Unknown",
+        description: voteDetail?.description || "Unknown",
+        image: voteDetail?.image || {},
+      };
+    });
+
+    res.status(200).json({
+      message: "Successfully retrieved user's votes",
+      votes
+    });
+  } catch (error) {
+    console.error('Error retrieving user votes:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
 
 // وظيفة لإضافة مستخدم موجود إلى التصويت
 export const addExistingUserToVote = async (req, res) => {
