@@ -577,7 +577,7 @@ export const countVotesForCandidates = async (req, res) => {
   }
 };
 
-
+/////
 
 /*
 //تُستخدم لجمع الأصوات لكل مرشح وإعادة تنسيق النتائج.
